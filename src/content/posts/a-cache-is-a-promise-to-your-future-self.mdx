@@ -1,0 +1,52 @@
+A cache is a bet that the world will not change in the next `n` seconds. You are allowed to
+make that bet. What you are not allowed to do is make it silently, in a helper, on behalf of
+someone who will be paged about it in eighteen months.
+
+## Three questions, before any cache
+
+**Who invalidates this, by name?** Not "it expires". A person or an event. If the answer is
+"time", say how much staleness is acceptable and to whom. If the answer is "the write path",
+then the write path now owns the cache, and it should look like it does.
+
+**What does a stale read cost?** A stale avatar costs nothing. A stale permission check costs
+you an incident review. Same mechanism, wildly different bet, and the code usually looks
+identical — which is the problem.
+
+**How will I know it is stale?** If the only way to discover a stale entry is a user
+complaining, the cache is not observable and you have quietly moved a class of bug out of your
+tests and into your inbox.
+
+## The shape I keep coming back to
+
+Tag on write, not timeout on read:
+
+```ts
+async function getProjects() {
+  'use cache';
+  cacheTag('projects');
+  return db.select().from(projects);
+}
+
+async function updateProject(input: Project) {
+  await db.update(projects).set(input).where(eq(projects.id, input.id));
+  updateTag('projects');
+}
+```
+
+The invalidation lives four lines from the mutation that causes it. Nobody has to remember a
+number. The answer to "who invalidates this, by name?" is right there in the diff that
+introduced the write.
+
+Time-based expiry is the fallback for data you do not own — a third-party feed, an exchange
+rate, something whose writes you never see. For your own database, an expiry time is usually a
+confession that you did not want to find every write path.
+
+## The failure I keep making anyway
+
+Caching the wrong layer. It is tempting to cache the expensive function, because that is the
+one showing up in the trace. It is almost always better to cache the thing with the natural
+invalidation boundary, even when it is cheaper, because that is the thing you can reason about
+at 3am.
+
+The expensive function has a number attached to it. The boundary has a name. Future you can
+work with a name.

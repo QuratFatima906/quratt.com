@@ -1,0 +1,58 @@
+For six months a dashboard query took nine seconds. For six months I said "it's a dashboard,
+nobody waits on a dashboard". Then someone put it on a page that loads on login.
+
+## The plan I had been ignoring
+
+```
+Nested Loop  (cost=0.43..184213.77 rows=1 width=48) (actual time=0.088..8914.311 rows=41 loops=1)
+  ->  Seq Scan on events e  (cost=0.00..183991.00 rows=1 width=24)
+        Filter: (kind = 'signup'::text)
+        Rows Removed by Filter: 4118973
+  ->  Index Scan using accounts_pkey on accounts a  (...) (actual rows=1 loops=41)
+```
+
+Three numbers in there tell the whole story, and I had looked at this plan more than once
+without reading any of them.
+
+**`rows=1` against `actual ... rows=41`.** The planner expected one row and got forty-one. A
+forty-one-fold estimate miss is not a rounding error, it is the planner telling you its
+statistics do not describe your data.
+
+**`Rows Removed by Filter: 4118973`.** Four million rows were read off disk and thrown away to
+find forty-one. That is the nine seconds. Everything else in the plan is noise.
+
+**`Seq Scan on events`.** Not because there was no index — there was an index on `kind` — but
+because the planner believed a sequential scan was cheaper, on the strength of the estimate in
+the first bullet.
+
+## Why the estimate was wrong
+
+`kind` had eleven distinct values, and `'signup'` was 0.001% of them. Postgres keeps a
+most-common-values list per column, and by default it is a hundred entries deep. Eleven values
+fit comfortably. So the statistics were *right*, and the estimate was still wrong, which is the
+part that took me longest to accept.
+
+The estimate was wrong because the query filtered on `kind` **and** a date range, and Postgres
+multiplied the two selectivities as if they were independent. They are the opposite of
+independent: signups are a young-account phenomenon, so a signup row is far more likely to fall
+inside a recent date range than a random row is.
+
+```sql
+CREATE STATISTICS events_kind_created (dependencies)
+  ON kind, created_at FROM events;
+ANALYZE events;
+```
+
+Extended statistics tell the planner those two columns move together. The estimate went from
+one row to thirty-eight. The plan flipped to a bitmap index scan. Nine seconds became forty
+milliseconds, and I did not write a line of application code.
+
+## What I actually learned
+
+`EXPLAIN` was not withholding anything. Every time I ran it, it printed the estimate next to
+the reality and invited me to compare them. I was reading the plan the way you read a stack
+trace on the way to somewhere else — scanning for a word I recognised, not for the one number
+that disagreed with itself.
+
+Now I read plans in one order, always: find the largest gap between `rows=` and `actual rows=`,
+start there, and ignore the rest of the tree until that gap is explained.

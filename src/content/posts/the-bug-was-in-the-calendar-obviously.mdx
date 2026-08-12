@@ -1,0 +1,54 @@
+The alert said the nightly rollup had run twice. The rollup is idempotent, so running it twice
+is not interesting. What was interesting is that the second run produced a different number.
+
+## The shape of the lie
+
+Every scheduler I have written has the same bug in it somewhere, and it is always the same
+bug wearing a new coat: a time that is not a time. A wall clock reading is a label, not an
+instant. It is only an instant once you know which rules were in force when it was written
+down, and those rules change by act of parliament.
+
+Here is the function that ruined the week:
+
+```go
+func nextRun(last time.Time) time.Time {
+	return last.Add(24 * time.Hour)
+}
+```
+
+Twenty-four hours is a duration. "Tomorrow at the same time" is a calendar operation. They
+agree for about three hundred and sixty-three days a year, which is exactly long enough for
+the test suite to go green and for everyone to forget.
+
+## What I checked, in the order I checked it
+
+1. The obvious thing. Was the job enqueued twice? It was not.
+2. The second obvious thing. Was there a retry? There was not.
+3. Leap seconds. There was no leap second. I spent a full afternoon on this and I would like
+   it back.
+4. The clock on the box. Fine, and monotonic, and I checked it three times because by then I
+   had stopped trusting nouns.
+5. The database's idea of the day boundary, which was not the application's idea of the day
+   boundary, because one of them had an opinion about a timezone and the other did not.
+
+## The fix
+
+```go
+func nextRun(last time.Time, loc *time.Location) time.Time {
+	y, m, d := last.In(loc).Date()
+	h, min, s := last.In(loc).Clock()
+	return time.Date(y, m, d+1, h, min, s, 0, loc)
+}
+```
+
+`d+1` is allowed to be out of range. `time.Date` normalises it, and it normalises it through
+the location's rules rather than through arithmetic. The whole fix is that the calendar is
+asked the question instead of being told the answer.
+
+## The part worth keeping
+
+The bug was not in the timezone library. Timezone libraries are, on the whole, correct and
+long-suffering. The bug was that a duration and a calendar step were spelled the same way in
+my head, so I never looked at the line where they diverged. I now write the location into the
+signature of anything that advances a time, purely so the compiler makes me think about it
+once a year.
