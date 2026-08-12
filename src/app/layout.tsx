@@ -43,7 +43,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       className={`h-full antialiased ${bricolage.variable} ${jetbrainsMono.variable} ${nastaliq.variable}`}
     >
       <body className="min-h-full">
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+        {/* Dark by default rather than following the OS (D11) — the design is built for it.
+            `enableSystem` stays off, or next-themes would resolve an unset preference back to
+            the system value and undo the default. The toggle still persists a choice. */}
+        <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>
