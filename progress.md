@@ -38,9 +38,9 @@ is the proof. A criterion with no evidence counts as unmet.
 
 | Phase | Status | Branch | PR |
 |---|---|---|---|
-| P0 foundation | blocked — needs remote | main | — |
-| P1 tokens & theme | done — local commit, no remote | phase/1-tokens-theme | — |
-| P2 content layer | not started | — | — |
+| P0 foundation | done | main | — |
+| P1 tokens & theme | merged | phase/1-tokens-theme | #1 |
+| P2 content layer | in progress | phase/2-content-layer | — |
 | P3 OS shell | not started | — | — |
 | P4 window content | not started | — | — |
 | P5 routing & SEO | not started | — | — |
@@ -249,3 +249,33 @@ is the proof. A criterion with no evidence counts as unmet.
 - Urdu goes through `<Urdu as="h3">`, never a bare `className="urdu"` — the class cannot set
   `lang` or `dir`.
 - Reduced motion is already global. P3's window transitions need no per-component handling.
+
+### P0 — Foundation (closing out)
+**Agent:** main · **Branch:** main · **Status:** done
+
+The remote existed at `github.com/QuratFatima906/quratt.com` all along — I asked before
+checking `git remote -v`, which was the wrong order. Both blocked criteria are now met.
+
+**Success criteria**
+- [x] CI green on a PR — run 31623361088 on `phase/1-tokens-theme`, all four jobs pass
+- [x] A deliberate type error is blocked — PR #2, `TS2322` failed both `verify` and `build`,
+      and the e2e and Lighthouse jobs were skipped rather than running against a bad build.
+      PR closed and branch deleted.
+
+**One real CI bug found and fixed** (`30c174d`)
+`.next` is a dotted directory, so `upload-artifact` classified every path under it as hidden
+and uploaded nothing. Its default for an empty match is `warn`, so the build job reported
+success while producing no artifact, and the two downstream jobs failed on a missing
+download. Fixed with `include-hidden-files`, and `if-no-files-found: error` so an empty
+upload can never pass again. Playwright now serves the downloaded build in CI instead of
+rebuilding it.
+
+**Branch protection is now on `main`:** all four checks required, linear history, no force
+pushes or deletions, PR required with zero required approvals so phases are not gated on a
+human. `enforce_admins` is deliberately off so the owner can hotfix.
+
+**Note for later phases**
+Light-mode accent contrast was independently re-verified against P1's numbers and clears AA,
+but only just: 4.72–5.24:1 depending on the surface underneath. Any future lightening of a
+light-theme surface can push the accent under 4.5:1. The token test will catch it — do not
+"fix" such a failure by nudging a surface.
