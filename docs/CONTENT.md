@@ -110,18 +110,35 @@ invisible until the shelf ships.
 
 ## Portrait
 
-`src/assets/portrait.jpeg`, 800×800. Imported statically so Next derives dimensions and a
-blur placeholder, and so a change to the file busts its own cache.
+`src/assets/portrait.webp`, 900×1125. Import it statically so Next derives dimensions and a
+blur placeholder, and so changing the file busts its own cache. Both questions that were open
+here are now settled.
 
-Two things to settle with the owner before launch:
+**Aspect ratio.** The source is 4:5, matching the design's 100×124 slot almost exactly
+(0.800 against 0.806). No crop compromise is needed — `object-fit: cover` is a rounding
+error, not a decision.
 
-1. **It is square; the design's slot is 100×124 portrait.** It needs an object-position that
-   keeps the face centred under a 4:5 crop, not a squash.
-2. **The background is saturated magenta.** Against the design's near-black desktop and its
-   lime/violet accents, it is the loudest element on the page and it is not part of the
-   palette. Options: leave it (it is bold, and bold is not wrong), swap in a version on a
-   token-coloured background, or cut it out. Not a decision to make silently on someone's
-   own photograph.
+**Background, recoloured.** The photograph arrived on a magenta backdrop measuring
+`oklch(0.715 0.213 325)`. Against `--accent-alt` at `oklch(0.72 0.14 290)` that was the
+awkward case: near-identical lightness, but 35° off in hue and 1.5× the chroma — close enough
+to read as an attempt at the brand violet and far enough to look like a miss.
+
+It now sits at `oklch(0.714 0.141 290)`, on the token.
+
+The recolour ran in OKLCH rather than RGB, which matters twice:
+
+- **Per-pixel lightness was left untouched**, so the backdrop's original vertical gradient
+  survives — it still falls from 0.714 at top-left to 0.679 at top-right. A flat fill would
+  have replaced a photographed backdrop with a printed one.
+- **Pixels were selected by hue and chroma, not RGB distance.** In RGB, skin tones sit only
+  ~112 units from that magenta, so a distance threshold wide enough to catch the backdrop
+  would have tinted her face. By hue, the subject's colours — navy denim, olive hijab, skin —
+  are all far away and provably safe. Measured result: 49.4% of pixels fully recoloured,
+  0.55% feathered at edges, 50.1% untouched.
+
+**Weight.** Delivered at 900px wide as WebP: **148 KB, down from 1.7 MB**. That is still
+roughly 7× the display size, so there is headroom for larger use later. A 2.3 MB master for a
+124px slot was never going to survive the P7 performance budget.
 
 ## Product settings
 
