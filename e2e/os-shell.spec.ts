@@ -189,6 +189,42 @@ test.describe('mobile', () => {
     );
   });
 
+  test('the sheet tracks the finger, and resists rather than stopping at its bound', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName !== 'chromium', 'real touch injection needs CDP');
+    await page.goto('/');
+    const sheet = page.locator('[data-window="about"]');
+    const bar = (await sheet.locator('> div').first().boundingBox())!;
+    const x = bar.x + bar.width / 2;
+    const y = bar.y + bar.height / 2;
+
+    const cdp = await page.context().newCDPSession(page);
+    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at: number) =>
+      cdp.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: type === 'touchEnd' ? [] : [{ x, y: at, radiusX: 6, radiusY: 6, force: 1 }],
+      });
+    const offset = async () =>
+      parseFloat((await sheet.evaluate((el) => getComputedStyle(el).translate)).split(' ')[1] ?? '0');
+
+    await touch('touchStart', y);
+    await touch('touchMove', y + 120);
+    expect(await offset()).toBeCloseTo(120, 0); // downward is 1:1 with the finger
+
+    // 200px past the top bound. A hard stop reads as frozen; this should give, but grudgingly.
+    for (let i = 1; i <= 10; i++) await touch('touchMove', y + 120 - i * 32);
+    const overshoot = Math.abs(await offset());
+    expect(overshoot).toBeGreaterThan(0);
+    expect(overshoot).toBeLessThan(120);
+
+    await touch('touchEnd', y - 200);
+    await page.waitForTimeout(500);
+    expect(await offset()).toBe(0); // settles home
+    await expect(sheet).toHaveCount(1); // an upward drag never dismisses
+  });
+
   test('a downward swipe dismisses the sheet, and a tap does not', async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'real touch injection needs CDP');
     await page.goto('/');
