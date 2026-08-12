@@ -16,6 +16,13 @@ const DIM = 'text-text-muted! opacity-55';
 const PANEL_ITEM =
   'w-full cursor-pointer rounded px-2.5 py-1.5 text-left whitespace-nowrap text-text hover:bg-surface-hover';
 
+/**
+ * Did this click actually use the panel? A disabled item did nothing, so the panel stays put
+ * and its tooltip stays readable.
+ */
+const used = (event: React.MouseEvent) =>
+  !(event.target as Element).closest('[aria-disabled="true"]');
+
 /** Close a panel on Escape or on a click that lands outside it. */
 function useDismiss(open: boolean, close: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,6 +54,8 @@ export function MenuBar() {
   const closeMenu = useCallback(() => setMenu(false), []);
   const overflowRef = useDismiss(overflow, closeOverflow);
   const menuRef = useDismiss(menu, closeMenu);
+  const overflowToggle = useRef<HTMLButtonElement>(null);
+  const menuToggle = useRef<HTMLButtonElement>(null);
 
   /**
    * How many menu items fit. Measured off a hidden probe holding every label at full width,
@@ -120,6 +129,7 @@ export function MenuBar() {
           <div ref={overflowRef} className="flex-none">
             <button
               type="button"
+              ref={overflowToggle}
               aria-expanded={overflow}
               onClick={() => setOverflow((o) => !o)}
               className="cursor-pointer whitespace-nowrap text-accent-alt hover:text-accent"
@@ -127,7 +137,12 @@ export function MenuBar() {
               more ({hidden.length}) <span aria-hidden="true">▾</span>
             </button>
             {overflow && (
-              <div className="absolute top-8 left-0 z-9500 flex min-w-44 flex-col gap-px rounded-lg border border-border bg-surface-chrome p-1.5 shadow-xl">
+              <div
+                data-overflow-panel=""
+                onClickCapture={(e) => used(e) && overflowToggle.current?.focus()}
+                onClick={(e) => used(e) && setOverflow(false)}
+                className="absolute top-8 left-0 z-9500 flex min-w-44 flex-col gap-px rounded-lg border border-border bg-surface-chrome p-1.5 shadow-xl"
+              >
                 {hidden.map((w) => (
                   <Launcher
                     key={w.key}
@@ -170,6 +185,7 @@ export function MenuBar() {
         <div ref={menuRef} className="md:hidden">
           <button
             type="button"
+            ref={menuToggle}
             aria-expanded={menu}
             aria-label="Menu"
             onClick={() => setMenu((m) => !m)}
@@ -180,6 +196,8 @@ export function MenuBar() {
           {menu && (
             <nav
               aria-label="Sections"
+              onClickCapture={(e) => used(e) && menuToggle.current?.focus()}
+              onClick={(e) => used(e) && setMenu(false)}
               className="absolute top-9 right-2 left-2 z-9500 flex flex-col gap-px rounded-lg border border-border bg-surface-chrome p-1.5 shadow-xl"
             >
               {WINDOWS.map((w) => (

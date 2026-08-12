@@ -104,6 +104,34 @@ test.describe('desktop', () => {
     await expect(writes).toBeFocused();
   });
 
+  test('the overflow panel closes on use and hands focus back to its own button', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/');
+    // `document.fonts.status` reads "loaded" while idle, so it is not a signal that the mono
+    // face has arrived — let the post-`fonts.ready` re-measure land before touching anything.
+    await page.waitForTimeout(600);
+
+    const more = page.getByRole('button', { name: /^more \(/ });
+    await more.click();
+    await expect(page.locator('[data-overflow-panel]')).toBeVisible();
+    // Whichever windows overflow — that is the measurement's business, not this test's.
+    const popup = page.locator('[data-overflow-panel]');
+    const item = popup.getByRole('button').first();
+    const label = (await item.innerText()).trim();
+    await item.click();
+
+    await expect(popup).toHaveCount(0);
+    const opened = page.getByRole('region', { name: label });
+    await expect(opened).toBeFocused();
+
+    await opened.getByRole('button', { name: `Close ${label}` }).click();
+    // Focus cannot return to the panel item that opened the window — it no longer exists — so
+    // it returns to the button that owns the panel.
+    await expect(more).toBeFocused();
+  });
+
   for (const theme of ['dark', 'light'] as const) {
     test(`no accessibility violations in ${theme} with three windows open`, async ({ page }) => {
       await page.addInitScript(`localStorage.setItem('theme', '${theme}')`);

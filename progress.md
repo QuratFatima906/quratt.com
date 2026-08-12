@@ -504,8 +504,8 @@ light-theme surface can push the accent under 4.5:1. The token test will catch i
       ✓ [mobile-chrome] mobile › windows are full-screen sheets and the menu bar is a hamburger
       ```
 
-Full suite, four browser projects: `31 passed, 17 skipped` (the skips are the desktop tests on
-phones and the phone tests on desktops).
+Full suite, four browser projects: `33 passed, 19 skipped`, three consecutive clean runs (the
+skips are the desktop tests on phones and the phone tests on desktops).
 
 **Deviations from plan.md**
 
@@ -566,6 +566,13 @@ phones and the phone tests on desktops).
 - **`def.route` is unused so far.** P5 attaches routing to it; nothing needs restructuring.
 - **The clock is `aria-hidden` and renders empty until mounted**, so the server's time can
   never mismatch the visitor's.
+- **A panel hands focus to its own toggle before the window opens.** Activating an item in the
+  overflow or hamburger panel unmounts that item, so it cannot be the thing focus returns to
+  when the window later closes. The panel focuses its toggle in the *capture* phase — before the
+  launcher's own handler records whatever has focus as the opener — and closes in the bubble
+  phase. Both halves matter: doing the focus and the close together in capture makes React flush
+  the unmount synchronously (focus is a discrete event) and the launcher's click never fires at
+  all. That failure looks exactly like a dead menu item.
 - **The menu bar nav is `overflow-x: clip; overflow-y: visible`**, deliberately. It has to clip
   horizontally so an unmeasured row cannot spill into the clock, and open downwards or it
   swallows the tooltip. `overflow-hidden` would do both.
