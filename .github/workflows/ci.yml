@@ -31,6 +31,24 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
+    # Pages that read content are prerendered, so the database is a build dependency — and only
+    # a build dependency. The jobs that serve the artifact need no database at all.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quratt
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/quratt
+
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -39,6 +57,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate && pnpm db:seed
       - run: pnpm build
       - uses: actions/upload-artifact@v4
         with:

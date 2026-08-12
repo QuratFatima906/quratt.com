@@ -99,7 +99,10 @@ Collections and their fields are fully specified by the design's `SEED` and `SCH
 — see `docs/design/data-model.md`. Nine collections: `about`, `contact`, `now`, `projects`,
 `posts`, `talks`, `shelf`, `uses`, `cv`.
 
-- Provision Neon through the Vercel Marketplace; branch-per-preview enabled
+- ~~Provision Neon through the Vercel Marketplace; branch-per-preview enabled~~ — moved to P8,
+  which already owns it. It needs the Vercel CLI and a linked project, neither of which exists
+  yet, and nothing in this phase depends on it: `pg` speaks to a local Postgres and to Neon's
+  pooled endpoint identically, so provisioning is a change of one connection string.
 - Drizzle schema; `draft` + `pinned` on `projects`/`posts`/`talks`; `updated_at` trigger
 - Zod schemas as the single source of truth for shape; drizzle types derived from them
 - `posts` additionally carries `slug`, `body` (MDX source) and `canonical` — see D6

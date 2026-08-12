@@ -40,7 +40,7 @@ is the proof. A criterion with no evidence counts as unmet.
 |---|---|---|---|
 | P0 foundation | done | main | — |
 | P1 tokens & theme | merged | phase/1-tokens-theme | #1 |
-| P2 content layer | in progress | phase/2-content-layer | — |
+| P2 content layer | done | phase/2-content-layer | #3 |
 | P3 OS shell | not started | — | — |
 | P4 window content | not started | — | — |
 | P5 routing & SEO | not started | — | — |
@@ -279,3 +279,100 @@ Light-mode accent contrast was independently re-verified against P1's numbers an
 but only just: 4.72–5.24:1 depending on the surface underneath. Any future lightening of a
 light-theme surface can push the accent under 4.5:1. The token test will catch it — do not
 "fix" such a failure by nudging a surface.
+
+### P2 — Content layer
+**Agent:** content · **Branch:** phase/2-content-layer · **PR:** #3 · **Status:** done
+
+**Started:** 2026-08-12
+**Finished:** 2026-08-12
+
+**Done**
+- `src/lib/content/schema.ts` — zod schemas for all nine collections (the shape contract,
+  lifted from the design's `SEED`/`SCHEMA`) plus the drizzle tables built on top of them.
+  `draft`/`pinned` on `projects`/`posts`/`talks`, `sort_order` everywhere, `created_at` and
+  `updated_at` on every table. `posts` additionally carries `slug` (unique), `body` and
+  `canonical`.
+- `drizzle/0000_numerous_apocalypse.sql` — generated schema. `drizzle/0001_updated_at_trigger.sql`
+  — hand-written `set_updated_at()` plus one `BEFORE UPDATE` trigger per table, guarded by
+  `WHEN (OLD.* IS DISTINCT FROM NEW.*)` so a no-op write does not bump the stamp.
+- `src/content/seed.ts` — the design's placeholder content verbatim, parsed by `seedSchema` at
+  module load, so a malformed edit fails the import rather than the database.
+- `src/content/posts/*.mdx` — three real post bodies matching seeded slugs, exercising D6's
+  authoring path.
+- `scripts/seed.ts` — idempotent upsert on stable ids, loading MDX bodies off disk and
+  validating them through the same zod field that describes the column.
+- `src/lib/content/queries.ts` — `use cache` + `cacheTag(collection)` + `cacheLife('max')` per
+  collection, with `visible()` as the single draft filter and `featured` / recent posts /
+  recent shelf / counts derived from it.
+- `src/lib/content/db.ts` — lazy drizzle client over `node-postgres`.
+- CI build job gained a Postgres service and a `db:migrate && db:seed` step; the e2e and
+  Lighthouse jobs need no database, which is the point.
+- `docs/ENVIRONMENT.md` — how to run a local Postgres, how to reset it.
+
+**Success criteria**
+- [x] `pnpm verify` exits 0 — `verify exit: 0`; 17 tests across 2 files
+- [x] `pnpm build` exits 0 — `build exit: 0`; `○ / — Static, prerendered as static content`
+- [x] `pnpm db:migrate && pnpm db:seed` from an empty database — after
+      `DROP DATABASE ... WITH (FORCE); CREATE DATABASE`: `migrations applied successfully`,
+      then `seeded: about 1 · contact 1 · now 4 · projects 12 · posts 7 (3 with bodies) ·
+      talks 3 · shelf 8 · uses 5 · cv 4`
+- [x] Seeding twice produces no duplicates — row counts before and after the second run are
+      identical (about 1, contact 1, now_meta 1, now 4, projects 12, posts 7, talks 3,
+      shelf 8, uses 5, cv 4)
+- [x] Unit test: `visible()` hides drafts and keeps published rows — `src/lib/content/queries.test.ts`
+- [x] Unit test: counts exclude drafts — `countVisible` over a fixture with two drafts returns 3 of 5
+- [x] A page reading content renders with zero DB queries at request time — `/` is `○ (Static)`
+      in the build output, and with the Postgres container **stopped** and `DATABASE_URL`
+      unset, `next start` served it `200` with `x-nextjs-prerender: 1` and the correct
+      draft-excluding counts (`projects/ — 11 items · all 6 posts · shelf/ — 8 books`;
+      the seed holds 12 projects and 7 posts, one of each a draft)
+- [x] `updated_at` changes on UPDATE — `update projects set name = name` left the stamp at
+      `17:41:50.373376+00`; `update projects set "desc" = 'trigger proof'` moved it to
+      `17:42:11.270838+00`
+
+**Deviations from plan.md**
+- **Driver swapped from `@neondatabase/serverless` to `pg`.** Agreed with the reasoning in the
+  brief: the HTTP driver exists for edge runtimes, we run on Node, and every query happens at
+  build or revalidate time. `pg` talks to local Postgres and to Neon's pooled endpoint with one
+  code path and no proxy. Neon remains the deployment target; only the driver changed.
+- **Enumerations are enforced in zod, not in Postgres.** Neither a pg enum nor a check
+  constraint survives contact with the design: filter chips are derived from whatever tags
+  exist in the data, and an unrecognised shelf state is *rendered* (in the danger colour), not
+  rejected. Both DB mechanisms would need a migration to add a value. Zod still catches a typo
+  at the only write boundary that exists today, and widening it is a one-line edit.
+- **`visible()` is a pure function over rows, not a SQL predicate.** It makes the criterion a
+  real unit test instead of an integration test, and the admin seam is identical either way —
+  a query that wants drafts simply does not call it. The functions that touch the database are
+  module-private, so raw rows cannot escape the file.
+- **`nowUpdated` lives in its own single-row `now_meta` table.** The data model puts it on the
+  collection rather than the row, and it is a hand-written "as of" label, not a derivation of
+  `max(updated_at)`.
+- **`cacheComponents: true` in `next.config.ts`.** `use cache` does not exist without it in
+  Next 16. It also turns PPR on by default, which P5 wanted anyway.
+- **CI build job now has a Postgres service.** Prerendering content means the database is a
+  build dependency. Nothing downstream of the build needs one.
+- **`src/app/page.tsx` renders the three counts.** The success criterion needs a page that
+  actually reads content; the counts line is the smallest honest one, and P3 replaces this page
+  wholesale.
+
+**Blocked on**
+- Nothing. Neon is not provisioned yet, but nothing here depends on it: `DATABASE_URL` is the
+  only thing that changes.
+
+**Notes for later phases**
+- `getProjects` / `getPosts` / `getTalks` return **visible rows only**. If P9's admin needs
+  drafts, add an admin-only reader beside them — do not relax the getters.
+- Writes must call `updateTag(collection)` with the tag names used in `queries.ts`: `about`,
+  `contact`, `now`, `projects`, `posts`, `talks`, `shelf`, `uses`, `cv`.
+- `posts.body` is nullable. Three of the seven seeded posts have MDX bodies; the rest are
+  metadata only, so P4's post route must handle a body-less post rather than assuming one.
+- `posts.date` and `posts.mins` are display strings (`"Jul 2026"`, `"8 min"`) because that is
+  what the design's contract says. Anything needing a real timestamp — sitemap `lastModified`,
+  JSON-LD `dateModified` — should use `updated_at`, which is trigger-maintained and true.
+- `sort_order` is not unique, deliberately: a hand reorder in P9's editor would otherwise need
+  deferred constraints. The seed assigns it from array position.
+- `projects.desc` is a Postgres reserved word. Drizzle quotes identifiers, so only hand-written
+  SQL needs care.
+- No `getContent()` aggregate yet. ARCHITECTURE describes the `(os)` layout fetching every
+  collection in one call; that layout does not exist until P3, so the call it will make does
+  not either.
