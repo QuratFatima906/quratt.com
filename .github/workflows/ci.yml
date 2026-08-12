@@ -43,7 +43,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next
+          # `.next` is a dotted directory, so every path under it counts as hidden and is
+          # skipped unless this is set. Without `error`, an empty upload only warns and the
+          # job goes green while producing nothing — which is how this failed the first time.
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .next
+            !.next/cache
           retention-days: 1
 
   e2e:
