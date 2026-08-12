@@ -509,8 +509,9 @@ light-theme surface can push the accent under 4.5:1. The token test will catch i
       exactly `120px` — 1:1 with the finger — and 200px past the top bound moves it only
       `82.4px` and then settles back to `0px` without dismissing.
 
-Full suite, four browser projects: `36 passed, 24 skipped`, repeated clean runs (the
-skips are the desktop tests on phones and the phone tests on desktops).
+Full suite, four browser projects: `36 passed, 24 skipped`, three consecutive clean runs (the
+skips are the desktop tests on phones and the phone tests on desktops). CI green on the PR:
+build, e2e + accessibility, performance budgets, and typecheck/lint/unit all pass.
 
 **Deviations from plan.md**
 
@@ -560,6 +561,9 @@ skips are the desktop tests on phones and the phone tests on desktops).
   directly reorders nodes on every raise, and moving a node re-runs its `@starting-style`
   entrance — every click on a background window would flash it back in. Keep the DOM order
   stable.
+- **Drag bounds are measured once, at the grab.** Re-deriving the window's untranslated
+  position from a rect that already contains the current translate makes the bounds drift along
+  with the window, so it can be pushed past the edge it was meant to stop at.
 - **Pointer capture belongs on the title bar, not the window.** Capture retargets every later
   pointer event at the capturing element; the window is the title bar's ancestor, so capturing
   there routes the moves past the handlers instead of to them. This is why the drag silently

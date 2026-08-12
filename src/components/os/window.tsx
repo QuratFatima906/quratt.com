@@ -56,6 +56,11 @@ type Drag = {
   pointerY: number;
   originX: number;
   originY: number;
+  /** Where the window sits with no translate applied — the frame the bounds are expressed in. */
+  layoutX: number;
+  layoutY: number;
+  width: number;
+  height: number;
   lastY: number;
   lastAt: number;
   velocity: number;
@@ -95,6 +100,7 @@ export function Window({ def, stack }: { def: WindowDef; stack: number }) {
       if (!el || drag.current) return; // ignore a second finger mid-drag, or it jumps
 
       const origin = readTranslate(el);
+      const rect = el.getBoundingClientRect();
       el.dataset.dragging = 'true';
       el.style.willChange = 'translate';
       // Capture on the title bar, not the window: capture retargets every later pointer event
@@ -107,6 +113,12 @@ export function Window({ def, stack }: { def: WindowDef; stack: number }) {
         pointerY: event.clientY,
         originX: origin.x,
         originY: origin.y,
+        // Measured once. Deriving it per move from a rect that already includes the current
+        // translate makes the bounds drift along with the window.
+        layoutX: rect.left - origin.x,
+        layoutY: rect.top - origin.y,
+        width: rect.width,
+        height: rect.height,
         lastY: event.clientY,
         lastAt: event.timeStamp,
         velocity: 0,
@@ -136,13 +148,18 @@ export function Window({ def, stack }: { def: WindowDef; stack: number }) {
         return;
       }
 
-      const rect = el.getBoundingClientRect();
-      const x = d.originX + event.clientX - d.pointerX;
-      const y = d.originY + event.clientY - d.pointerY;
-      // Bounds are in translate-space: how far the element may move from where it is laid out.
-      const left = rect.left - d.originX;
-      const top = rect.top - d.originY;
-      el.style.translate = `${clamp(x, KEEP_VISIBLE - left - rect.width, window.innerWidth - KEEP_VISIBLE - left)}px ${clamp(y, MENU_BAR - top, window.innerHeight - TASKBAR - top - 32)}px`;
+      // Bounds are in translate-space: how far the window may move from where it is laid out.
+      const x = clamp(
+        d.originX + event.clientX - d.pointerX,
+        KEEP_VISIBLE - d.layoutX - d.width,
+        window.innerWidth - KEEP_VISIBLE - d.layoutX,
+      );
+      const y = clamp(
+        d.originY + event.clientY - d.pointerY,
+        MENU_BAR - d.layoutY,
+        window.innerHeight - TASKBAR - d.layoutY - 32,
+      );
+      el.style.translate = `${x}px ${y}px`;
     },
     [isSheet],
   );

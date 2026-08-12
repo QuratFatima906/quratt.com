@@ -42,6 +42,16 @@ test.describe('desktop', () => {
     expect(after.y - before.y).toBeGreaterThan(60);
     expect(await about.evaluate((el) => getComputedStyle(el).translate)).not.toBe('none');
 
+    // The bounds are measured once at the grab, so a long drag toward an edge stops at the
+    // edge rather than letting the bound drift along with the window.
+    await page.mouse.move(bar.x + 160, bar.y + 96);
+    await page.mouse.down();
+    for (let i = 1; i <= 30; i++) await page.mouse.move(bar.x + 160 - i * 60, bar.y + 96 + i * 40);
+    await page.mouse.up();
+    const parked = (await about.boundingBox())!;
+    expect(parked.x + parked.width).toBeGreaterThanOrEqual(90); // still grabbable
+    expect(parked.y).toBeLessThanOrEqual(page.viewportSize()!.height - 40);
+
     await page.getByRole('button', { name: 'close all' }).click();
     await expect(openWindows(page)).toHaveCount(0);
     await expect(taskbar(page).getByText('nothing open')).toBeVisible();
@@ -179,8 +189,14 @@ test.describe('mobile', () => {
     await page.goto('/');
     const sheet = page.locator('[data-window="about"]');
     const box = (await sheet.boundingBox())!;
+    const width = await page.evaluate(() => ({
+      client: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
     expect(box.x).toBeLessThan(2);
-    expect(box.width).toBeGreaterThan(page.viewportSize()!.width - 3);
+    expect(box.width).toBeGreaterThan(width.client - 2);
+    // and the page itself never scrolls sideways
+    expect(width.scroll).toBeLessThanOrEqual(width.client);
 
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
