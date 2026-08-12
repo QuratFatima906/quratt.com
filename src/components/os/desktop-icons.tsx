@@ -17,7 +17,9 @@ export function DesktopIcons() {
           <Launcher
             key={key}
             windowKey={key}
-            className="flex w-22 cursor-pointer flex-col items-center gap-1.5 rounded-md px-1.5 pt-2.5 pb-2 transition-colors duration-150 hover:bg-surface-hover/60 max-md:w-full"
+            // Scale on press, not just on release: the icon has to acknowledge the click at
+            // the moment of the click, or the desktop feels unresponsive on slow connections.
+            className="flex w-22 cursor-pointer flex-col items-center gap-1.5 rounded-md px-1.5 pt-2.5 pb-2 transition-[background-color,scale] duration-150 ease-out hover:bg-surface-hover/60 active:scale-97 max-md:w-full"
             disabledClassName="opacity-60"
             tooltipClassName="top-full left-1/2 -translate-x-1/2"
           >

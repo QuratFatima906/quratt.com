@@ -108,7 +108,10 @@ export function MenuBar() {
       <nav
         ref={navRef}
         aria-label="Sections"
-        className="relative hidden min-w-0 flex-1 items-center gap-3 overflow-hidden md:flex"
+        // Clipped horizontally so an unmeasured row cannot spill into the clock, but open
+        // downwards — `overflow-hidden` would swallow the "coming soon" tooltip. The pair
+        // (clip, visible) is legal where (hidden, visible) would coerce to a scroll box.
+        className="relative hidden min-w-0 flex-1 items-center gap-3 overflow-x-clip overflow-y-visible md:flex"
       >
         {WINDOWS.slice(0, fit).map((w) => (
           <Launcher key={w.key} windowKey={w.key} className={`flex-none ${ITEM}`} disabledClassName={DIM} />
