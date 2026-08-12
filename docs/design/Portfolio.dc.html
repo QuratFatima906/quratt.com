@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#0b0b0e; color:#e8e8ea; }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color: oklch(0.86 0.16 130); }
+  ::selection { background: oklch(0.82 0.16 130); color:#111; }
+</style>
+</helmet>
+
+<section style="padding:64px 64px 96px; background:#0b0b0e; font-family:'JetBrains Mono',monospace;">
+  <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:8px;">
+    <div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:oklch(0.82 0.16 130);">Turn 2</div>
+    <div style="font-size:12px; color:oklch(0.62 0.012 280);">1a refined — wallpaper picker, × close buttons, matched bars, and the expanded views</div>
+  </div>
+
+  <div id="2a" data-turn="2" style="display:flex; flex-direction:column; gap:14px; margin-top:40px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; padding:5px 9px; border-radius:5px; background:oklch(0.82 0.16 130); color:#0b0b0e;">2a</div>
+      <div style="font-size:12px; color:oklch(0.7 0.012 280);">qurat.os</div>
+      <div onClick="{{ onTapC }}" style="display:flex; gap:6px; align-items:center; margin-left:14px; font-size:11px; color:oklch(0.58 0.012 280);">
+        <span>jump to expanded state:</span>
+        <span data-open="projects-all" style="padding:5px 9px; border-radius:4px; border:1px solid oklch(0.34 0.016 285); color:oklch(0.82 0.01 285); cursor:pointer;">projects/ · all 24</span>
+        <span data-open="writes-all" style="padding:5px 9px; border-radius:4px; border:1px solid oklch(0.34 0.016 285); color:oklch(0.82 0.01 285); cursor:pointer;">writing archive</span>
+        <span data-open="talks-book" style="padding:5px 9px; border-radius:4px; border:1px solid oklch(0.34 0.016 285); color:oklch(0.82 0.01 285); cursor:pointer;">talks · booking</span>
+        <span data-open="reads-all" style="padding:5px 9px; border-radius:4px; border:1px solid oklch(0.34 0.016 285); color:oklch(0.82 0.01 285); cursor:pointer;">the whole shelf</span>
+      </div>
+    </div>
+
+    <div data-desktop="c" onPointerDown="{{ onDown }}" onClick="{{ onTapC }}" style="width:1280px; height:840px; position:relative; overflow:hidden; border-radius:12px; background-color:oklch(0.17 0.012 285); background-image:{{ wallC }}; background-size:{{ wallSizeC }}; font-family:'Bricolage Grotesque',system-ui,sans-serif; color:oklch(0.94 0.006 285); border:1px solid oklch(0.3 0.016 285); box-shadow:0 40px 90px rgba(0,0,0,0.55); user-select:none;">
+
+      <div style="position:absolute; inset:0 0 auto 0; height:36px; display:flex; align-items:center; gap:13px; padding:0 14px; background:oklch(0.13 0.012 285); border-bottom:1px solid oklch(0.26 0.014 285); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.03em; z-index:9000;">
+        <div style="font-weight:700; color:oklch(0.82 0.16 130); margin-right:4px;">qurat.os</div>
+        <div data-open="about" style="cursor:pointer; color:oklch(0.74 0.01 285);">about.md</div>
+        <div data-open="projects" style="cursor:pointer; color:oklch(0.74 0.01 285);">projects/</div>
+        <div data-open="writes" style="cursor:pointer; color:oklch(0.74 0.01 285);">writes.md</div>
+        <div data-open="talks" style="cursor:pointer; color:oklch(0.74 0.01 285);">talks.md</div>
+        <div data-open="reads" style="cursor:pointer; color:oklch(0.74 0.01 285);">reads.md</div>
+        <div data-open="now" style="cursor:pointer; color:oklch(0.74 0.01 285);">now.txt</div>
+        <div data-open="uses" style="cursor:pointer; color:oklch(0.74 0.01 285);">uses.txt</div>
+        <div data-open="cv" style="cursor:pointer; color:oklch(0.74 0.01 285);">cv.pdf</div>
+        <div data-open="contact" style="cursor:pointer; color:oklch(0.74 0.01 285);">say-hi.eml</div>
+        <div data-open="toy" style="cursor:pointer; color:oklch(0.74 0.01 285);">entropy.exe</div>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+          <div data-action="closeall" style="cursor:pointer; color:oklch(0.68 0.012 285);">close all</div>
+          <div style="width:1px; height:14px; background:oklch(0.3 0.016 285);"></div>
+          <div style="display:flex; gap:9px; align-items:center;">
+            <div data-wall="dots" title="dots" style="width:16px; height:16px; border-radius:3px; cursor:pointer; background-color:oklch(0.2 0.014 285); background-image:radial-gradient(oklch(0.7 0.01 285) 1px, transparent 1px); background-size:5px 5px; outline:{{ ringDots }}; outline-offset:2px;"></div>
+            <div data-wall="grid" title="grid" style="width:16px; height:16px; border-radius:3px; cursor:pointer; background-color:oklch(0.2 0.014 285); background-image:linear-gradient(oklch(0.62 0.01 285) 1px, transparent 1px), linear-gradient(90deg, oklch(0.62 0.01 285) 1px, transparent 1px); background-size:5px 5px; outline:{{ ringGrid }}; outline-offset:2px;"></div>
+            <div data-wall="lime" title="gradient" style="width:16px; height:16px; border-radius:3px; cursor:pointer; background:radial-gradient(circle at 30% 30%, oklch(0.45 0.1 130), oklch(0.19 0.014 285)); outline:{{ ringLime }}; outline-offset:2px;"></div>
+          </div>
+          <div style="width:1px; height:14px; background:oklch(0.3 0.016 285);"></div>
+          <div style="color:oklch(0.94 0.006 285);">{{ clock }}</div>
+        </div>
+      </div>
+
+      <div style="position:absolute; left:16px; top:48px; display:flex; flex-direction:column; gap:4px; z-index:1;">
+        <div data-open="about" style="width:88px; padding:10px 6px 8px; border-radius:7px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer;" style-hover="background:oklch(0.28 0.02 285 / 0.6);">
+          <div style="width:38px; height:44px; border-radius:4px; background:oklch(0.88 0.008 285); border:1px solid oklch(0.7 0.01 285); display:flex; align-items:flex-end; padding:4px; box-sizing:border-box;">
+            <div style="width:100%; height:14px; background:repeating-linear-gradient(oklch(0.55 0.012 285) 0 2px, transparent 2px 5px);"></div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.86 0.008 285); text-align:center;">about.md</div>
+        </div>
+        <div data-open="cv" style="width:88px; padding:10px 6px 8px; border-radius:7px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer;" style-hover="background:oklch(0.28 0.02 285 / 0.6);">
+          <div style="width:38px; height:44px; border-radius:4px; background:oklch(0.82 0.01 285); border:1px solid oklch(0.68 0.01 285); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; color:oklch(0.45 0.16 25);">PDF</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.86 0.008 285); text-align:center;">cv.pdf</div>
+        </div>
+        <div data-open="toy" style="width:88px; padding:10px 6px 8px; border-radius:7px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer;" style-hover="background:oklch(0.28 0.02 285 / 0.6);">
+          <div style="width:38px; height:44px; border-radius:4px; background:oklch(0.24 0.016 285); border:1px solid oklch(0.42 0.02 285); display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:6px; box-sizing:border-box;">
+            <div style="background:oklch(0.82 0.16 130);"></div><div style="background:oklch(0.34 0.018 285);"></div><div style="background:oklch(0.72 0.14 290);"></div>
+            <div style="background:oklch(0.34 0.018 285);"></div><div style="background:oklch(0.82 0.16 130);"></div><div style="background:oklch(0.34 0.018 285);"></div>
+            <div style="background:oklch(0.72 0.14 290);"></div><div style="background:oklch(0.34 0.018 285);"></div><div style="background:oklch(0.34 0.018 285);"></div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.86 0.008 285); text-align:center;">entropy.exe</div>
+        </div>
+      </div>
+
+      <div data-win="about" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:540px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:20;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">about.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:24px 26px 26px;">
+          <div style="display:flex; gap:22px; align-items:flex-start;">
+            <div style="width:100px; height:124px; flex:none; border-radius:6px; border:1px solid oklch(0.36 0.018 285); background-image:repeating-linear-gradient(135deg, oklch(0.26 0.016 285) 0 7px, oklch(0.22 0.014 285) 7px 14px); display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:oklch(0.62 0.012 285); letter-spacing:0.06em;">portrait</span>
+            </div>
+            <div>
+              <h1 style="margin:0 0 6px; font-size:34px; line-height:1.05; font-weight:700; letter-spacing:-0.02em;">Qurat ul ain<br>Fatima</h1>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:oklch(0.82 0.16 130); letter-spacing:0.04em;">senior software engineer</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:oklch(0.66 0.012 285); letter-spacing:0.04em; margin-top:3px;">[city] · [timezone] · shipping since [year]</div>
+            </div>
+          </div>
+          <p style="margin:20px 0 12px; font-size:15.5px; line-height:1.62; color:oklch(0.88 0.008 285); text-wrap:pretty;">I like the problems that look boring from the outside and turn out to have a trapdoor in them. Schedulers. Cache invalidation. The third rewrite of a migration nobody asked for. I read the whole RFC, including the footnote that ruins your afternoon.</p>
+          <p style="margin:0 0 18px; font-size:15.5px; line-height:1.62; color:oklch(0.74 0.01 285); text-wrap:pretty;">Currently at <span style="color:oklch(0.72 0.14 290);">[company]</span>, where I work on [the thing]. Before that: [company], [company], and one startup that is now a cautionary tale I tell at parties.</p>
+          <div style="display:flex; gap:9px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <div data-open="cv" style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.82 0.16 130); color:oklch(0.82 0.16 130); cursor:pointer;">cv.pdf ↓</div>
+            <div data-open="contact" style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.38 0.018 285); color:oklch(0.8 0.01 285); cursor:pointer;">hire me →</div>
+            <div style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.38 0.018 285); color:oklch(0.8 0.01 285); cursor:pointer;">github ↗</div>
+          </div>
+        </div>
+      </div>
+
+      <div data-win="writes" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:420px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:13;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">writes.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:18px 20px 20px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:oklch(0.62 0.012 285); margin-bottom:13px;">Recent posts</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; cursor:pointer;"><div style="font-size:14.5px; line-height:1.35;">The bug was in the calendar, obviously</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">Jul 2026</div></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; cursor:pointer;"><div style="font-size:14.5px; line-height:1.35;">Postgres told me the truth, I just didn't listen</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">May 2026</div></div>
+            <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; cursor:pointer;"><div style="font-size:14.5px; line-height:1.35;">A cache is a promise to your future self</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">Mar 2026</div></div>
+          </div>
+          <div data-open="writes-all" style="margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer;">all 34 posts →</div>
+        </div>
+      </div>
+
+      <div data-win="projects" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:420px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:13;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">projects/ — 24 items</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:16px 20px 18px; display:flex; flex-direction:column; gap:11px;">
+          <div style="display:flex; gap:12px; align-items:baseline;"><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.82 0.16 130); width:86px; flex:none;">quietwatch</div><div style="font-size:14px; color:oklch(0.82 0.01 285); line-height:1.4;">a status page that only pings you when it actually matters</div></div>
+          <div style="display:flex; gap:12px; align-items:baseline;"><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.82 0.16 130); width:86px; flex:none;">parsley</div><div style="font-size:14px; color:oklch(0.82 0.01 285); line-height:1.4;">a hand-written parser for a config format nobody asked for</div></div>
+          <div data-open="projects-all" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer; margin-top:2px;">open all 24 →</div>
+        </div>
+      </div>
+
+      <div data-win="toy" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:220px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:11; display:{{ toyDisplay }};">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">entropy.exe</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div onClick="{{ shuffle }}" style="padding:14px; cursor:pointer;">
+          <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px;">
+            <sc-for list="{{ cells }}" as="c" hint-placeholder-count="36">
+              <div style="aspect-ratio:1; border-radius:2px; background:{{ c.bg }};"></div>
+            </sc-for>
+          </div>
+          <div style="margin-top:11px; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.6 0.012 285); letter-spacing:0.04em;">click to reroll · seed {{ seed }}</div>
+        </div>
+      </div>
+
+      <div data-win="now" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:220px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:12;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">now.txt</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:16px 16px 18px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.9; color:oklch(0.84 0.008 285);">
+          <div style="color:oklch(0.6 0.012 285); margin-bottom:8px;">// updated [date]</div>
+          <div>→ reading <span style="color:oklch(0.82 0.16 130);">[book]</span></div>
+          <div>→ rewriting my [x] parser, 3rd time</div>
+          <div>→ learning [instrument], badly</div>
+          <div>→ open to staff roles</div>
+        </div>
+      </div>
+
+      <div data-win="talks" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:430px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">talks.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:20px 22px 22px; display:flex; flex-direction:column; gap:14px;">
+          <div><div style="font-size:15px; line-height:1.35;">Everything I know about queues, in 25 minutes</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[conference] · 2026 · video ↗ slides ↗</div></div>
+          <div><div style="font-size:15px; line-height:1.35;">Migrations: a love story with three rollbacks</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[conference] · 2025 · video ↗</div></div>
+          <div><div style="font-size:15px; line-height:1.35;">You do not need a service mesh (probably)</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[meetup] · 2024 · slides ↗</div></div>
+          <div data-open="talks-book" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer;">want me at yours? →</div>
+        </div>
+      </div>
+
+      <div data-win="reads" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">reads.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+          <div style="color:oklch(0.6 0.012 285); margin-bottom:8px;">// 21 books this year, 4 finished</div>
+          <div><span style="color:oklch(0.82 0.16 130);">now</span> · [title], [author]</div>
+          <div><span style="color:oklch(0.6 0.012 285);">done</span> · [title], [author]</div>
+          <div><span style="color:oklch(0.68 0.13 25);">dnf</span> · [title] — sorry</div>
+          <div data-open="reads-all" style="margin-top:10px; color:oklch(0.72 0.14 290); cursor:pointer;">the whole shelf →</div>
+        </div>
+      </div>
+
+      <div data-win="uses" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">uses.txt</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+          <div>editor · [editor], same config since [year]</div>
+          <div>shell · [shell] + too many aliases</div>
+          <div>machine · [laptop]</div>
+          <div>keyboard · [keyboard], loud on purpose</div>
+          <div>notes · a plain text file, obviously</div>
+          <div style="margin-top:10px; color:oklch(0.6 0.012 285);">// tabs. we're not doing this again</div>
+        </div>
+      </div>
+
+      <div data-win="cv" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:400px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">cv.pdf — preview</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:20px 22px 22px;">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–now</div><div style="font-size:14px; line-height:1.4;">Senior Software Engineer, <span style="color:oklch(0.82 0.16 130);">[company]</span></div></div>
+            <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–[yr]</div><div style="font-size:14px; line-height:1.4;">Software Engineer, [company]</div></div>
+            <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–[yr]</div><div style="font-size:14px; line-height:1.4;">Software Engineer, [company]</div></div>
+            <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]</div><div style="font-size:14px; line-height:1.4;">[degree], [university]</div></div>
+          </div>
+          <div style="margin-top:18px; display:inline-block; padding:8px 13px; border-radius:5px; background:oklch(0.82 0.16 130); color:#0b0b0e; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer;">download the real one ↓</div>
+        </div>
+      </div>
+
+      <div data-win="contact" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+        <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">say-hi.eml</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+          <div>to · <span style="color:oklch(0.82 0.16 130);">[you]@[domain]</span></div>
+          <div>re · a job / a bug / a bird photo</div>
+          <div style="height:1px; background:oklch(0.32 0.016 285); margin:10px 0;"></div>
+          <div style="line-height:1.65; color:oklch(0.88 0.008 285);">I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.<span style="color:oklch(0.72 0.14 290);">▌</span></div>
+          <div style="margin-top:14px; display:inline-block; padding:8px 13px; border-radius:5px; background:oklch(0.72 0.14 290); color:#0b0b0e; cursor:pointer;">send →</div>
+        </div>
+      </div>
+
+      <div data-win="projects-all" data-display="flex" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:1140px; height:620px; border-radius:10px; overflow:hidden; flex-direction:column; background:oklch(0.21 0.014 285); border:1px solid oklch(0.38 0.018 285); box-shadow:0 34px 80px rgba(0,0,0,0.6); z-index:40;">
+        <div data-drag="1" style="height:34px; flex:none; display:flex; align-items:center; gap:8px; padding:0 12px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">projects/ — all 24 items</div>
+          <div style="color:oklch(0.55 0.012 285);">· expanded from projects/</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="flex:1; min-height:0; overflow:auto; padding:26px 30px 30px;">
+          <div onClick="{{ onFilter }}" style="display:flex; gap:7px; margin-bottom:20px; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <div data-filter="all" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fAll }}; color:{{ cAll }};">all 24</div>
+            <div data-filter="systems" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fSystems }}; color:{{ cSystems }};">systems</div>
+            <div data-filter="tools" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fTools }}; color:{{ cTools }};">tools</div>
+            <div data-filter="silly" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fSilly }}; color:{{ cSilly }};">silly</div>
+            <div style="margin-left:auto; align-self:center; white-space:nowrap; color:oklch(0.58 0.012 285);">{{ count }} shown</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+            <sc-for list="{{ shown }}" as="p" hint-placeholder-count="9">
+              <div style="padding:16px 16px 14px; border-radius:8px; background:oklch(0.245 0.016 285); border:1px solid oklch(0.32 0.018 285); display:flex; flex-direction:column; gap:7px; min-height:132px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:7px; height:7px; border-radius:50%; background:{{ p.dot }};"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px;">{{ p.name }}</div>
+                  <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285);">{{ p.year }}</div>
+                </div>
+                <div style="font-size:13.5px; line-height:1.45; color:oklch(0.8 0.01 285); text-wrap:pretty;">{{ p.desc }}</div>
+                <div style="margin-top:auto; display:flex; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.6 0.012 285);">
+                  <div style="padding:3px 7px; border-radius:4px; background:oklch(0.19 0.014 285);">{{ p.lang }}</div>
+                  <div style="padding:3px 7px; border-radius:4px; background:oklch(0.19 0.014 285);">{{ p.tag }}</div>
+                  <div style="margin-left:auto; color:oklch(0.72 0.14 290);">open ↗</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div data-win="writes-all" data-display="flex" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:900px; height:620px; border-radius:10px; overflow:hidden; flex-direction:column; background:oklch(0.21 0.014 285); border:1px solid oklch(0.38 0.018 285); box-shadow:0 34px 80px rgba(0,0,0,0.6); z-index:41;">
+        <div data-drag="1" style="height:34px; flex:none; display:flex; align-items:center; gap:8px; padding:0 12px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">writing/ — archive, 34 posts</div>
+          <div style="color:oklch(0.55 0.012 285);">· expanded from writes.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="flex:1; min-height:0; overflow:auto; padding:28px 34px 34px;">
+          <sc-for list="{{ posts }}" as="p" hint-placeholder-count="8">
+            <div style="display:flex; gap:22px; padding:15px 0; border-bottom:1px solid oklch(0.27 0.014 285);">
+              <div style="width:82px; flex:none; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); padding-top:4px;">{{ p.date }}</div>
+              <div style="flex:1;">
+                <div style="font-size:17px; line-height:1.3; cursor:pointer;">{{ p.title }}</div>
+                <div style="font-size:14px; line-height:1.5; color:oklch(0.68 0.012 285); margin-top:4px; text-wrap:pretty;">{{ p.blurb }}</div>
+              </div>
+              <div style="width:52px; flex:none; text-align:right; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 285); padding-top:4px;">{{ p.mins }}</div>
+            </div>
+          </sc-for>
+          <div style="margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285);">// 26 older posts, in the RSS feed where they belong</div>
+        </div>
+      </div>
+
+      <div data-win="talks-book" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:700px; border-radius:10px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.38 0.018 285); box-shadow:0 34px 80px rgba(0,0,0,0.6); z-index:42;">
+        <div data-drag="1" style="height:34px; display:flex; align-items:center; gap:8px; padding:0 12px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">invite-qurat.form</div>
+          <div style="color:oklch(0.55 0.012 285);">· expanded from talks.md → want me at yours?</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="padding:30px 34px 34px; display:flex; gap:34px;">
+          <div style="flex:1;">
+            <h2 style="margin:0 0 8px; font-size:26px; font-weight:700; letter-spacing:-0.02em;">Yes, probably.</h2>
+            <p style="margin:0 0 22px; font-size:15px; line-height:1.6; color:oklch(0.74 0.01 285); text-wrap:pretty;">I'll travel for a good hallway track. Tell me roughly what you need and I'll tell you honestly whether I'm the right person.</p>
+            <div style="display:flex; flex-direction:column; gap:12px; font-family:'JetBrains Mono',monospace; font-size:11px;">
+              <div><div style="color:oklch(0.62 0.012 285); margin-bottom:5px;">event</div><div style="padding:9px 11px; border-radius:5px; background:oklch(0.17 0.012 285); border:1px solid oklch(0.34 0.018 285); color:oklch(0.6 0.012 285);">[conference or team name]</div></div>
+              <div><div style="color:oklch(0.62 0.012 285); margin-bottom:5px;">when &amp; where</div><div style="padding:9px 11px; border-radius:5px; background:oklch(0.17 0.012 285); border:1px solid oklch(0.34 0.018 285); color:oklch(0.6 0.012 285);">[date] · [city or remote]</div></div>
+              <div><div style="color:oklch(0.62 0.012 285); margin-bottom:5px;">what you want me to talk about</div><div style="padding:9px 11px; border-radius:5px; background:oklch(0.17 0.012 285); border:1px solid oklch(0.34 0.018 285); color:oklch(0.6 0.012 285); min-height:44px;">[one paragraph is plenty]</div></div>
+              <div style="display:flex; gap:8px; margin-top:4px;">
+                <div style="padding:9px 14px; border-radius:5px; background:oklch(0.82 0.16 130); color:#0b0b0e; cursor:pointer;">send invite →</div>
+                <div data-close="1" style="padding:9px 14px; border-radius:5px; border:1px solid oklch(0.36 0.018 285); color:oklch(0.8 0.01 285); cursor:pointer;">never mind</div>
+              </div>
+            </div>
+          </div>
+          <div style="width:230px; flex:none; padding-left:28px; border-left:1px solid oklch(0.3 0.016 285); font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.9; color:oklch(0.72 0.01 285);">
+            <div style="color:oklch(0.62 0.012 285); letter-spacing:0.1em; text-transform:uppercase; font-size:10px; margin-bottom:10px;">the fine print</div>
+            <div>· 25 or 45 minutes</div>
+            <div>· no keynote fluff</div>
+            <div>· slides shared after, always</div>
+            <div>· workshops: ask early</div>
+            <div style="margin-top:14px; color:oklch(0.6 0.012 285);">// I need 6 weeks. I will pretend 3 is fine and then not sleep.</div>
+          </div>
+        </div>
+      </div>
+
+      <div data-win="reads-all" data-display="flex" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:620px; height:580px; border-radius:10px; overflow:hidden; flex-direction:column; background:oklch(0.21 0.014 285); border:1px solid oklch(0.38 0.018 285); box-shadow:0 34px 80px rgba(0,0,0,0.6); z-index:43;">
+        <div data-drag="1" style="height:34px; flex:none; display:flex; align-items:center; gap:8px; padding:0 12px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="letter-spacing:0.04em;">shelf/ — 2026</div>
+          <div style="color:oklch(0.55 0.012 285);">· expanded from reads.md</div>
+          <div data-close="1" style="margin-left:auto; width:19px; height:19px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:oklch(0.78 0.01 285); background:oklch(0.3 0.018 285); cursor:pointer;" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+        </div>
+        <div style="flex:1; min-height:0; overflow:auto; padding:26px 30px 30px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); margin-bottom:16px;">// 21 started, 4 finished. The maths is not flattering.</div>
+          <sc-for list="{{ shelf }}" as="b" hint-placeholder-count="10">
+            <div style="display:flex; gap:14px; align-items:baseline; padding:10px 0; border-bottom:1px solid oklch(0.27 0.014 285);">
+              <div style="width:42px; flex:none; font-family:'JetBrains Mono',monospace; font-size:10px; color:{{ b.color }};">{{ b.state }}</div>
+              <div style="font-size:14.5px; color:oklch(0.86 0.008 285);">{{ b.title }}</div>
+              <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 285); white-space:nowrap;">{{ b.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:absolute; inset:auto 0 0 0; height:40px; display:flex; align-items:center; gap:8px; padding:0 12px; background:oklch(0.13 0.012 285 / 0.96); border-top:1px solid oklch(0.3 0.016 285); font-family:'JetBrains Mono',monospace; font-size:11px; z-index:9000;">
+        <div style="color:oklch(0.6 0.012 285); letter-spacing:0.1em; text-transform:uppercase; font-size:9.5px; padding-right:6px; border-right:1px solid oklch(0.28 0.016 285); margin-right:2px;">open</div>
+        <div style="display:flex; gap:6px; align-items:center; overflow:hidden;">
+          <sc-for list="{{ taskbar }}" as="t" hint-placeholder-count="5">
+            <div data-open="{{ t.key }}" style="display:flex; align-items:center; gap:8px; padding:7px 9px 7px 11px; border-radius:6px; background:oklch(0.22 0.014 285); border:1px solid oklch(0.32 0.018 285); color:oklch(0.88 0.008 285); cursor:pointer; white-space:nowrap;" style-hover="background:oklch(0.27 0.018 285);">
+              <div style="width:6px; height:6px; border-radius:50%; background:oklch(0.82 0.16 130);"></div>
+              <div>{{ t.label }}</div>
+              <div data-close-key="{{ t.key }}" style="width:16px; height:16px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1; color:oklch(0.66 0.012 285); background:oklch(0.28 0.018 285);" style-hover="background:oklch(0.62 0.16 25); color:#0b0b0e;">×</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ nothingOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="color:oklch(0.56 0.012 285);">nothing open — click an icon, or use the menu bar</div>
+          </sc-if>
+        </div>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:12px; color:oklch(0.6 0.012 285); white-space:nowrap;">
+          <div>{{ openCount }} window{{ plural }}</div>
+          <div style="width:1px; height:14px; background:oklch(0.28 0.016 285);"></div>
+          <div>github ↗ · rss</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:1px; background:oklch(0.26 0.014 285); margin:76px 0 40px;"></div>
+
+  <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:8px;">
+    <div style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:oklch(0.62 0.012 280);">Turn 1</div>
+    <div style="font-size:12px; color:oklch(0.62 0.012 280);">two homepage directions (<a href="#1a" style="color:oklch(0.72 0.14 290)">1a</a>, <a href="#1b" style="color:oklch(0.72 0.14 290)">1b</a>) &nbsp;·&nbsp; two projects layouts (<a href="#1c" style="color:oklch(0.72 0.14 290)">1c</a>, <a href="#1d" style="color:oklch(0.72 0.14 290)">1d</a>) &nbsp;·&nbsp; windows drag, close and relaunch from the dock</div>
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:72px; align-items:flex-start; margin-top:40px;">
+
+    <!-- ========== 1a ========== -->
+    <div id="1a" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; padding:5px 9px; border-radius:5px; background:oklch(0.82 0.16 130); color:#0b0b0e;">1a</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.7 0.012 280);">qurat.os — full desktop, lime/violet</div>
+      </div>
+
+      <div data-desktop="a" onPointerDown="{{ onDown }}" onClick="{{ onTap }}" style="width:1280px; height:820px; position:relative; overflow:hidden; border-radius:12px; background-color:oklch(0.17 0.012 285); background-image:{{ wallA }}; background-size:26px 26px; font-family:'Bricolage Grotesque',system-ui,sans-serif; color:oklch(0.94 0.006 285); border:1px solid oklch(0.3 0.016 285); box-shadow:0 40px 90px rgba(0,0,0,0.55); user-select:none;">
+
+        <!-- menu bar -->
+        <div style="position:absolute; inset:0 0 auto 0; height:34px; display:flex; align-items:center; gap:22px; padding:0 16px; background:oklch(0.13 0.012 285); border-bottom:1px solid oklch(0.26 0.014 285); font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.04em; z-index:9000;">
+          <div style="font-weight:700; color:oklch(0.82 0.16 130);">qurat.os</div>
+          <div style="display:flex; gap:18px; color:oklch(0.72 0.01 285);">
+            <div data-open="about" style="cursor:pointer;">about.md</div>
+            <div data-open="projects" style="cursor:pointer;">projects/</div>
+            <div data-open="writes" style="cursor:pointer;">writes.md</div>
+            <div data-open="now" style="cursor:pointer;">now.txt</div>
+            <div data-open="talks" style="cursor:pointer;">talks.md</div>
+            <div data-open="uses" style="cursor:pointer;">uses.txt</div>
+          </div>
+          <div style="margin-left:auto; display:flex; gap:16px; align-items:center; color:oklch(0.72 0.01 285);">
+            <div data-open="contact" style="cursor:pointer;">✉ say hi</div>
+            <div style="color:oklch(0.94 0.006 285);">{{ clock }}</div>
+          </div>
+        </div>
+
+        <!-- about.md -->
+        <div data-win="about" style="position:absolute; left:44px; top:72px; width:540px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:14;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+            <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">about.md</div>
+          </div>
+          <div style="padding:26px 28px 28px;">
+            <div style="display:flex; gap:22px; align-items:flex-start;">
+              <div style="width:104px; height:128px; flex:none; border-radius:6px; border:1px solid oklch(0.36 0.018 285); background-image:repeating-linear-gradient(135deg, oklch(0.26 0.016 285) 0 7px, oklch(0.22 0.014 285) 7px 14px); display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:oklch(0.62 0.012 285); letter-spacing:0.06em;">portrait</span>
+              </div>
+              <div>
+                <h1 style="margin:0 0 6px; font-size:36px; line-height:1.05; font-weight:700; letter-spacing:-0.02em;">Qurat ul ain<br>Fatima</h1>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:oklch(0.82 0.16 130); letter-spacing:0.04em;">senior software engineer</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:oklch(0.66 0.012 285); letter-spacing:0.04em; margin-top:3px;">[city] · [timezone] · shipping since [year]</div>
+              </div>
+            </div>
+            <p style="margin:22px 0 12px; font-size:15.5px; line-height:1.62; color:oklch(0.88 0.008 285); text-wrap:pretty;">I like the problems that look boring from the outside and turn out to have a trapdoor in them. Schedulers. Cache invalidation. The third rewrite of a migration nobody asked for. I read the whole RFC, including the footnote that ruins your afternoon.</p>
+            <p style="margin:0 0 18px; font-size:15.5px; line-height:1.62; color:oklch(0.74 0.01 285); text-wrap:pretty;">Currently at <span style="color:oklch(0.72 0.14 290);">[company]</span>, where I work on [the thing]. Before that: [company], [company], and one startup that is now a cautionary tale I tell at parties.</p>
+            <div style="display:flex; gap:9px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:11px;">
+              <div data-open="cv" style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.82 0.16 130); color:oklch(0.82 0.16 130); cursor:pointer;">cv.pdf ↓</div>
+              <div data-open="contact" style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.38 0.018 285); color:oklch(0.8 0.01 285); cursor:pointer;">hire me →</div>
+              <div style="padding:7px 12px; border-radius:5px; border:1px solid oklch(0.38 0.018 285); color:oklch(0.8 0.01 285); cursor:pointer;">github ↗</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- now.txt -->
+        <div data-win="now" style="position:absolute; left:1044px; top:400px; width:220px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:12;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">now.txt</div>
+          </div>
+          <div style="padding:16px 16px 18px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.9; color:oklch(0.84 0.008 285);">
+            <div style="color:oklch(0.6 0.012 285); margin-bottom:8px;">// updated [date]</div>
+            <div>→ reading <span style="color:oklch(0.82 0.16 130);">[book]</span></div>
+            <div>→ rewriting my [x] parser, 3rd time</div>
+            <div>→ learning [instrument], badly</div>
+            <div>→ open to staff roles &amp; odd contracts</div>
+            <div style="margin-top:12px; color:oklch(0.6 0.012 285);">// not doing: crypto, on-call for fun</div>
+          </div>
+        </div>
+
+        <!-- writes.md -->
+        <div data-win="writes" style="position:absolute; left:604px; top:72px; width:420px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:13;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">writes.md</div>
+          </div>
+          <div style="padding:20px 22px 22px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:oklch(0.62 0.012 285); margin-bottom:14px;">Recent posts</div>
+            <div style="display:flex; flex-direction:column; gap:13px;">
+              <div style="display:flex; justify-content:space-between; gap:16px; align-items:baseline; cursor:pointer;"><div style="font-size:15px; line-height:1.35;">The bug was in the calendar, obviously</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">Jul 2026</div></div>
+              <div style="display:flex; justify-content:space-between; gap:16px; align-items:baseline; cursor:pointer;"><div style="font-size:15px; line-height:1.35;">Postgres told me the truth, I just didn't listen</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">May 2026</div></div>
+              <div style="display:flex; justify-content:space-between; gap:16px; align-items:baseline; cursor:pointer;"><div style="font-size:15px; line-height:1.35;">A cache is a promise to your future self</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">Mar 2026</div></div>
+              <div style="display:flex; justify-content:space-between; gap:16px; align-items:baseline; cursor:pointer;"><div style="font-size:15px; line-height:1.35;">In defence of the extremely boring queue</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); white-space:nowrap;">Jan 2026</div></div>
+            </div>
+            <div style="margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer;">all 34 posts →</div>
+          </div>
+        </div>
+
+        <!-- projects -->
+        <div data-win="projects" style="position:absolute; left:604px; top:404px; width:420px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:15;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">projects/ — 24 items</div>
+          </div>
+          <div style="padding:16px 20px 20px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:12px; align-items:baseline;"><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.82 0.16 130); width:96px; flex:none;">quietwatch</div><div style="font-size:14px; color:oklch(0.82 0.01 285); line-height:1.4;">a status page that only pings you when it actually matters</div></div>
+            <div style="display:flex; gap:12px; align-items:baseline;"><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.82 0.16 130); width:96px; flex:none;">parsley</div><div style="font-size:14px; color:oklch(0.82 0.01 285); line-height:1.4;">a hand-written parser for a config format nobody asked for</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer; margin-top:2px;">open all 24 →</div>
+          </div>
+        </div>
+
+        <!-- toy -->
+        <div data-win="toy" style="position:absolute; left:1044px; top:72px; width:220px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:11; display:{{ toyDisplay }};">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">entropy.exe</div>
+          </div>
+          <div onClick="{{ shuffle }}" style="padding:14px; cursor:pointer;">
+            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px;">
+              <sc-for list="{{ cells }}" as="c" hint-placeholder-count="36">
+                <div style="aspect-ratio:1; border-radius:2px; background:{{ c.bg }};"></div>
+              </sc-for>
+            </div>
+            <div style="margin-top:11px; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.6 0.012 285); letter-spacing:0.04em;">click to reroll · seed {{ seed }}</div>
+          </div>
+        </div>
+
+        <!-- talks.md -->
+        <div data-win="talks" style="display:none; position:absolute; left:250px; top:150px; width:430px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">talks.md</div>
+          </div>
+          <div style="padding:20px 22px 22px; display:flex; flex-direction:column; gap:14px;">
+            <div><div style="font-size:15px; line-height:1.35;">Everything I know about queues, in 25 minutes</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[conference] · 2026 · video ↗ slides ↗</div></div>
+            <div><div style="font-size:15px; line-height:1.35;">Migrations: a love story with three rollbacks</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[conference] · 2025 · video ↗</div></div>
+            <div><div style="font-size:15px; line-height:1.35;">You do not need a service mesh (probably)</div><div style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:oklch(0.58 0.012 285); margin-top:3px;">[meetup] · 2024 · slides ↗</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.72 0.14 290); cursor:pointer;">want me at yours? →</div>
+          </div>
+        </div>
+
+        <!-- reads.md -->
+        <div data-win="reads" style="display:none; position:absolute; left:700px; top:170px; width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">reads.md</div>
+          </div>
+          <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+            <div style="color:oklch(0.6 0.012 285); margin-bottom:8px;">// 21 books this year, 4 finished</div>
+            <div><span style="color:oklch(0.82 0.16 130);">now</span> · [title], [author]</div>
+            <div><span style="color:oklch(0.6 0.012 285);">done</span> · [title], [author]</div>
+            <div><span style="color:oklch(0.6 0.012 285);">done</span> · [title], [author]</div>
+            <div><span style="color:oklch(0.68 0.13 25);">dnf</span> · [title] — sorry</div>
+            <div style="margin-top:10px; color:oklch(0.72 0.14 290); cursor:pointer;">the whole shelf →</div>
+          </div>
+        </div>
+
+        <!-- uses.txt -->
+        <div data-win="uses" style="display:none; position:absolute; left:330px; top:300px; width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">uses.txt</div>
+          </div>
+          <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+            <div>editor · [editor], same config since [year]</div>
+            <div>shell · [shell] + too many aliases</div>
+            <div>machine · [laptop]</div>
+            <div>keyboard · [keyboard], loud on purpose</div>
+            <div>notes · a plain text file, obviously</div>
+            <div style="margin-top:10px; color:oklch(0.6 0.012 285);">// tabs. we're not doing this again</div>
+          </div>
+        </div>
+
+        <!-- cv.pdf -->
+        <div data-win="cv" style="display:none; position:absolute; left:420px; top:120px; width:400px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">cv.pdf — preview</div>
+          </div>
+          <div style="padding:20px 22px 22px;">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–now</div><div style="font-size:14px; line-height:1.4;">Senior Software Engineer, <span style="color:oklch(0.82 0.16 130);">[company]</span></div></div>
+              <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–[yr]</div><div style="font-size:14px; line-height:1.4;">Software Engineer, [company]</div></div>
+              <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]–[yr]</div><div style="font-size:14px; line-height:1.4;">Software Engineer, [company]</div></div>
+              <div style="display:flex; gap:14px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.6 0.012 285); width:74px; flex:none;">[yr]</div><div style="font-size:14px; line-height:1.4;">[degree], [university]</div></div>
+            </div>
+            <div style="margin-top:18px; display:inline-block; padding:8px 13px; border-radius:5px; background:oklch(0.82 0.16 130); color:#0b0b0e; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer;">download the real one ↓</div>
+          </div>
+        </div>
+
+        <!-- contact -->
+        <div data-win="contact" style="display:none; position:absolute; left:760px; top:430px; width:360px; border-radius:9px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:16;">
+          <div data-drag="1" style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); cursor:grab; font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+            <div data-close="1" style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25); cursor:pointer;"></div>
+            <div style="margin-left:6px; letter-spacing:0.04em;">say-hi.eml</div>
+          </div>
+          <div style="padding:18px 20px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 285);">
+            <div>to · <span style="color:oklch(0.82 0.16 130);">[you]@[domain]</span></div>
+            <div>re · a job / a bug / a bird photo</div>
+            <div style="height:1px; background:oklch(0.32 0.016 285); margin:10px 0;"></div>
+            <div style="line-height:1.65; color:oklch(0.88 0.008 285);">I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.<span style="color:oklch(0.72 0.14 290);">▌</span></div>
+            <div style="margin-top:14px; display:inline-block; padding:8px 13px; border-radius:5px; background:oklch(0.72 0.14 290); color:#0b0b0e; cursor:pointer;">send →</div>
+          </div>
+        </div>
+
+        <!-- dock -->
+        <div style="position:absolute; left:50%; transform:translateX(-50%); bottom:20px; display:flex; gap:6px; padding:8px; border-radius:12px; background:oklch(0.14 0.012 285 / 0.92); border:1px solid oklch(0.3 0.016 285); box-shadow:0 18px 40px rgba(0,0,0,0.5); font-family:'JetBrains Mono',monospace; font-size:11px; z-index:9000;">
+          <div data-open="about" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">about.md</div>
+          <div data-open="projects" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">projects/</div>
+          <div data-open="writes" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">writes.md</div>
+          <div data-open="now" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">now.txt</div>
+          <div data-open="reads" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">reads.md</div>
+          <div data-open="cv" style="padding:8px 12px; border-radius:7px; background:oklch(0.22 0.014 285); color:oklch(0.86 0.008 285); cursor:pointer;">cv.pdf</div>
+          <div data-open="toy" style="padding:8px 12px; border-radius:7px; background:oklch(0.82 0.16 130); color:#0b0b0e; cursor:pointer;">entropy.exe</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 1b ========== -->
+    <div id="1b" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; padding:5px 9px; border-radius:5px; background:oklch(0.8 0.11 210); color:#0b0b0e;">1b</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.7 0.012 280);">workbench — one big window, file tree, ice/coral</div>
+      </div>
+
+      <div data-desktop="b" onPointerDown="{{ onDown }}" onClick="{{ onTap }}" style="width:1280px; height:820px; position:relative; overflow:hidden; border-radius:12px; background:oklch(0.145 0.018 250); font-family:'Instrument Sans',system-ui,sans-serif; color:oklch(0.94 0.006 250); border:1px solid oklch(0.28 0.02 250); box-shadow:0 40px 90px rgba(0,0,0,0.55); user-select:none;">
+
+        <!-- main window -->
+        <div data-win="main" style="position:absolute; left:64px; top:56px; width:900px; height:640px; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; background:oklch(0.185 0.02 250); border:1px solid oklch(0.32 0.022 250); box-shadow:0 30px 70px rgba(0,0,0,0.55); z-index:12;">
+          <div data-drag="1" style="height:36px; display:flex; align-items:center; gap:10px; padding:0 13px; background:oklch(0.22 0.022 250); border-bottom:1px solid oklch(0.32 0.022 250); cursor:grab; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.74 0.012 250);">
+            <div data-close="1" style="width:11px; height:11px; border-radius:3px; background:oklch(0.75 0.12 35); cursor:pointer;"></div>
+            <div data-title="1" style="margin-left:4px;">~/qurat — about.md</div>
+            <div style="margin-left:auto; color:oklch(0.58 0.012 250);">{{ clock }}</div>
+          </div>
+          <div style="flex:1; display:flex; min-height:0;">
+            <div style="width:206px; flex:none; border-right:1px solid oklch(0.28 0.02 250); padding:18px 0; font-family:'Space Mono',monospace; font-size:12px; color:oklch(0.72 0.012 250); display:flex; flex-direction:column; gap:2px;">
+              <div style="padding:5px 18px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:oklch(0.52 0.012 250);">qurat/</div>
+              <div data-file="about.md" style="padding:6px 18px 6px 16px; background:oklch(0.24 0.022 250); color:oklch(0.8 0.11 210); border-left:2px solid oklch(0.8 0.11 210); cursor:pointer;">about.md</div>
+              <div data-file="projects/" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">projects/</div>
+              <div data-file="writing/" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">writing/</div>
+              <div data-file="talks.md" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">talks.md</div>
+              <div data-file="reads.md" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">reads.md</div>
+              <div data-file="uses.txt" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">uses.txt</div>
+              <div data-file="cv.pdf" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">cv.pdf</div>
+              <div style="padding:5px 18px; margin-top:14px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:oklch(0.52 0.012 250);">toys/</div>
+              <div data-open="ping" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">now.txt</div>
+              <div data-open="mail" style="padding:6px 18px 6px 16px; border-left:2px solid transparent; cursor:pointer;">mail.exe</div>
+              <div style="margin-top:auto; padding:14px 18px 0; font-size:11px; color:oklch(0.52 0.012 250);">9 open tabs · 1 regret</div>
+            </div>
+            <div data-panes="1" style="flex:1; min-height:0; overflow:auto;">
+              <div data-pane="about.md" style="padding:44px 52px;">
+              <div style="font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.8 0.11 210); letter-spacing:0.04em;">senior software engineer</div>
+              <h1 style="margin:10px 0 0; font-size:58px; line-height:1.0; font-weight:600; letter-spacing:-0.035em;">Qurat ul ain Fatima</h1>
+              <p style="margin:26px 0 0; max-width:520px; font-size:19px; line-height:1.55; color:oklch(0.9 0.008 250); text-wrap:pretty;">I build the unglamorous parts that hold the glamorous parts up. Ten years of schedulers, caches, and migrations that were supposed to take a weekend.</p>
+              <p style="margin:16px 0 0; max-width:520px; font-size:16px; line-height:1.6; color:oklch(0.7 0.012 250); text-wrap:pretty;">Currently <span style="color:oklch(0.75 0.12 35);">[company]</span>. Previously [company] and [company]. I write things down so the next person doesn't have to rediscover them at 3am.</p>
+              <div style="display:flex; gap:10px; margin-top:32px; font-family:'Space Mono',monospace; font-size:12px;">
+                <div style="padding:10px 16px; border-radius:6px; background:oklch(0.8 0.11 210); color:#0b0b0e; cursor:pointer;">cv.pdf ↓</div>
+                <div data-open="mail" style="padding:10px 16px; border-radius:6px; border:1px solid oklch(0.36 0.022 250); color:oklch(0.86 0.008 250); cursor:pointer;">email me</div>
+              </div>
+              <div style="margin-top:44px; padding-top:22px; border-top:1px solid oklch(0.26 0.02 250); display:flex; gap:44px; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.62 0.012 250);">
+                <div><div style="color:oklch(0.94 0.006 250); font-size:22px; margin-bottom:4px;">24</div>things built</div>
+                <div><div style="color:oklch(0.94 0.006 250); font-size:22px; margin-bottom:4px;">34</div>posts written</div>
+                <div><div style="color:oklch(0.94 0.006 250); font-size:22px; margin-bottom:4px;">6</div>talks given</div>
+                <div><div style="color:oklch(0.94 0.006 250); font-size:22px; margin-bottom:4px;">0</div>blockchains touched</div>
+              </div>
+              </div>
+
+              <div data-pane="projects/" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 6px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">projects/</h2>
+                <p style="margin:0 0 26px; font-size:15px; line-height:1.55; color:oklch(0.68 0.012 250); max-width:460px;">24 things, most of them small. Some are held together with a deprecated API and hope.</p>
+                <div style="display:flex; flex-direction:column;">
+                  <div style="display:flex; gap:18px; padding:13px 0; border-bottom:1px solid oklch(0.26 0.02 250);"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">quietwatch</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">a status page that only pings you when it actually matters</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2026</div></div>
+                  <div style="display:flex; gap:18px; padding:13px 0; border-bottom:1px solid oklch(0.26 0.02 250);"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">parsley</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">a hand-written parser for a config format nobody asked for</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2026</div></div>
+                  <div style="display:flex; gap:18px; padding:13px 0; border-bottom:1px solid oklch(0.26 0.02 250);"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">deadline</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">turns your calendar into a burndown chart, ruthlessly</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2025</div></div>
+                  <div style="display:flex; gap:18px; padding:13px 0; border-bottom:1px solid oklch(0.26 0.02 250);"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">cold start</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">a year of measuring one cloud's mood swings, in graphs</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2025</div></div>
+                  <div style="display:flex; gap:18px; padding:13px 0; border-bottom:1px solid oklch(0.26 0.02 250);"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">tabs.exe</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">a tab manager shaped like a filing cabinet, killed by an API</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2024</div></div>
+                  <div style="display:flex; gap:18px; padding:13px 0;"><div style="width:130px; flex:none; font-family:'Space Mono',monospace; font-size:12.5px; color:oklch(0.8 0.11 210);">grep for humans</div><div style="font-size:15px; color:oklch(0.82 0.01 250);">regexes explained by drawing them instead of shouting</div><div style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.56 0.012 250);">2024</div></div>
+                </div>
+                <div style="margin-top:20px; font-family:'Space Mono',monospace; font-size:12px; color:oklch(0.75 0.12 35); cursor:pointer;">all 24 →</div>
+              </div>
+
+              <div data-pane="writing/" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 6px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">writing/</h2>
+                <p style="margin:0 0 26px; font-size:15px; line-height:1.55; color:oklch(0.68 0.012 250); max-width:460px;">34 posts, mostly about the moment a system stopped making sense.</p>
+                <div style="display:flex; flex-direction:column; gap:18px; max-width:520px;">
+                  <div><div style="font-size:19px; line-height:1.3;">The bug was in the calendar, obviously</div><div style="font-size:14.5px; color:oklch(0.68 0.012 250); margin-top:5px; line-height:1.5;">Three days, one timezone, and a leap second that wasn't there.</div><div style="font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.54 0.012 250); margin-top:6px;">Jul 2026 · 8 min</div></div>
+                  <div><div style="font-size:19px; line-height:1.3;">Postgres told me the truth, I just didn't listen</div><div style="font-size:14.5px; color:oklch(0.68 0.012 250); margin-top:5px; line-height:1.5;">A query plan I ignored for six months, annotated.</div><div style="font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.54 0.012 250); margin-top:6px;">May 2026 · 12 min</div></div>
+                  <div><div style="font-size:19px; line-height:1.3;">A cache is a promise to your future self</div><div style="font-size:14.5px; color:oklch(0.68 0.012 250); margin-top:5px; line-height:1.5;">And future you is not a reliable person.</div><div style="font-family:'Space Mono',monospace; font-size:10.5px; color:oklch(0.54 0.012 250); margin-top:6px;">Mar 2026 · 6 min</div></div>
+                </div>
+                <div style="margin-top:24px; font-family:'Space Mono',monospace; font-size:12px; color:oklch(0.75 0.12 35); cursor:pointer;">archive →</div>
+              </div>
+
+              <div data-pane="talks.md" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 26px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">talks.md</h2>
+                <div style="display:flex; flex-direction:column; gap:20px; max-width:520px;">
+                  <div><div style="font-size:19px; line-height:1.3;">Everything I know about queues, in 25 minutes</div><div style="font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.54 0.012 250); margin-top:6px;">[conference] · 2026 · <span style="color:oklch(0.8 0.11 210);">video ↗ slides ↗</span></div></div>
+                  <div><div style="font-size:19px; line-height:1.3;">Migrations: a love story with three rollbacks</div><div style="font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.54 0.012 250); margin-top:6px;">[conference] · 2025 · <span style="color:oklch(0.8 0.11 210);">video ↗</span></div></div>
+                  <div><div style="font-size:19px; line-height:1.3;">You do not need a service mesh (probably)</div><div style="font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.54 0.012 250); margin-top:6px;">[meetup] · 2024 · <span style="color:oklch(0.8 0.11 210);">slides ↗</span></div></div>
+                </div>
+                <div style="margin-top:26px; font-family:'Space Mono',monospace; font-size:12px; color:oklch(0.75 0.12 35); cursor:pointer;">want me at yours? →</div>
+              </div>
+
+              <div data-pane="reads.md" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 6px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">reads.md</h2>
+                <p style="margin:0 0 24px; font-size:15px; color:oklch(0.68 0.012 250);">21 started this year. 4 finished. The maths is not flattering.</p>
+                <div style="font-family:'Space Mono',monospace; font-size:13px; line-height:2.1; color:oklch(0.84 0.008 250);">
+                  <div><span style="color:oklch(0.8 0.11 210);">now</span> · [title], [author]</div>
+                  <div><span style="color:oklch(0.54 0.012 250);">done</span> · [title], [author]</div>
+                  <div><span style="color:oklch(0.54 0.012 250);">done</span> · [title], [author]</div>
+                  <div><span style="color:oklch(0.54 0.012 250);">done</span> · [title], [author]</div>
+                  <div><span style="color:oklch(0.75 0.12 35);">dnf</span> · [title] — it wasn't you, it was chapter four</div>
+                </div>
+              </div>
+
+              <div data-pane="uses.txt" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 24px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">uses.txt</h2>
+                <div style="font-family:'Space Mono',monospace; font-size:13px; line-height:2.1; color:oklch(0.84 0.008 250);">
+                  <div>editor &nbsp;· [editor], same config since [year]</div>
+                  <div>shell &nbsp;&nbsp;· [shell] and too many aliases</div>
+                  <div>machine · [laptop]</div>
+                  <div>keyboard · [keyboard], loud on purpose</div>
+                  <div>notes &nbsp;&nbsp;· a plain text file, obviously</div>
+                  <div>music &nbsp;&nbsp;· one album on loop for a whole quarter</div>
+                  <div style="color:oklch(0.54 0.012 250); margin-top:12px;"># tabs. we're not doing this again.</div>
+                </div>
+              </div>
+
+              <div data-pane="cv.pdf" style="display:none; padding:40px 52px;">
+                <h2 style="margin:0 0 24px; font-size:30px; font-weight:600; letter-spacing:-0.025em;">cv.pdf</h2>
+                <div style="display:flex; flex-direction:column; gap:16px; max-width:520px;">
+                  <div style="display:flex; gap:18px;"><div style="width:88px; flex:none; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.56 0.012 250);">[yr]–now</div><div><div style="font-size:16px;">Senior Software Engineer, <span style="color:oklch(0.8 0.11 210);">[company]</span></div><div style="font-size:14px; color:oklch(0.68 0.012 250); margin-top:3px;">[one line on what you own there]</div></div></div>
+                  <div style="display:flex; gap:18px;"><div style="width:88px; flex:none; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.56 0.012 250);">[yr]–[yr]</div><div><div style="font-size:16px;">Software Engineer, [company]</div><div style="font-size:14px; color:oklch(0.68 0.012 250); margin-top:3px;">[one line]</div></div></div>
+                  <div style="display:flex; gap:18px;"><div style="width:88px; flex:none; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.56 0.012 250);">[yr]–[yr]</div><div><div style="font-size:16px;">Software Engineer, [company]</div><div style="font-size:14px; color:oklch(0.68 0.012 250); margin-top:3px;">[one line]</div></div></div>
+                  <div style="display:flex; gap:18px;"><div style="width:88px; flex:none; font-family:'Space Mono',monospace; font-size:11.5px; color:oklch(0.56 0.012 250);">[yr]</div><div style="font-size:16px;">[degree], [university]</div></div>
+                </div>
+                <div style="margin-top:26px; display:inline-block; padding:10px 16px; border-radius:6px; background:oklch(0.8 0.11 210); color:#0b0b0e; font-family:'Space Mono',monospace; font-size:12px; cursor:pointer;">download the real one ↓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- sticky note window -->
+        <div data-win="ping" style="position:absolute; left:912px; top:118px; width:300px; border-radius:10px; overflow:hidden; background:oklch(0.185 0.02 250); border:1px solid oklch(0.32 0.022 250); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:14;">
+          <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:10px; padding:0 12px; background:oklch(0.22 0.022 250); border-bottom:1px solid oklch(0.32 0.022 250); cursor:grab; font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.74 0.012 250);">
+            <div data-close="1" style="width:11px; height:11px; border-radius:3px; background:oklch(0.75 0.12 35); cursor:pointer;"></div>
+            <div>now.txt</div>
+          </div>
+          <div style="padding:18px 20px; font-family:'Space Mono',monospace; font-size:12px; line-height:1.9; color:oklch(0.84 0.008 250);">
+            <div style="color:oklch(0.56 0.012 250); margin-bottom:6px;"># updated [date]</div>
+            <div>· reading [book]</div>
+            <div>· rewriting [x] parser (3/3)</div>
+            <div>· learning [instrument], badly</div>
+            <div style="color:oklch(0.8 0.11 210);">· open to staff roles</div>
+          </div>
+        </div>
+
+        <!-- mail window -->
+        <div data-win="mail" style="position:absolute; left:864px; top:398px; width:344px; border-radius:10px; overflow:hidden; background:oklch(0.185 0.02 250); border:1px solid oklch(0.32 0.022 250); box-shadow:0 24px 50px rgba(0,0,0,0.5); z-index:13;">
+          <div data-drag="1" style="height:32px; display:flex; align-items:center; gap:10px; padding:0 12px; background:oklch(0.22 0.022 250); border-bottom:1px solid oklch(0.32 0.022 250); cursor:grab; font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.74 0.012 250);">
+            <div data-close="1" style="width:11px; height:11px; border-radius:3px; background:oklch(0.75 0.12 35); cursor:pointer;"></div>
+            <div>new message</div>
+          </div>
+          <div style="padding:18px 20px 20px; font-family:'Space Mono',monospace; font-size:12px; color:oklch(0.72 0.012 250); line-height:1.9;">
+            <div>to: <span style="color:oklch(0.8 0.11 210);">[you]@[domain]</span></div>
+            <div>re: <span style="color:oklch(0.9 0.008 250);">a job / a bug / a bird photo</span></div>
+            <div style="height:1px; background:oklch(0.28 0.02 250); margin:12px 0;"></div>
+            <div style="color:oklch(0.88 0.008 250); line-height:1.7;">hi qurat, I read the one about queues and now I have opinions. can we talk<span style="color:oklch(0.75 0.12 35);">▌</span></div>
+            <div style="margin-top:16px; display:inline-block; padding:9px 15px; border-radius:6px; background:oklch(0.75 0.12 35); color:#0b0b0e; cursor:pointer;">send →</div>
+          </div>
+        </div>
+
+        <!-- status bar -->
+        <div style="position:absolute; inset:auto 0 0 0; height:36px; display:flex; align-items:center; gap:26px; padding:0 18px; background:oklch(0.12 0.018 250); border-top:1px solid oklch(0.26 0.02 250); font-family:'Space Mono',monospace; font-size:11px; color:oklch(0.64 0.012 250); z-index:9000;">
+          <div style="color:oklch(0.8 0.11 210);">● available for work</div>
+          <div data-open="main" style="cursor:pointer;">about</div>
+          <div data-open="ping" style="cursor:pointer;">now.txt</div>
+          <div data-open="mail" style="cursor:pointer;">mail</div>
+          <div style="margin-left:auto;">github ↗ · linkedin ↗ · rss</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 1c ========== -->
+    <div id="1c" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; padding:5px 9px; border-radius:5px; background:oklch(0.72 0.14 290); color:#0b0b0e;">1c</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.7 0.012 280);">projects — the ledger (dense, by year)</div>
+      </div>
+      <div style="width:720px; height:820px; border-radius:10px; overflow:hidden; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 30px 70px rgba(0,0,0,0.5); font-family:'Bricolage Grotesque',system-ui,sans-serif; color:oklch(0.94 0.006 285);">
+        <div style="height:31px; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25);"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+          <div style="margin-left:6px;">projects/ — 24 items, sorted by year desc</div>
+        </div>
+        <div style="padding:30px 34px;">
+          <p style="margin:0 0 26px; font-size:14px; line-height:1.6; color:oklch(0.68 0.012 285); max-width:520px; text-wrap:pretty;">Heads up: some of these are held together with duct tape and a deprecated API. The broken ones I'm still emotionally attached to are marked <span style="color:oklch(0.68 0.13 25);">†</span>.</p>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; color:oklch(0.82 0.16 130); padding-bottom:8px; border-bottom:1px solid oklch(0.32 0.016 285);">2026</div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">quietwatch</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">a status page that only pings you when it actually matters</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">go · systems</div></div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">parsley</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">a hand-written parser for a config format nobody asked for</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">rust · tools</div></div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; color:oklch(0.82 0.16 130); padding:26px 0 8px; border-bottom:1px solid oklch(0.32 0.016 285);">2025</div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">deadline</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">turns your calendar into a burndown chart, ruthlessly</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">ts · tools</div></div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">cold start</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">a year of measuring one cloud's mood swings, in graphs</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">py · writing</div></div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; color:oklch(0.82 0.16 130); padding:26px 0 8px; border-bottom:1px solid oklch(0.32 0.016 285);">2024</div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">tabs.exe <span style="color:oklch(0.68 0.13 25);">†</span></div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">a tab manager shaped like a filing cabinet, killed by an API</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">js · silly</div></div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">grep for humans</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">regexes explained by drawing them instead of shouting</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">js · tools</div></div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; color:oklch(0.82 0.16 130); padding:26px 0 8px; border-bottom:1px solid oklch(0.32 0.016 285);">2023 and before</div>
+          <div style="display:flex; gap:18px; padding:14px 0; border-bottom:1px solid oklch(0.26 0.014 285);"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">queue depth</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">a load generator that lies to you, but politely</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">go · systems</div></div>
+          <div style="display:flex; gap:18px; padding:14px 0;"><div style="width:118px; flex:none; font-family:'JetBrains Mono',monospace; font-size:13px;">coffee ledger</div><div style="font-size:14.5px; line-height:1.45; color:oklch(0.78 0.01 285);">four years of espresso, logged, graphed, quietly regretted</div><div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285); white-space:nowrap;">sql · silly</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 1d ========== -->
+    <div id="1d" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.1em; padding:5px 9px; border-radius:5px; background:oklch(0.72 0.14 290); color:#0b0b0e;">1d</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.7 0.012 280);">projects — filterable cards (click the chips)</div>
+      </div>
+      <div style="width:720px; height:820px; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; background:oklch(0.21 0.014 285); border:1px solid oklch(0.34 0.018 285); box-shadow:0 30px 70px rgba(0,0,0,0.5); font-family:'Bricolage Grotesque',system-ui,sans-serif; color:oklch(0.94 0.006 285);">
+        <div style="height:31px; flex:none; display:flex; align-items:center; gap:9px; padding:0 11px; background:oklch(0.25 0.016 285); border-bottom:1px solid oklch(0.34 0.018 285); font-family:'JetBrains Mono',monospace; font-size:11px; color:oklch(0.75 0.01 285);">
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.68 0.13 25);"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:oklch(0.4 0.02 285);"></div>
+          <div style="margin-left:6px;">projects/ — gallery view</div>
+        </div>
+        <div style="padding:28px 30px; flex:1; min-height:0; overflow:auto;">
+          <div onClick="{{ onFilter }}" style="display:flex; gap:7px; margin-bottom:22px; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <div data-filter="all" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fAll }}; color:{{ cAll }};">all 24</div>
+            <div data-filter="systems" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fSystems }}; color:{{ cSystems }};">systems</div>
+            <div data-filter="tools" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fTools }}; color:{{ cTools }};">tools</div>
+            <div data-filter="silly" style="padding:7px 13px; border-radius:20px; border:1px solid oklch(0.36 0.018 285); cursor:pointer; background:{{ fSilly }}; color:{{ cSilly }};">silly</div>
+            <div style="margin-left:auto; align-self:center; white-space:nowrap; color:oklch(0.58 0.012 285);">{{ count }} shown</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <sc-for list="{{ shown }}" as="p" hint-placeholder-count="8">
+              <div style="padding:18px 18px 16px; border-radius:8px; background:oklch(0.245 0.016 285); border:1px solid oklch(0.32 0.018 285); display:flex; flex-direction:column; gap:8px; min-height:158px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:7px; height:7px; border-radius:50%; background:{{ p.dot }};"></div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:oklch(0.94 0.006 285);">{{ p.name }}</div>
+                  <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; color:oklch(0.56 0.012 285);">{{ p.year }}</div>
+                </div>
+                <div style="font-size:14px; line-height:1.45; color:oklch(0.8 0.01 285); text-wrap:pretty;">{{ p.desc }}</div>
+                <div style="margin-top:auto; display:flex; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:oklch(0.6 0.012 285);">
+                  <div style="padding:3px 7px; border-radius:4px; background:oklch(0.19 0.014 285);">{{ p.lang }}</div>
+                  <div style="padding:3px 7px; border-radius:4px; background:oklch(0.19 0.014 285);">{{ p.tag }}</div>
+                  <div style="margin-left:auto; color:oklch(0.72 0.14 290);">open ↗</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;wallpaper&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dots&quot;,&quot;grid&quot;,&quot;plain&quot;],&quot;default&quot;:&quot;dots&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Desktop&quot;},&quot;showToys&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Desktop&quot;},&quot;clock24&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Desktop&quot;}}">
+const PROJECTS = [
+  {name:"quietwatch", year:"2026", tag:"systems", lang:"go", desc:"a status page that only pings you when it actually matters"},
+  {name:"parsley", year:"2026", tag:"tools", lang:"rust", desc:"a hand-written parser for a config format nobody asked for"},
+  {name:"deadline", year:"2025", tag:"tools", lang:"ts", desc:"turns your calendar into a burndown chart, ruthlessly"},
+  {name:"cold start", year:"2025", tag:"systems", lang:"py", desc:"a year of measuring one cloud's mood swings, in graphs"},
+  {name:"tabs.exe", year:"2024", tag:"silly", lang:"js", desc:"a tab manager shaped like a filing cabinet, killed by an API"},
+  {name:"grep for humans", year:"2024", tag:"tools", lang:"js", desc:"regexes explained by drawing them instead of shouting"},
+  {name:"queue depth", year:"2023", tag:"systems", lang:"go", desc:"a load generator that lies to you, but politely"},
+  {name:"coffee ledger", year:"2022", tag:"silly", lang:"sql", desc:"four years of espresso, logged, graphed, quietly regretted"}
+];
+const LABELS = {
+  about: "about.md", projects: "projects/", writes: "writes.md", talks: "talks.md", reads: "reads.md",
+  now: "now.txt", uses: "uses.txt", cv: "cv.pdf", contact: "say-hi.eml", toy: "entropy.exe",
+  "projects-all": "projects/ · all 24", "writes-all": "writing archive", "talks-book": "invite form", "reads-all": "the shelf"
+};
+const DOT = {systems:"oklch(0.82 0.16 130)", tools:"oklch(0.72 0.14 290)", silly:"oklch(0.78 0.12 60)"};
+
+const MORE_PROJECTS = [
+  {name:"halfpipe", year:"2026", tag:"tools", lang:"go", desc:"CI that tells you which test is flaky before you ask"},
+  {name:"tinyvault", year:"2026", tag:"systems", lang:"rust", desc:"secrets for one laptop and zero opinions about kubernetes"},
+  {name:"latency dice", year:"2025", tag:"silly", lang:"js", desc:"roll for how slow your API feels today"},
+  {name:"pgwatch-lite", year:"2025", tag:"systems", lang:"py", desc:"four graphs that actually predicted an outage once"},
+  {name:"schema diff", year:"2025", tag:"tools", lang:"ts", desc:"migrations reviewed in English instead of DDL"},
+  {name:"onk", year:"2024", tag:"silly", lang:"c", desc:"an awk I wrote to avoid learning awk"},
+  {name:"retry budget", year:"2024", tag:"systems", lang:"go", desc:"a library that says no to your retry loop"},
+  {name:"deploy roulette", year:"2024", tag:"silly", lang:"sh", desc:"a Friday deploy simulator. nobody wins"},
+  {name:"logfold", year:"2023", tag:"tools", lang:"rust", desc:"collapses 40k log lines into the six that matter"},
+  {name:"birdcount", year:"2023", tag:"silly", lang:"py", desc:"counts the birds on my balcony, badly, with a camera"},
+  {name:"idle hands", year:"2023", tag:"tools", lang:"ts", desc:"finds the cloud resources everyone forgot about"},
+  {name:"clocked", year:"2022", tag:"systems", lang:"go", desc:"a distributed clock skew detector, born of one bad week"},
+  {name:"minipaxos", year:"2022", tag:"systems", lang:"rust", desc:"consensus, 400 lines, purely so I would understand it"},
+  {name:"typo", year:"2022", tag:"tools", lang:"js", desc:"a spellchecker for commit messages. yes, really"},
+  {name:"stack trace tarot", year:"2021", tag:"silly", lang:"js", desc:"reads your exception and predicts your afternoon"},
+  {name:"pager quiet", year:"2021", tag:"systems", lang:"py", desc:"alert dedup that cut my on-call noise by half"}
+];
+const POSTS = [
+  {date:"Jul 2026", mins:"8 min", title:"The bug was in the calendar, obviously", blurb:"Three days, one timezone, and a leap second that was never there."},
+  {date:"May 2026", mins:"12 min", title:"Postgres told me the truth, I just didn't listen", blurb:"A query plan I ignored for six months, annotated line by line."},
+  {date:"Mar 2026", mins:"6 min", title:"A cache is a promise to your future self", blurb:"And future you is not a reliable person."},
+  {date:"Jan 2026", mins:"9 min", title:"In defence of the extremely boring queue", blurb:"Every exciting queue I have met was exciting for bad reasons."},
+  {date:"Nov 2025", mins:"14 min", title:"How I read a codebase I am afraid of", blurb:"Start at the deploy script. It cannot lie to you."},
+  {date:"Sep 2025", mins:"7 min", title:"Nobody wants your abstraction yet", blurb:"Three call sites is a pattern. Two is a coincidence."},
+  {date:"Jul 2025", mins:"11 min", title:"The migration that took a weekend, four times", blurb:"A timeline, with the parts I got wrong left in."},
+  {date:"Apr 2025", mins:"5 min", title:"Writing the postmortem before the incident", blurb:"A trick for finding out what you actually believe."}
+];
+const SHELF = [
+  {state:"now", title:"[title], [author]", note:"p. 140 of 380", color:"oklch(0.82 0.16 130)"},
+  {state:"now", title:"[title], [author]", note:"started [month]", color:"oklch(0.82 0.16 130)"},
+  {state:"done", title:"[title], [author]", note:"best of the year so far", color:"oklch(0.62 0.012 285)"},
+  {state:"done", title:"[title], [author]", note:"re-read, held up", color:"oklch(0.62 0.012 285)"},
+  {state:"done", title:"[title], [author]", note:"one chapter too long", color:"oklch(0.62 0.012 285)"},
+  {state:"done", title:"[title], [author]", note:"a gift, unexpectedly good", color:"oklch(0.62 0.012 285)"},
+  {state:"soon", title:"[title], [author]", note:"on the desk, guilt-shaped", color:"oklch(0.72 0.14 290)"},
+  {state:"soon", title:"[title], [author]", note:"everyone keeps recommending it", color:"oklch(0.72 0.14 290)"},
+  {state:"dnf", title:"[title], [author]", note:"it wasn't you, it was chapter four", color:"oklch(0.68 0.13 25)"},
+  {state:"dnf", title:"[title], [author]", note:"600 pages of one idea", color:"oklch(0.68 0.13 25)"}
+];
+
+class Component extends DCLogic {
+  state = { clock: "", seed: 1, filter: "all", wallC: "dots", openC: ["about", "writes", "projects", "toy", "now"] };
+  pos = {};
+
+  componentDidMount() {
+    this.tick();
+    this.timer = setInterval(() => this.tick(), 20000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); window.removeEventListener("pointermove", this.move); window.removeEventListener("pointerup", this.up); }
+
+  tick() {
+    const d = new Date();
+    const h = this.props.clock24 === false ? ((d.getHours() % 12) || 12) : d.getHours();
+    this.setState({ clock: String(h).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") });
+  }
+
+  raise(el) {
+    const root = el.closest("[data-desktop]");
+    let max = 10;
+    root.querySelectorAll("[data-win]").forEach(w => { max = Math.max(max, +getComputedStyle(w).zIndex || 10); });
+    el.style.zIndex = max + 1;
+  }
+
+  onDown = (e) => {
+    const handle = e.target.closest("[data-drag]");
+    if (!handle || e.target.closest("[data-close]")) return;
+    const win = handle.closest("[data-win]");
+    if (!win) return;
+    this.raise(win);
+    const key = win.closest("[data-desktop]").dataset.desktop + ":" + win.dataset.win;
+    this.bases = this.bases || {};
+    if (this.bases[key] === undefined) this.bases[key] = win.style.transform || "";
+    const p = this.pos[key] || { x: 0, y: 0 };
+    this.drag = { win, key, p, sx: e.clientX, sy: e.clientY };
+    handle.style.cursor = "grabbing";
+    window.addEventListener("pointermove", this.move);
+    window.addEventListener("pointerup", this.up);
+    e.preventDefault();
+  };
+
+  move = (e) => {
+    const d = this.drag; if (!d) return;
+    const x = d.p.x + (e.clientX - d.sx), y = d.p.y + (e.clientY - d.sy);
+    d.win.style.transform = (this.bases[d.key] || "") + " translate(" + x + "px," + y + "px)";
+    d.next = { x, y };
+  };
+
+  up = () => {
+    const d = this.drag; if (!d) return;
+    if (d.next) this.pos[d.key] = d.next;
+    d.win.querySelector("[data-drag]").style.cursor = "grab";
+    this.drag = null;
+    window.removeEventListener("pointermove", this.move);
+    window.removeEventListener("pointerup", this.up);
+  };
+
+  onTapC = (e) => {
+    const wrap = e.currentTarget.closest('[data-turn="2"]');
+    const root = (wrap && wrap.querySelector('[data-desktop="c"]')) || e.currentTarget;
+    const wall = e.target.closest("[data-wall]");
+    if (wall) { this.setState({ wallC: wall.dataset.wall }); return; }
+    if (e.target.closest('[data-action="closeall"]')) {
+      root.querySelectorAll("[data-win]").forEach(w => { w.style.display = "none"; });
+      this.syncC(root);
+      return;
+    }
+    const tbClose = e.target.closest("[data-close-key]");
+    if (tbClose) {
+      const w = root.querySelector('[data-win="' + tbClose.dataset.closeKey + '"]');
+      if (w) w.style.display = "none";
+      this.syncC(root);
+      return;
+    }
+    this.handle(root, e.target);
+    this.syncC(root);
+  };
+
+  syncC(root) {
+    const open = [];
+    root.querySelectorAll("[data-win]").forEach(w => {
+      if (getComputedStyle(w).display !== "none") open.push(w.dataset.win);
+    });
+    this.setState({ openC: open });
+  }
+
+  onTap = (e) => this.handle(e.currentTarget, e.target);
+
+  handle = (root, target) => {
+    const e = { target };
+    const closer = e.target.closest("[data-close]");
+    if (closer) { const w = closer.closest("[data-win]"); if (w) w.style.display = "none"; return; }
+    const file = e.target.closest("[data-file]");
+    if (file) {
+      file.parentElement.querySelectorAll("[data-file]").forEach(el => {
+        el.style.background = "transparent";
+        el.style.color = "";
+        el.style.borderLeftColor = "transparent";
+      });
+      file.style.background = "oklch(0.24 0.022 250)";
+      file.style.color = "oklch(0.8 0.11 210)";
+      file.style.borderLeftColor = "oklch(0.8 0.11 210)";
+      const t = root.querySelector("[data-title]");
+      if (t) t.textContent = "~/qurat — " + file.dataset.file;
+      const panes = root.querySelector("[data-panes]");
+      if (panes) {
+        panes.querySelectorAll("[data-pane]").forEach(p => { p.style.display = p.dataset.pane === file.dataset.file ? "" : "none"; });
+        panes.scrollTop = 0;
+      }
+      return;
+    }
+    const opener = e.target.closest("[data-open]");
+    if (opener) {
+      const w = root.querySelector('[data-win="' + opener.dataset.open + '"]');
+      if (w) { w.style.display = w.dataset.display || ""; this.raise(w); }
+      return;
+    }
+    const win = e.target.closest("[data-win]");
+    if (win) this.raise(win);
+  };
+
+  onFilter = (e) => {
+    const chip = e.target.closest("[data-filter]");
+    if (chip) this.setState({ filter: chip.dataset.filter });
+  };
+
+  shuffle = () => this.setState(s => ({ seed: s.seed + 1 }));
+
+  renderVals() {
+    const hues = ["oklch(0.82 0.16 130)", "oklch(0.72 0.14 290)", "oklch(0.3 0.016 285)", "oklch(0.3 0.016 285)", "oklch(0.24 0.014 285)", "oklch(0.55 0.06 200)"];
+    let r = this.state.seed * 9301 + 49297;
+    const rnd = () => { r = (r * 9301 + 49297) % 233280; return r / 233280; };
+    const cells = Array.from({ length: 36 }, () => ({ bg: hues[Math.floor(rnd() * hues.length)] }));
+
+    const f = this.state.filter;
+    const all = PROJECTS.concat(MORE_PROJECTS);
+    const shown = all.filter(p => f === "all" || p.tag === f).map(p => ({ ...p, dot: DOT[p.tag] }));
+    const wallsC = {
+      dots: "radial-gradient(oklch(0.245 0.016 285) 1.5px, transparent 1.5px)",
+      grid: "linear-gradient(oklch(0.205 0.014 285) 1px, transparent 1px), linear-gradient(90deg, oklch(0.205 0.014 285) 1px, transparent 1px)",
+      scan: "repeating-linear-gradient(oklch(0.195 0.014 285) 0 1px, transparent 1px 5px)",
+      lime: "radial-gradient(120% 90% at 18% 12%, oklch(0.28 0.075 130), transparent 60%)",
+      plain: "none"
+    };
+    const sizesC = { dots: "26px 26px", grid: "40px 40px", scan: "auto", lime: "auto", plain: "auto" };
+    const w = this.state.wallC;
+    const ring = k => (w === k ? "2px solid oklch(0.82 0.16 130)" : "1px solid oklch(0.34 0.016 285)");
+    const on = "oklch(0.82 0.16 130)", off = "transparent", onT = "#0b0b0e", offT = "oklch(0.82 0.01 285)";
+    const wallpapers = {
+      dots: "radial-gradient(oklch(0.24 0.016 285) 1px, transparent 1px)",
+      grid: "linear-gradient(oklch(0.2 0.014 285) 1px, transparent 1px), linear-gradient(90deg, oklch(0.2 0.014 285) 1px, transparent 1px)",
+      plain: "none"
+    };
+
+    return {
+      clock: this.state.clock,
+      seed: this.state.seed,
+      cells,
+      shuffle: this.shuffle,
+      onDown: this.onDown,
+      onTap: this.onTap,
+      onFilter: this.onFilter,
+      onTapC: this.onTapC,
+      taskbar: (this.state.openC || []).map(k => ({ key: k, label: LABELS[k] || k })),
+      openCount: (this.state.openC || []).length,
+      plural: (this.state.openC || []).length === 1 ? "" : "s",
+      nothingOpen: (this.state.openC || []).length === 0,
+      posts: POSTS,
+      shelf: SHELF,
+      wallC: wallsC[w],
+      wallSizeC: sizesC[w],
+      ringDots: ring("dots"), ringGrid: ring("grid"), ringScan: ring("scan"), ringLime: ring("lime"), ringPlain: ring("plain"),
+      shown,
+      count: shown.length,
+      toyDisplay: this.props.showToys === false ? "none" : "",
+      wallA: wallpapers[this.props.wallpaper || "dots"],
+      fAll: f === "all" ? on : off, cAll: f === "all" ? onT : offT,
+      fSystems: f === "systems" ? on : off, cSystems: f === "systems" ? onT : offT,
+      fTools: f === "tools" ? on : off, cTools: f === "tools" ? onT : offT,
+      fSilly: f === "silly" ? on : off, cSilly: f === "silly" ? onT : offT
+    };
+  }
+}
+</script>
+</body>
+</html>
