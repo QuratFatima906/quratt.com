@@ -61,7 +61,7 @@ type Drag = {
   velocity: number;
 };
 
-export function Window({ def, index, count }: { def: WindowDef; index: number; count: number }) {
+export function Window({ def, stack }: { def: WindowDef; stack: number }) {
   const { focus, closeWindow, raise } = useOs();
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<Drag | null>(null);
@@ -88,13 +88,19 @@ export function Window({ def, index, count }: { def: WindowDef; index: number; c
   const onPointerDown = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
       if (event.pointerType === 'mouse' && event.button !== 0) return;
+      // Pointer capture retargets the following `click` at the capturing element, so starting
+      // a drag from the close button would swallow its activation entirely.
+      if ((event.target as Element).closest('button')) return;
       const el = ref.current;
       if (!el || drag.current) return; // ignore a second finger mid-drag, or it jumps
 
       const origin = readTranslate(el);
       el.dataset.dragging = 'true';
       el.style.willChange = 'translate';
-      el.setPointerCapture(event.pointerId);
+      // Capture on the title bar, not the window: capture retargets every later pointer event
+      // at the capturing element, and the window is the title bar's *ancestor* — so capturing
+      // there would route the moves past these handlers instead of to them.
+      event.currentTarget.setPointerCapture(event.pointerId);
       drag.current = {
         pointerId: event.pointerId,
         pointerX: event.clientX,
@@ -173,7 +179,7 @@ export function Window({ def, index, count }: { def: WindowDef; index: number; c
       aria-labelledby={titleId}
       data-window={def.key}
       style={{
-        zIndex: 20 + index,
+        zIndex: 20 + stack,
         // The registry's coordinates are for the design's 1280×820 desktop, so they are a
         // preference, not a position — CSS clamps them into whatever viewport actually
         // exists. Doing it here rather than in an effect means no first-paint jump.
@@ -207,7 +213,7 @@ export function Window({ def, index, count }: { def: WindowDef; index: number; c
       </div>
       {/* P4 fills these. The shell only owns the frame. */}
       <div className="min-h-24 overflow-auto p-6 font-mono text-xs text-text-muted">
-        {def.label} — window {index + 1} of {count}
+        {def.label}
       </div>
     </section>
   );

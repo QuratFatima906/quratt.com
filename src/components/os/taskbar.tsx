@@ -36,7 +36,9 @@ export function Taskbar() {
                 type="button"
                 aria-label={`Close ${def.label}`}
                 onClick={() => closeWindow(key)}
-                className="mr-1.5 flex size-4 cursor-pointer items-center justify-center rounded-sm bg-surface-hover text-[11px] leading-none text-text-secondary transition-colors duration-150 hover:bg-danger hover:text-on-accent"
+                // 24px, not the design's 16: below that it fails WCAG 2.2 SC 2.5.8, and the
+                // taskbar entry beside it leaves no spacing exception to fall back on.
+                className="mr-1 flex size-6 cursor-pointer items-center justify-center rounded-sm bg-surface-hover text-[11px] leading-none text-text-secondary transition-colors duration-150 hover:bg-danger hover:text-on-accent"
               >
                 <span aria-hidden="true">×</span>
               </button>

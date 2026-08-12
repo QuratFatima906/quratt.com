@@ -1,6 +1,6 @@
 'use client';
 
-import { windowDef } from '@/lib/windows';
+import { WINDOWS } from '@/lib/windows';
 
 import { DesktopIcons } from './desktop-icons';
 import { MenuBar } from './menu-bar';
@@ -31,9 +31,17 @@ function Surface() {
         main landmark. P5 moves it onto the routed window; nothing else has to change.
       */}
       <main aria-label="Desktop">
+        {/* The desktop's own heading. P4's windows carry their own; P5 decides which one wins
+            on a route that names a window. Until then this keeps `/` from having none. */}
+        <h1 className="sr-only">Qurat ul ain Fatima — qurat.os</h1>
         <DesktopIcons />
-        {open.map((key, i) => (
-          <Window key={key} def={windowDef(key)} index={i} count={open.length} />
+        {/*
+          Rendered in registry order, stacked by z-index. Mapping the `open` array directly
+          would reorder the DOM on every raise, and moving a node re-runs its `@starting-style`
+          entrance — so every click on a background window would flash it back in.
+        */}
+        {WINDOWS.filter((def) => open.includes(def.key)).map((def) => (
+          <Window key={def.key} def={def} stack={open.indexOf(def.key)} />
         ))}
       </main>
       <Taskbar />
