@@ -42,6 +42,73 @@
   }
 }
 
+/* The built-in CSS easings are too weak to read as deliberate. These are the standard strong
+   variants: `out` for anything entering, the iOS drawer curve for the sheet settling back. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Windows scale up from 0.97 rather than from nothing — objects do not appear from zero size.
+   `translate` is its own property so the drag can write it without fighting the entrance, and
+   so the sheet's settle animates while the entrance does not re-run. */
+.os-window {
+  transition:
+    opacity 160ms var(--ease-out),
+    scale 160ms var(--ease-out),
+    translate 300ms var(--ease-drawer);
+}
+
+@starting-style {
+  .os-window {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
+/* A dragged window must track the pointer exactly, so the settle transition steps aside. */
+.os-window[data-dragging] {
+  transition: none;
+}
+
+/* Wallpapers, at the design's values. The swatch variants are the same pattern at a size that
+   is legible in a 16px square. */
+.wall-dots {
+  background-image: radial-gradient(var(--surface-overlay) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+
+.wall-grid {
+  background-image:
+    linear-gradient(var(--surface-raised) 1px, transparent 1px),
+    linear-gradient(90deg, var(--surface-raised) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.wall-gradient {
+  background-image: radial-gradient(120% 90% at 18% 12%, var(--surface-accent), transparent 60%);
+}
+
+.swatch-dots {
+  background-image: radial-gradient(var(--border-interactive) 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.swatch-grid {
+  background-image:
+    linear-gradient(var(--border-interactive) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-interactive) 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.swatch-gradient {
+  background-image: radial-gradient(circle at 30% 30%, var(--surface-accent), var(--surface));
+}
+
+.ruled-lines {
+  background-image: repeating-linear-gradient(var(--text-muted) 0 2px, transparent 2px 5px);
+}
+
 /* Nastaliq's baseline descends steeply; at normal leading the kasheeda of one line collides
    with the next. 2.2 is measured, not guessed — see progress.md. `dir` and `lang` are set by
    the <Urdu> component, since they are attributes and cannot come from CSS. */

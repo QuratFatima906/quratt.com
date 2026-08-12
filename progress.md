@@ -41,7 +41,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P0 foundation | done | main | — |
 | P1 tokens & theme | merged | phase/1-tokens-theme | #1 |
 | P2 content layer | done | phase/2-content-layer | #3 |
-| P3 OS shell | not started | — | — |
+| P3 OS shell | done | phase/3-os-shell | #4 |
 | P4 window content | not started | — | — |
 | P5 routing & SEO | not started | — | — |
 | P6 AI discoverability | not started | — | — |
@@ -376,3 +376,212 @@ light-theme surface can push the accent under 4.5:1. The token test will catch i
 - No `getContent()` aggregate yet. ARCHITECTURE describes the `(os)` layout fetching every
   collection in one call; that layout does not exist until P3, so the call it will make does
   not either.
+
+---
+
+### P3 — OS shell
+**Agent:** os-shell · **Branch:** phase/3-os-shell · **PR:** #4 · **Status:** done
+
+**Started:** 2026-08-12
+**Finished:** 2026-08-13
+
+**Done**
+- `src/lib/windows.ts` — the window registry. Ten windows: key, label, icon, route,
+  availability and the design's opening geometry. `DESKTOP_ICONS` names the three that sit on
+  the desktop. Everything else in the phase reads from it, so the menu bar, the icons and the
+  taskbar cannot drift apart.
+- `src/components/os/` — `Desktop`, `MenuBar` (overflow measurement, close all, clock,
+  hamburger), `DesktopIcons`, `Taskbar`, `WallpaperPicker`, `Window` (drag / sheet gesture),
+  `Launcher` (the one thing that opens a window, and the one place the disabled state lives),
+  `OsProvider` (open set, focus, z-order, wallpaper).
+- Disabled windows per D8/D13: `aria-disabled`, never the `disabled` attribute, with a real
+  tooltip — focusable trigger, shown on hover *and* focus, hoverable, dismissed by Escape,
+  wired with `aria-describedby`. Activating one opens nothing.
+- Mobile: windows become full-screen sheets with swipe-to-dismiss (momentum projection,
+  rubber-banding at the top bound, interruptible because a new grab reads the live on-screen
+  offset); the menu bar collapses to a hamburger; icons become a grid.
+- `src/app/page.tsx` now renders the desktop, replacing P2's counts placeholder.
+- `e2e/os-shell.spec.ts` and `e2e/menu-overflow.spec.ts` — the criteria below, as tests.
+
+**Success criteria**
+
+- [x] `pnpm verify` exits 0
+      ```
+      Test Files  3 passed (3)
+           Tests  163 passed (163)
+      ```
+      (typecheck and lint both silent, which is how they pass)
+
+- [x] `pnpm build` exits 0
+      ```
+      Route (app)
+      ┌ ○ /
+      ├ ○ /_not-found
+      └ ○ /preview
+      ○  (Static)  prerendered as static content
+      ```
+
+- [x] Windows open, close, drag, stack and raise on click; taskbar mirrors state exactly —
+      `e2e/os-shell.spec.ts` "opens, stacks and raises windows, and the taskbar mirrors them
+      exactly" opens four, asserts four taskbar entries, asserts `z-index(toy) > z-index(about)`,
+      clicks `about` and asserts the order inverts, drags the title bar with a real mouse
+      (`+120px, +80px`, `translate` non-`none`, so nothing but `translate` moved), closes one
+      from its title bar and asserts three remain in both the desktop and the taskbar, then
+      `close all` and asserts zero. Live check of the same, in the browser:
+      ```
+      before: [{about,20},{projects,21},{now,22},{toy,23}]
+      after:  [{projects,20},{now,21},{toy,22},{about,23}]
+      taskbar: ["projects/","now.txt","entropy.exe","about.md"]
+      focus before/after the raise: toy / toy   ← raising does not steal focus
+      ```
+
+- [x] Keyboard alone opens every live window, moves focus into it, closes it, lands focus back
+      on the opener — every available window, in the browser, opener focused then activated:
+      ```
+      about.md    → focus landed in about.md    → closed → focus back on about.md
+      projects/   → focus landed in projects/   → closed → focus back on projects/
+      now.txt     → focus landed in now.txt     → closed → focus back on now.txt
+      uses.txt    → focus landed in uses.txt    → closed → focus back on uses.txt
+      resume.pdf  → focus landed in resume.pdf  → closed → focus back on resume.pdf
+      say-hi.eml  → focus landed in say-hi.eml  → closed → focus back on say-hi.eml
+      entropy.exe → focus landed in entropy.exe → closed → focus back on entropy.exe
+      ```
+      and as a test in chromium and webkit ("the keyboard alone opens a window, lands inside
+      it, and returns to the opener"), driven by real `Tab`/`Enter` key events.
+
+- [x] Disabled windows are keyboard-reachable, announce unavailability, and open nothing
+      ```
+      writes.md  inTabOrder:true  el.disabled:false  aria-disabled:"true"
+                 tooltip role:"tooltip" text:"coming soon"  windows 0 → 0
+      talks.md   inTabOrder:true  el.disabled:false  aria-disabled:"true"
+                 tooltip role:"tooltip" text:"coming soon"  windows 0 → 0
+      reads.md   inTabOrder:true  el.disabled:false  aria-disabled:"true"
+                 tooltip role:"tooltip" text:"coming soon"  windows 0 → 0
+      ```
+      Escape, pressed for real: `{ tooltips: 0, stillFocused: "writes.md" }` — dismissed
+      without moving focus.
+
+- [x] axe reports zero violations with three windows open, in both themes — chromium and
+      webkit, `wcag2a wcag2aa wcag21a wcag21aa wcag22aa`, with a tooltip open as well:
+      ```
+      ✓ no accessibility violations in dark with three windows open
+      ✓ no accessibility violations in light with three windows open
+      ✓ [mobile] no accessibility violations with the section menu open
+      ```
+      It did not pass first time. `target-size` (SC 2.5.8) failed on the taskbar's 16px close
+      buttons; they are 24px now.
+
+- [x] `prefers-reduced-motion: reduce` removes all window transitions — the "no window
+      transition survives" test reads the computed `transition-duration` of an open window in a
+      context launched with `reducedMotion: 'reduce'` and asserts every component is under 1ms.
+      Without it, the same element reports `0.16s, 0.16s, 0.3s` for `opacity, scale, translate`.
+
+- [x] Menu bar overflow correct at 320 / 768 / 1024 / 1440 / 1920 px — `e2e/menu-overflow.spec.ts`
+      waits for `document.fonts.status === 'loaded'` at each width, then asserts nothing spills
+      out of the nav and that shown + hidden always equals ten:
+      ```
+      320:  hamburger, 10 items in the panel
+      768:  4 shown + "more (6) ▾", spill -21.4px
+      1024: 7 shown + "more (3) ▾", spill -82.0px
+      1440: 10 shown (no more button), spill -328.5px
+      1920: 10 shown (no more button), spill -808.5px
+      ```
+
+- [x] Dragging holds 60 fps in a DevTools performance trace — production build, three windows
+      open, 120 pointer moves out and back:
+      ```
+      frames: 120  median 8.3ms  p95 9.3ms  worst 9.4ms
+      droppedFrames (>16.7ms): 0   effectiveFps: 120
+      ```
+      and the trace itself reports `CLS: 0.00` across the drag, which is the real claim: the
+      gesture writes `translate` and touches no layout property.
+
+- [x] Mobile sheet swipe-to-dismiss works under real touch emulation — `mobile-chrome`
+      (Pixel 7), touches injected through CDP `Input.dispatchTouchEvent`, not synthesised
+      clicks. A tap (touchStart/touchEnd at one point) leaves the sheet alone; a downward drag
+      of twelve moves dismisses it and the taskbar falls back to "nothing open".
+      ```
+      ✓ [mobile-chrome] mobile › a downward swipe dismisses the sheet, and a tap does not
+      ✓ [mobile-chrome] mobile › windows are full-screen sheets and the menu bar is a hamburger
+      ✓ [mobile-chrome] mobile › the sheet tracks the finger, and resists rather than stopping
+      ```
+      The physics, measured through the same touch injection: a 120px pull moves the sheet
+      exactly `120px` — 1:1 with the finger — and 200px past the top bound moves it only
+      `82.4px` and then settles back to `0px` without dismissing.
+
+Full suite, four browser projects: `36 passed, 24 skipped`, three consecutive clean runs (the
+skips are the desktop tests on phones and the phone tests on desktops). CI green on the PR:
+build, e2e + accessibility, performance budgets, and typecheck/lint/unit all pass.
+
+**Deviations from plan.md**
+
+- **`<main>` is the desktop, not the focused window.** `ARCHITECTURE.md#accessibility` puts
+  `<main>` on the focused window, but "focused" means "named by the route", and there are no
+  routes until P5. A `<main>` that hops between windows as you click them would also be a
+  strange thing to hand a screen reader. The desktop is the main landmark for now; P5 moves it
+  onto the routed window and nothing else changes.
+- **Windows are clamped to `left ≥ 7.5rem`.** The registry's coordinates come from the design
+  composition that has no desktop icons, so `about` at `x: 44` opens directly on top of them —
+  two of the three icons are invisible on first load. The clamp is one CSS `clamp()` bound and
+  it keeps the design's staggered layout everywhere else. Alternatives were moving the icons
+  (further from the design) or editing the registry (its geometry is the contract).
+- **Desktop icon glyphs use surface tokens, not the design's white paper.** The design draws
+  the sheet as a near-white rectangle, which only reads as paper on a dark desktop; in the
+  light theme it inverted into a dark blob with invisible ruled lines. `surface-raised` plus
+  `border-interactive` reads as a sheet in both themes.
+- **Taskbar close buttons are 24px, not the design's 16px.** Below 24 they fail WCAG 2.2
+  SC 2.5.8, and sitting flush against the taskbar entry leaves no spacing exception to claim.
+  axe found this, it was not a judgement call.
+- **"Overflow correct at 320px" means the hamburger.** Below `md` the menu bar collapses per
+  D3, so there is no overflow row to measure — the assertion at 320 is that all ten windows are
+  reachable from the panel. The measurement itself is exercised at 768 and above.
+- **`<h1 class="sr-only">` on the desktop.** P0's smoke test asserts exactly one `h1` per page
+  and the shell has no headings of its own — window contents are P4's. One hidden heading keeps
+  the invariant true today. P5 decides which heading wins on a route that names a window.
+- **Added a `mobile-chrome` Playwright project.** Real touch injection goes through CDP, which
+  only Chromium speaks, so the swipe gesture had no browser to run in. `mobile-safari` still
+  covers the sheet layout.
+- **The wallpaper picker is three native radios in a `<fieldset>`.** It is a radiogroup either
+  way; the native one brings arrow-key roving, the group name and the checked state with it,
+  and needs no keyboard handler to maintain.
+- **`src/app/page.tsx` replaced.** P2 flagged this: its counts line existed to prove a page
+  could read content, and P3 owned the page from the start.
+
+**Blocked on**
+- Nothing.
+
+**Notes for later phases**
+- **`Launcher` is the only thing that opens a window.** Menu bar, overflow panel, hamburger
+  panel and desktop icons all render one. Anything new that opens a window should render one
+  too, or the disabled treatment has to be reimplemented and will drift.
+- **`useOs()` is the whole API**: `open` (stacking order, last is top), `focus`
+  (`{ key, nonce }` — the nonce is what re-focuses an already-open window), `openWindow`,
+  `closeWindow`, `closeAll`, `raise`, `wallpaper`, `setWallpaper`.
+- **Windows render in registry order and stack by `z-index`.** Mapping `open` to the DOM
+  directly reorders nodes on every raise, and moving a node re-runs its `@starting-style`
+  entrance — every click on a background window would flash it back in. Keep the DOM order
+  stable.
+- **Drag bounds are measured once, at the grab.** Re-deriving the window's untranslated
+  position from a rect that already contains the current translate makes the bounds drift along
+  with the window, so it can be pushed past the edge it was meant to stop at.
+- **Pointer capture belongs on the title bar, not the window.** Capture retargets every later
+  pointer event at the capturing element; the window is the title bar's ancestor, so capturing
+  there routes the moves past the handlers instead of to them. This is why the drag silently
+  did nothing under real input while working under dispatched events. For the same reason the
+  drag refuses to start on a `button` — capture would swallow the close button's click.
+- **The window body is one placeholder div** in `window.tsx`. P4 replaces it. The window frame
+  already carries `transition: opacity, scale, translate` — content should not add transitions
+  to the same element or the entrance will fight them.
+- **`def.route` is unused so far.** P5 attaches routing to it; nothing needs restructuring.
+- **The clock is `aria-hidden` and renders empty until mounted**, so the server's time can
+  never mismatch the visitor's.
+- **A panel hands focus to its own toggle before the window opens.** Activating an item in the
+  overflow or hamburger panel unmounts that item, so it cannot be the thing focus returns to
+  when the window later closes. The panel focuses its toggle in the *capture* phase — before the
+  launcher's own handler records whatever has focus as the opener — and closes in the bubble
+  phase. Both halves matter: doing the focus and the close together in capture makes React flush
+  the unmount synchronously (focus is a discrete event) and the launcher's click never fires at
+  all. That failure looks exactly like a dead menu item.
+- **The menu bar nav is `overflow-x: clip; overflow-y: visible`**, deliberately. It has to clip
+  horizontally so an unmeasured row cannot spill into the clock, and open downwards or it
+  swallows the tooltip. `overflow-hidden` would do both.

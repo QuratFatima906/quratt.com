@@ -23,6 +23,9 @@ export default defineConfig({
     // The OS metaphor changes shape entirely below the breakpoint, so mobile is not an
     // afterthought project — it exercises a different component tree.
     { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
+    // Touch injection for the swipe-to-dismiss gesture goes through CDP, which only Chromium
+    // speaks — so the sheet needs a Chromium-flavoured phone as well as a WebKit one.
+    { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
   ],
 
   webServer: process.env.PLAYWRIGHT_BASE_URL
