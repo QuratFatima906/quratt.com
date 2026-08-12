@@ -10,7 +10,9 @@ import { WallpaperPicker } from './wallpaper-picker';
 import { useOs } from './window-manager';
 
 const ITEM = 'cursor-pointer whitespace-nowrap text-text-secondary hover:text-accent';
-const DIM = 'text-text-muted/60 hover:text-text-muted/60';
+// `!` because it has to beat the hover colour the shared item class already carries; the
+// two rules are otherwise equally specific and the winner would depend on emit order.
+const DIM = 'text-text-muted! opacity-55';
 const PANEL_ITEM =
   'w-full cursor-pointer rounded px-2.5 py-1.5 text-left whitespace-nowrap text-text hover:bg-surface-hover';
 
@@ -128,7 +130,7 @@ export function MenuBar() {
                     key={w.key}
                     windowKey={w.key}
                     className={PANEL_ITEM}
-                    disabledClassName="text-text-muted/60 hover:bg-transparent"
+                    disabledClassName="text-text-muted! opacity-55 hover:bg-transparent!"
                     tooltipClassName="top-1/2 left-full ml-2 -translate-y-1/2"
                   />
                 ))}

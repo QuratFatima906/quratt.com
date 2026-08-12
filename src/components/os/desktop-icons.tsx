@@ -37,7 +37,7 @@ function Glyph({ icon }: { icon: WindowIcon }) {
     return (
       <span
         aria-hidden="true"
-        className={`${frame} items-center justify-center border-border-interactive bg-text-secondary font-mono text-[9px] font-bold text-danger`}
+        className={`${frame} items-center justify-center border-border-interactive bg-surface-raised font-mono text-[9px] font-bold text-danger`}
       >
         PDF
       </span>
@@ -66,7 +66,9 @@ function Glyph({ icon }: { icon: WindowIcon }) {
   return (
     <span
       aria-hidden="true"
-      className={`${frame} items-end border-border-interactive bg-text-secondary p-1`}
+      // The design draws paper as a white rectangle, which only reads as paper on a dark
+      // desktop. Surface tokens invert with the theme, so the sheet stays a sheet in both.
+      className={`${frame} items-end border-border-interactive bg-surface-raised p-1`}
     >
       <span className="ruled-lines h-3.5 w-full" />
     </span>

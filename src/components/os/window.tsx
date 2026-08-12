@@ -177,7 +177,9 @@ export function Window({ def, index, count }: { def: WindowDef; index: number; c
         // The registry's coordinates are for the design's 1280×820 desktop, so they are a
         // preference, not a position — CSS clamps them into whatever viewport actually
         // exists. Doing it here rather than in an effect means no first-paint jump.
-        left: `clamp(1rem, ${def.x}px, calc(100vw - ${def.width}px - 1rem))`,
+        // The lower bound clears the icon column: the design composition these coordinates
+        // come from has no desktop icons, so `about` at x=44 would open on top of them.
+        left: `clamp(7.5rem, ${def.x}px, calc(100vw - ${def.width}px - 1rem))`,
         top: `clamp(2.75rem, ${def.y}px, calc(100dvh - 8rem))`,
         width: def.width,
       }}
