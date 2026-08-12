@@ -65,3 +65,46 @@ the domain is either unused or migrated before cutting over.
 
 ### D10 · TypeScript, strict
 `strict` plus `noUncheckedIndexedAccess`. No `any` without a comment justifying it.
+
+### D11 · Dark is the default theme, not system preference
+The design is dark and is clearly happier there, so a first-time visitor gets dark regardless
+of their OS setting. The toggle still works and still persists.
+
+**This corrects P1**, which shipped `defaultTheme="system"` and generated `:root` as light —
+correct for a system-following site, wrong for this one. Two changes are required and neither
+is cosmetic:
+
+- `ThemeProvider` moves to `defaultTheme="dark"`.
+- `scripts/gen-tokens.ts` must emit **dark on bare `:root`**, with light under
+  `[data-theme='light']` and under `prefers-color-scheme: light` guarded by
+  `:not([data-theme='dark'])`. Otherwise a visitor with JavaScript disabled, or anyone seeing
+  the page before the theme script runs, gets a light page the site never intended to show.
+
+The contrast tests cover both palettes either way, so this is a change of default, not of
+safety.
+
+### D12 · Résumé, not CV
+The `cv` window becomes `resume`: key, label (`resume.pdf`), and route (`/resume`) all change.
+No `/cv` route is kept — nothing has linked to it yet, so there is nothing to redirect.
+
+### D13 · Three windows ship disabled
+`writes.md`, `talks.md` and `reads.md` render disabled with a "coming soon" tooltip.
+
+Consequences worth stating, because each looks like a bug later:
+- The MDX pipeline from D6 still gets built, but has no live surface. It is foundation.
+- Nastaliq from P1 likewise has no live surface — Urdu is book titles only, and the shelf is
+  the disabled window. A regression in the lazy font load would be invisible.
+- `talks.md` is disabled despite the owner having real speaking and community material. See
+  `docs/CONTENT.md` — this one should be revisited before launch.
+
+### D14 · The phone number is never published
+The résumé carries a mobile number. Only the email was authorised for publication, and a
+scraped phone number cannot be withdrawn. It appears in no seed data, no structured data, no
+markdown twin, and no generated file.
+
+The résumé PDF itself is not served from the repository. `resume.pdf` in the UI points at a
+file the owner publishes deliberately.
+
+### D15 · Analytics is Vercel Analytics
+Zero-config, no cookie banner required. Revisit only if the free tier's retention proves too
+short to be useful.
