@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Not ours: session scratch files and the imported design sources.
+    ".remember/**",
+    "docs/design/**",
   ]),
 ]);
 

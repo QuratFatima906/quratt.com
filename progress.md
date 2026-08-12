@@ -38,7 +38,7 @@ is the proof. A criterion with no evidence counts as unmet.
 
 | Phase | Status | Branch | PR |
 |---|---|---|---|
-| P0 foundation | not started | — | — |
+| P0 foundation | blocked — needs remote | main | — |
 | P1 tokens & theme | not started | — | — |
 | P2 content layer | not started | — | — |
 | P3 OS shell | not started | — | — |
@@ -74,3 +74,45 @@ is the proof. A criterion with no evidence counts as unmet.
   contrast — the table is in ARCHITECTURE.md.
 - The design's `SEED` and `SCHEMA` objects are the content model. Do not reinvent them.
 - Vercel CLI is not installed. P8 needs `npm i -g vercel`.
+
+### P0 — Foundation
+**Agent:** main · **Branch:** main · **PR:** — · **Status:** blocked
+
+**Started / finished:** 2026-08-12
+
+**Done**
+- TypeScript tightened: `strict` + `noUncheckedIndexedAccess`, `noImplicitOverride`,
+  `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`, target ES2022
+- Vitest (jsdom) + Playwright (chromium, webkit, iPhone 14) + axe wired up
+- `.github/workflows/ci.yml`: verify / build / e2e+axe / Lighthouse, with the browser cache
+  keyed on the resolved Playwright version
+- `lighthouserc.json` carrying the budgets from ARCHITECTURE.md
+- `.env.example` + `docs/ENVIRONMENT.md`
+- Template assets and the default landing page removed; minimal placeholder in their place
+
+**Success criteria**
+- [x] `pnpm verify` exits 0 — typecheck, lint clean, 12 tests pass
+- [x] `pnpm build` exits 0 — 4 static routes generated
+- [x] Playwright + axe pass — 3/3 on desktop-chromium
+- [ ] CI green on a throwaway PR — **needs the GitHub remote to exist**
+- [ ] A deliberate type error is blocked by CI — same blocker
+
+**Deviations from plan.md**
+- `pnpm typecheck` now runs `next typegen` first. Next 16 generates `LayoutProps`/`PageProps`
+  into `.next/types`, and `tsc` fails on a clean checkout without them. Not optional.
+- Built `src/lib/color.ts` (OKLCH → sRGB → WCAG contrast) during P0 rather than P1. P0 asked
+  for a real test and there was no real logic yet; inventing a throwaway unit to justify a
+  test is worse than borrowing the one piece P1 genuinely needs. It also gave the light-theme
+  contrast claim in ARCHITECTURE.md an actual proof instead of an assertion.
+
+**Blocked on**
+- No GitHub remote. Everything about PRs, branch protection, and CI verification depends on
+  it, and creating a repository under someone's account is their call, not mine.
+
+**Notes for later phases**
+- ESLint ignores `.remember/**` and `docs/design/**` — session scratch and imported design
+  sources, neither of them ours to lint.
+- `AGENTS.md` is generated and re-added by `next dev`. Commit it with your work; deleting it
+  from a diff only recreates the dirty tree.
+- Lighthouse budgets are live from now on. They pass trivially today because the page is
+  nearly empty — expect them to bite in P4 and P7, which is the point.
