@@ -1,25 +1,62 @@
 @import 'tailwindcss';
+@import './tokens.css';
 
-/* Placeholder tokens. P1 replaces this file with the design's full palette in both
-   themes — nothing outside this file may contain a raw colour. */
-:root {
-  --surface: oklch(0.98 0 0);
-  --text: oklch(0.2 0.012 285);
+/* `inline` so the utilities resolve to `var(--token)` rather than a snapshot of its value —
+   that is what lets one class react to the theme swap without a second set of utilities. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-chrome: var(--surface-chrome);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-accent: var(--surface-accent);
+  --color-border: var(--border);
+  --color-border-interactive: var(--border-interactive);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-on-accent: var(--on-accent);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-alt: var(--accent-alt);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-focus: var(--focus);
+
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-urdu: var(--font-nastaliq), serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface: oklch(0.17 0.012 285);
-    --text: oklch(0.94 0.006 285);
+@layer base {
+  body {
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 }
 
-@theme inline {
-  --color-surface: var(--surface);
-  --color-text: var(--text);
+/* Nastaliq's baseline descends steeply; at normal leading the kasheeda of one line collides
+   with the next. 2.2 is measured, not guessed — see progress.md. `dir` and `lang` are set by
+   the <Urdu> component, since they are attributes and cannot come from CSS. */
+.urdu {
+  font-family: var(--font-urdu);
+  line-height: 2.2;
 }
 
-body {
-  background: var(--surface);
-  color: var(--text);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
