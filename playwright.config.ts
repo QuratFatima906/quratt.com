@@ -28,7 +28,9 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'pnpm build && pnpm start',
+        // CI downloads `.next` from the build job, so rebuilding here would burn several
+        // minutes reproducing an artifact it already has. Locally there is no artifact.
+        command: process.env.CI ? 'pnpm start' : 'pnpm build && pnpm start',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
