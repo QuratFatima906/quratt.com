@@ -102,7 +102,10 @@ Collections and their fields are fully specified by the design's `SEED` and `SCH
 - Provision Neon through the Vercel Marketplace; branch-per-preview enabled
 - Drizzle schema; `draft` + `pinned` on `projects`/`posts`/`talks`; `updated_at` trigger
 - Zod schemas as the single source of truth for shape; drizzle types derived from them
+- `posts` additionally carries `slug`, `body` (MDX source) and `canonical` — see D6
 - `src/content/seed.ts` — typed placeholder content lifted from the design
+- `src/content/posts/*.mdx` — post bodies authored as files, loaded into `posts.body`
+  by the seed script. Authoring happens in files; serving always happens from the database.
 - `scripts/seed.ts` — idempotent upsert, safe to re-run
 - `queries.ts` with `'use cache'` + `cacheTag(collection)`; a single `visible()` helper is
   the **only** place `draft` is filtered — that is the seam admin auth flips later
@@ -121,6 +124,12 @@ Collections and their fields are fully specified by the design's `SEED` and `SCH
 **Depends on:** P1. **Skills:** `emil-design-eng`, `apple-design`, `animation-vocabulary`,
 `chrome-devtools-mcp:a11y-debugging`
 
+- `src/lib/windows.ts` — the **window registry**: key, label, icon, route, availability. It
+  is the single source of truth driving the menu bar, desktop icons and taskbar together.
+  Build this first; everything else in P3 reads from it.
+- Unavailable windows render disabled with a "coming soon" tooltip (D8). `aria-disabled`
+  plus a real keyboard-reachable tooltip — the `title` attribute is not accessible and must
+  not be used.
 - `MenuBar` — including the design's overflow measurement (`ResizeObserver` + hidden probe →
   `more (n) ▾`). Re-measure after `document.fonts.ready`.
 - `DesktopIcons`, `Taskbar`, `WallpaperPicker` (3 wallpapers), clock
@@ -155,13 +164,17 @@ markdown twins, so any coupling here costs three times.
 invite form · `reads` shelf · `now` · `uses` · `cv` · `contact` · `entropy.exe` toy
 
 - Tag filter reads and writes `?tag=` — never local state
+- Post bodies render from MDX via `next-mdx-remote` in a server component, with syntax
+  highlighting and computed reading time (D6)
+- Both forms are `mailto:` handoffs plus a copy-to-clipboard address, never a dead end (D7)
 - `entropy.exe` keeps the design's seeded PRNG so it is deterministic and testable
 - Urdu book and project titles render through the P1 Urdu utility
 
 **Success criteria**
 - [ ] Every window matches the design at 1280×840 — compare against `docs/design/` screenshots
-- [ ] Unit tests: tag filter, draft exclusion, PRNG determinism for a fixed seed
+- [ ] Unit tests: tag filter, draft exclusion, PRNG determinism for a fixed seed, reading time
 - [ ] All ten windows pass axe, in both themes
+- [ ] Disabled windows are reachable by keyboard and announce their unavailability
 - [ ] No window component imports from `components/os/`
 
 ---
@@ -240,6 +253,10 @@ Loop: measure → fix → re-measure. Do not stop at the first passing run.
 
 - Vercel project linked; preview per PR, production on `main`
 - Neon production database + preview branching
+- **Before delegating DNS:** snapshot the full GoDaddy zone to `docs/dns-snapshot.md` and
+  confirm with the owner whether mail on the domain is in use. Delegation moves *all* DNS to
+  Vercel — every MX, TXT and subdomain record must be recreated there or it stops resolving
+  (D9). This is the one irreversible-feeling step in the build; get sign-off.
 - GoDaddy → Vercel by nameserver delegation; HTTPS; `www` → apex redirect
 - Vercel Analytics + Speed Insights
 - `docs/RUNBOOK.md`: deploy, roll back, rotate a secret, restore the DB

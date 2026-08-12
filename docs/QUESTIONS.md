@@ -13,25 +13,12 @@ phase from starting.
 | Test depth | Lean gate: typecheck, lint, unit, Playwright smoke, axe, Lighthouse budgets. |
 | Language | TypeScript throughout, `strict`. |
 | Admin scope | Deferred. Foundation only (`draft`/`pinned` columns, `visible()` seam). |
+| Blog posts | Full articles hosted here. Authored as MDX files, served from the DB. |
+| Forms | `mailto:` handoff plus a copy-address fallback. No backend, no spam surface. |
+| DNS | Nameserver delegation to Vercel — see D9 for the MX-record risk this carries. |
+| Window scope | All ten ship. Ones without content render disabled with a "coming soon" tooltip. |
 
 ## Blocking
-
-**Q1 — Do blog posts live on the site, or link out?** *(blocks P4, P5)*
-The design shows titles, blurbs and read times, but never a post body. If posts are real
-articles hosted here, that needs a rich-text pipeline, `/writing/[slug]` pages, syntax
-highlighting, and reading-time calculation. If they link to Medium/dev.to/Substack, the
-window is a link list and P4 shrinks considerably.
-
-**Q2 — Do the two forms actually send?** *(blocks P4)*
-`say-hi.eml` has a **send →** button and `invite-qurat.form` has **send invite →**. Options:
-a real submission through Resend (adds a provider, a rate limit, and spam protection), a
-`mailto:` handoff (zero infrastructure, ugly on mobile), or display-only with the address
-shown. Anything that accepts input from the public needs validation and rate limiting.
-
-**Q3 — How should `quratt.com` point at Vercel?** *(blocks P8)*
-Nameserver delegation is simplest but moves *all* DNS to Vercel — **if you have email on
-this domain, existing MX records break.** Keeping GoDaddy DNS and adding A/CNAME records is
-slightly more fiddly and leaves email untouched. Which applies?
 
 **Q4 — Is there real content?** *(blocks P2 seed, and the site going live)*
 The design is placeholders throughout: `[city]`, `[company]`, `[title], [author]`, "24
@@ -42,9 +29,10 @@ and employer, work history for `cv.pdf`, the real project list, the real book sh
 
 ## Content
 
-**Q5 — Which sections actually apply?** An empty `talks.md` is worse than no `talks.md`.
-If there are no conference talks yet, that window and the invite form should not ship. Same
-question for `writes.md`. Which of the ten windows are real for you today?
+**Q5 — Which windows have real content today?** All ten are being built, but the ones
+without content ship disabled with a "coming soon" tooltip rather than showing an empty
+shell. I need to know which to mark unavailable: `talks.md`, `writes.md`, `reads.md`,
+`now.txt`, `uses.txt`, `cv.pdf`. Everything not listed as ready gets disabled by default.
 
 **Q6 — Urdu scope.** You mentioned book names in Urdu. Only the shelf, or also project names,
 the bio, and post titles? This decides whether Urdu is a per-string utility or the site is
