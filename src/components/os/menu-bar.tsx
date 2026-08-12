@@ -172,7 +172,7 @@ export function MenuBar() {
         <button
           type="button"
           onClick={closeAll}
-          className="hidden cursor-pointer whitespace-nowrap text-text-muted hover:text-text md:block"
+          className="hidden cursor-pointer py-1.5 whitespace-nowrap text-text-muted hover:text-text md:block"
         >
           close all
         </button>
@@ -205,7 +205,7 @@ export function MenuBar() {
                   key={w.key}
                   windowKey={w.key}
                   className={PANEL_ITEM}
-                  disabledClassName="text-text-muted/60 hover:bg-transparent"
+                  disabledClassName="text-text-muted! opacity-55 hover:bg-transparent!"
                   tooltipClassName="top-1/2 right-2 -translate-y-1/2"
                 />
               ))}
@@ -214,7 +214,7 @@ export function MenuBar() {
                 <button
                   type="button"
                   onClick={closeAll}
-                  className="cursor-pointer text-text-muted hover:text-text"
+                  className="cursor-pointer px-1 py-1.5 text-text-muted hover:text-text"
                 >
                   close all
                 </button>

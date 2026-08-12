@@ -225,6 +225,20 @@ test.describe('mobile', () => {
     await expect(sheet).toHaveCount(1); // an upward drag never dismisses
   });
 
+  test('no accessibility violations with the section menu open', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await expect(page.getByRole('navigation', { name: 'Sections' })).toBeVisible();
+
+    const { violations } = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+
+    expect(
+      violations.flatMap((v) => v.nodes.map((n) => `${v.id}: ${n.target.join(' ')}`)),
+    ).toEqual([]);
+  });
+
   test('a downward swipe dismisses the sheet, and a tap does not', async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'real touch injection needs CDP');
     await page.goto('/');

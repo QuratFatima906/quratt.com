@@ -466,6 +466,7 @@ light-theme surface can push the accent under 4.5:1. The token test will catch i
       ```
       ✓ no accessibility violations in dark with three windows open
       ✓ no accessibility violations in light with three windows open
+      ✓ [mobile] no accessibility violations with the section menu open
       ```
       It did not pass first time. `target-size` (SC 2.5.8) failed on the taskbar's 16px close
       buttons; they are 24px now.
@@ -508,7 +509,7 @@ light-theme surface can push the accent under 4.5:1. The token test will catch i
       exactly `120px` — 1:1 with the finger — and 200px past the top bound moves it only
       `82.4px` and then settles back to `0px` without dismissing.
 
-Full suite, four browser projects: `34 passed, 22 skipped`, repeated clean runs (the
+Full suite, four browser projects: `36 passed, 24 skipped`, repeated clean runs (the
 skips are the desktop tests on phones and the phone tests on desktops).
 
 **Deviations from plan.md**
