@@ -1,6 +1,8 @@
 'use client';
 
-import { WINDOWS } from '@/lib/windows';
+import type { ReactNode } from 'react';
+
+import { WINDOWS, type WindowKey } from '@/lib/windows';
 
 import { DesktopIcons } from './desktop-icons';
 import { MenuBar } from './menu-bar';
@@ -8,15 +10,22 @@ import { Taskbar } from './taskbar';
 import { Window } from './window';
 import { OsProvider, useOs } from './window-manager';
 
-export function Desktop() {
+/**
+ * Window bodies are rendered on the server and handed down as elements. That is what lets
+ * `components/windows/*` stay pure and free of any OS import — they never learn that a window
+ * manager exists, so P5 can reuse the same components for routes and P6 for markdown twins.
+ */
+export type WindowBodies = Partial<Record<WindowKey, ReactNode>>;
+
+export function Desktop({ bodies }: { bodies: WindowBodies }) {
   return (
     <OsProvider>
-      <Surface />
+      <Surface bodies={bodies} />
     </OsProvider>
   );
 }
 
-function Surface() {
+function Surface({ bodies }: { bodies: WindowBodies }) {
   const { open, wallpaper } = useOs();
 
   return (
@@ -41,7 +50,9 @@ function Surface() {
           entrance — so every click on a background window would flash it back in.
         */}
         {WINDOWS.filter((def) => open.includes(def.key)).map((def) => (
-          <Window key={def.key} def={def} stack={open.indexOf(def.key)} />
+          <Window key={def.key} def={def} stack={open.indexOf(def.key)}>
+            {bodies[def.key]}
+          </Window>
         ))}
       </main>
       <Taskbar />
