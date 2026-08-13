@@ -1,12 +1,7 @@
+import Link from 'next/link';
+
 import { CopyButton } from '@/components/ui/copy-button';
 import type { Talk } from '@/lib/content/schema';
-
-/*
- * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
- * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
- * console for every link on screen. The href is already correct, so nothing changes when the
- * route lands beyond restoring prefetching.
- */
 
 /** The design renders venue, year and links as one meta line under the title. */
 const metaLine = (talk: Talk) =>
@@ -23,9 +18,9 @@ export function TalksWindow({ talks }: { talks: Talk[] }) {
           </li>
         ))}
       </ul>
-      <a href="/talks/invite" className="font-mono text-[11px] text-accent-alt hover:underline">
+      <Link href="/talks/invite" className="font-mono text-[11px] text-accent-alt hover:underline">
         want me at yours? →
-      </a>
+      </Link>
     </div>
   );
 }
@@ -63,7 +58,7 @@ export function InviteWindow({ email }: { email: string }) {
   return (
     <div className="flex gap-[34px] px-[34px] pt-[30px] pb-[34px] max-md:flex-col max-md:gap-6">
       <div className="flex-1">
-        <h3 className="mb-2 text-[26px] font-bold tracking-[-0.02em]">Yes, probably.</h3>
+        <h2 className="mb-2 text-[26px] font-bold tracking-[-0.02em]">Yes, probably.</h2>
         <p className="mb-[22px] text-[15px] leading-[1.6] text-pretty text-text-muted">
           I&rsquo;ll travel for a good hallway track. Tell me roughly what you need and I&rsquo;ll
           tell you honestly whether I&rsquo;m the right person.
@@ -85,9 +80,9 @@ export function InviteWindow({ email }: { email: string }) {
       </div>
 
       <div className="w-[230px] flex-none border-l border-border pl-7 font-mono text-[11px] leading-[1.9] text-text-secondary max-md:w-full max-md:border-l-0 max-md:border-t max-md:pt-5 max-md:pl-0">
-        <h4 className="mb-2.5 text-[10px] tracking-[0.1em] uppercase text-text-muted">
+        <h3 className="mb-2.5 text-[10px] tracking-[0.1em] uppercase text-text-muted">
           the fine print
-        </h4>
+        </h3>
         <ul>
           {FINE_PRINT.map((line) => (
             <li key={line}>

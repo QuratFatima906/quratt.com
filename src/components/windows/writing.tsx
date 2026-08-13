@@ -1,11 +1,6 @@
-import type { Post } from '@/lib/content/schema';
+import Link from 'next/link';
 
-/*
- * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
- * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
- * console for every link on screen. The href is already correct, so nothing changes when the
- * route lands beyond restoring prefetching.
- */
+import type { Post } from '@/lib/content/schema';
 
 /** 200 wpm is the usual figure for prose read on a screen, and it is what the design implies. */
 const WORDS_PER_MINUTE = 200;
@@ -28,34 +23,33 @@ export function readingTime(post: Pick<Post, 'body' | 'mins'>): string {
   return `${Math.max(1, Math.round(words / WORDS_PER_MINUTE))} min`;
 }
 
-/** P5 owns `/writing/[slug]`. */
 const postHref = (post: Post) => `/writing/${post.slug}`;
 
 /** The small window: the few most recent, and a way to the archive. */
 export function WritingWindow({ recent, total }: { recent: Post[]; total: number }) {
   return (
     <div className="px-5 pt-[18px] pb-5">
-      <h3 className="mb-[13px] font-mono text-[10.5px] tracking-[0.12em] uppercase text-text-muted">
+      <h2 className="mb-[13px] font-mono text-[10.5px] tracking-[0.12em] uppercase text-text-muted">
         Recent posts
-      </h3>
+      </h2>
       <ul className="flex flex-col gap-3">
         {recent.map((post) => (
           <li key={post.id} className="flex items-baseline justify-between gap-3.5">
-            <a href={postHref(post)} className="text-[14.5px] leading-[1.35] hover:text-accent">
+            <Link href={postHref(post)} className="text-[14.5px] leading-[1.35] hover:text-accent">
               {post.title}
-            </a>
+            </Link>
             <span className="font-mono text-[10.5px] whitespace-nowrap text-text-muted">
               {post.date}
             </span>
           </li>
         ))}
       </ul>
-      <a
+      <Link
         href="/writing"
         className="mt-4 block font-mono text-[11px] text-accent-alt hover:underline"
       >
         all {total} posts →
-      </a>
+      </Link>
     </div>
   );
 }
@@ -74,12 +68,12 @@ export function ArchiveWindow({ posts }: { posts: Post[] }) {
               {post.date}
             </span>
             <span className="flex-1">
-              <a
+              <Link
                 href={postHref(post)}
                 className="block text-[17px] leading-[1.3] hover:text-accent"
               >
                 {post.title}
-              </a>
+              </Link>
               <span className="mt-1 block text-[14px] leading-[1.5] text-pretty text-text-muted">
                 {post.blurb}
               </span>
