@@ -27,9 +27,11 @@ import {
  * (ARCHITECTURE.md, "Rendering & data flow"). The whole payload is a few kilobytes, which is
  * what buys instant background windows with no per-window loading state.
  *
- * P5 splits this across routes; the bodies map is deliberately the shape that survives that.
+ * `children` is the focused window — the one the URL names, server-rendered by its own route
+ * (D4). It renders inside the same desktop, from the same components, so a visitor with
+ * JavaScript disabled still gets the page's content and a crawler gets one document per URL.
  */
-export default async function Home() {
+export default async function OsLayout({ children }: LayoutProps<'/'>) {
   const [about, contact, now, uses, cv, featured, recentPosts, recentShelf, talks, counts] =
     await Promise.all([
       getAbout(),
@@ -57,5 +59,5 @@ export default async function Home() {
     toy: <EntropyWindow />,
   };
 
-  return <Desktop bodies={bodies} />;
+  return <Desktop bodies={bodies}>{children}</Desktop>;
 }

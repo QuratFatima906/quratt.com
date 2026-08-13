@@ -3,7 +3,8 @@ import { Bricolage_Grotesque, JetBrains_Mono, Noto_Nastaliq_Urdu } from 'next/fo
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://quratt.com';
+import { JsonLd, person } from '@/lib/seo/json-ld';
+import { siteUrl } from '@/lib/seo/site';
 
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -31,8 +32,12 @@ const nastaliq = Noto_Nastaliq_Urdu({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Qurat ul ain Fatima',
+  title: {
+    default: 'Qurat ul ain Fatima',
+    template: '%s · Qurat ul ain Fatima',
+  },
   description: 'Senior software engineer. Portfolio, writing, projects and reading.',
+  alternates: { types: { 'application/rss+xml': '/feed.xml' } },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
@@ -49,6 +54,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
+        {/* One `Person` for the whole site, with a stable `@id` every other node points at.
+            Entity resolution is the highest-value structured data here — everything else on
+            the site is a claim *about* this person. */}
+        <JsonLd data={person()} />
       </body>
     </html>
   );
