@@ -1,11 +1,6 @@
-import type { Project } from '@/lib/content/schema';
+import Link from 'next/link';
 
-/*
- * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
- * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
- * console for every link on screen. The href is already correct, so nothing changes when the
- * route lands beyond restoring prefetching.
- */
+import type { Project } from '@/lib/content/schema';
 
 /**
  * The dot and the chips are the only place a tag is styled. `data-model.md` names three tags
@@ -47,12 +42,41 @@ export function ProjectsWindow({ featured, total }: { featured: Project[]; total
           <span className="text-sm leading-[1.4] text-text-secondary">{project.desc}</span>
         </div>
       ))}
-      <a
+      <Link
         href="/projects"
         className="mt-0.5 font-mono text-[11px] text-accent-alt hover:underline"
       >
         open all {total} →
-      </a>
+      </Link>
+    </div>
+  );
+}
+
+/**
+ * One project — the `/projects/[slug]` view. The window's title bar already carries the name
+ * as the page's `h1`, so the body leads with what the grid card could not fit.
+ */
+export function ProjectWindow({ project }: { project: Project }) {
+  return (
+    <div className="px-[26px] pt-6 pb-[26px]">
+      <p className="flex items-center gap-2 font-mono text-[11px] text-text-muted">
+        <span
+          aria-hidden="true"
+          className={`size-[7px] flex-none rounded-full ${TAG_DOT[project.tag] ?? 'bg-border-interactive'}`}
+        />
+        <span>{project.tag}</span>
+        <span aria-hidden="true">·</span>
+        <span>{project.lang}</span>
+        <span aria-hidden="true">·</span>
+        <span>{project.year}</span>
+      </p>
+      <p className="mt-3 text-[17px] leading-[1.45] text-pretty">{project.desc}</p>
+      <Link
+        href="/projects"
+        className="mt-5 inline-block font-mono text-[11px] text-accent-alt hover:underline"
+      >
+        <span aria-hidden="true">← </span>all projects
+      </Link>
     </div>
   );
 }
@@ -78,7 +102,7 @@ export function ProjectsGrid({
     <div className="px-[30px] pt-[26px] pb-[30px]">
       <div className="mb-5 flex flex-wrap items-center gap-[7px] font-mono text-[11px]">
         {chips.map((chip) => (
-          <a
+          <Link
             key={chip}
             href={chip === 'all' ? basePath : `${basePath}?tag=${chip}`}
             aria-current={chip === active ? 'true' : undefined}
@@ -89,7 +113,7 @@ export function ProjectsGrid({
             }`}
           >
             {chip === 'all' ? `all ${projects.length}` : chip}
-          </a>
+          </Link>
         ))}
         <span className="ml-auto whitespace-nowrap text-text-muted" role="status">
           {shown.length} shown
@@ -115,13 +139,13 @@ export function ProjectsGrid({
             <div className="mt-auto flex gap-1.5 font-mono text-[9.5px] text-text-muted">
               <span className="rounded bg-surface px-[7px] py-[3px]">{project.lang}</span>
               <span className="rounded bg-surface px-[7px] py-[3px]">{project.tag}</span>
-              <a
+              <Link
                 href={`/projects/${projectSlug(project.name)}`}
                 className="ml-auto self-center text-accent-alt hover:underline"
               >
                 open<span aria-hidden="true"> ↗</span>
                 <span className="sr-only"> {project.name}</span>
-              </a>
+              </Link>
             </div>
           </li>
         ))}

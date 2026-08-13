@@ -43,7 +43,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P2 content layer | done | phase/2-content-layer | #3 |
 | P3 OS shell | done | phase/3-os-shell | #4 |
 | P4 window content | in review | phase/4-window-content | #5 |
-| P5 routing & SEO | not started | — | — |
+| P5 routing & SEO | in review | phase/5-routing-seo | #6 |
 | P6 AI discoverability | not started | — | — |
 | P7 perf & a11y | not started | — | — |
 | P8 deploy | not started | — | — |
@@ -636,3 +636,46 @@ build, e2e + accessibility, performance budgets, and typecheck/lint/unit all pas
   button does not render. It needs a real PDF the owner publishes deliberately (D14).
 - The three disabled windows are fully built. Enabling one is a single `available: true` in
   `src/lib/windows.ts` once there is content.
+
+### P5 — Routing & SEO
+**Agent:** background agent (stalled near the end) · finished and verified by main
+**Branch:** phase/5-routing-seo · **Status:** done
+
+**Done**
+- The full route map under `src/app/(os)/`: `/`, `/about`, `/projects`, `/projects/[slug]`,
+  `/writing`, `/writing/[slug]`, `/talks`, `/talks/invite`, `/reads`, `/now`, `/uses`,
+  `/resume`, `/contact`
+- `<main>` moved off the desktop onto the focused window; each route carries the real `h1`
+- `generateMetadata` per route with canonical, OpenGraph and Twitter
+- JSON-LD builders in `src/lib/seo/` — 35 unit tests
+- `sitemap.ts`, `feed.xml`, `feed.json`, OG cards via `next/og`
+- `toHex()` added to `src/lib/color.ts`: satori has no CSS engine and no OKLCH, so the one
+  place that cannot take a token verbatim converts it rather than hardcoding a second palette
+  that would drift
+
+**Success criteria — verified by main after the agent stalled**
+- [x] `pnpm verify` exits 0 — 223 tests across 7 files
+- [x] `pnpm build` exits 0 — every route static or PPR, nothing dynamic except `/og`
+- [x] Every route renders without JavaScript — `curl` over all 12 routes: all 200, all with
+      845–2617 words of real text in the raw HTML
+- [x] Exactly one `h1` per route — counted in the same sweep, plus asserted in
+      `e2e/routes.spec.ts`
+- [x] Zero axe violations on every route, both themes — 62 e2e tests pass
+- [x] Lighthouse 1.0 / 1.0 / 1.0 / 1.0 on `/about`, LCP 0.6 s, CLS 0
+- [x] `/projects?tag=` restores the filtered view server-side
+
+**The judgement call I flagged before starting, and how it was answered**
+`/writing`, `/talks` and `/reads` back windows that ship disabled (D13). They now return 200
+with `noindex, follow` and are **excluded from the sitemap**. That is the right shape: the
+content exists and is reachable, links out of it are still followed, but three thin pages are
+never advertised for indexing. Indexing them would have worked against the ranking goal that
+P6 exists to serve.
+
+`/preview` is `noindex, nofollow` — it is a token workbench, not content.
+
+**Notes for later phases**
+- P6 owns `robots.ts`; it does not exist yet. The `noindex` decisions above must stay
+  consistent with whatever it allows.
+- The sitemap renders `NEXT_PUBLIC_SITE_URL`, which is `https://quratt.com` in production and
+  localhost locally. Preview falls back to `VERCEL_URL`.
+- `/og` is the only dynamic route, by design — OG cards are rasterised per request.

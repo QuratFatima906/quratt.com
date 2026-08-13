@@ -75,7 +75,16 @@ test.describe('desktop', () => {
     // WebKit puts buttons in the tab order only when macOS Full Keyboard Access is on, and
     // Playwright cannot toggle that. The rest of the journey is identical either way.
     if (browserName === 'webkit') await close.focus();
-    else await page.keyboard.press('Tab');
+    else {
+      // The title bar is a link: it routes to the window, promoting it to the focused,
+      // server-rendered one (D4). It is the first stop inside the window, then the close
+      // button — so the keyboard can do everything the pointer can.
+      await page.keyboard.press('Tab');
+      await expect(
+        page.getByRole('region', { name: 'uses.txt' }).getByRole('link', { name: 'uses.txt' }),
+      ).toBeFocused();
+      await page.keyboard.press('Tab');
+    }
     await expect(close).toBeFocused();
     await page.keyboard.press('Enter');
 
@@ -153,6 +162,11 @@ test.describe('desktop', () => {
       // A tooltip is part of the page too, so open one before the sweep.
       await menu(page, 'talks.md').focus();
       await expect(page.getByRole('tooltip')).toBeVisible();
+      // Windows fade in over 160ms, and axe measures contrast against what is on screen —
+      // running mid-transition reads translucent text as failing a ratio it passes at rest.
+      await page.waitForFunction(() =>
+        document.getAnimations().every((animation) => animation.playState !== 'running'),
+      );
 
       const { violations } = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])

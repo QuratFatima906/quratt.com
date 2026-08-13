@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   useCallback,
   useEffect,
@@ -71,20 +73,29 @@ type Drag = {
   lastY: number;
   lastAt: number;
   velocity: number;
+  /** The gesture started on the title link, so a tap that never moved should navigate. */
+  onLink: boolean;
 };
 
 export function Window({
   def,
-  stack,
+  main = false,
   children,
 }: {
   def: WindowDef;
-  stack: number;
+  /**
+   * The window the URL names. It is the page's `<main>` and carries its only `h1` (D4) — the
+   * one server-rendered window on the route. Everything else on the desktop is a `<section>`.
+   */
+  main?: boolean;
   children: ReactNode;
 }) {
-  const { focus, closeWindow, raise } = useOs();
+  const { open, focus, closeWindow, raise } = useOs();
+  const router = useRouter();
+  const stack = Math.max(0, open.indexOf(def.key));
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<Drag | null>(null);
+  const dragged = useRef(false);
   const titleId = useId();
   const isSheet = useIsSheet();
 
@@ -111,11 +122,15 @@ export function Window({
       // Pointer capture retargets the following `click` at the capturing element, so starting
       // a drag from the close button would swallow its activation entirely.
       if ((event.target as Element).closest('button')) return;
+      // The title link is swallowed the same way, but the whole bar has to stay draggable —
+      // so the grab is allowed to start there and a tap that never moved navigates on release.
+      const onLink = Boolean((event.target as Element).closest('a'));
       const el = ref.current;
       if (!el || drag.current) return; // ignore a second finger mid-drag, or it jumps
 
       const origin = readTranslate(el);
       const rect = el.getBoundingClientRect();
+      dragged.current = false;
       el.dataset.dragging = 'true';
       el.style.willChange = 'translate';
       // Capture on the title bar, not the window: capture retargets every later pointer event
@@ -137,6 +152,7 @@ export function Window({
         lastY: event.clientY,
         lastAt: event.timeStamp,
         velocity: 0,
+        onLink,
       };
     },
     [],
@@ -147,6 +163,11 @@ export function Window({
       const el = ref.current;
       const d = drag.current;
       if (!el || !d || d.pointerId !== event.pointerId) return;
+
+      // A drag that ends on the title bar still fires a click; the link must not follow it.
+      if (Math.abs(event.clientX - d.pointerX) + Math.abs(event.clientY - d.pointerY) > 4) {
+        dragged.current = true;
+      }
 
       const elapsed = event.timeStamp - d.lastAt;
       if (elapsed > 0) {
@@ -185,6 +206,12 @@ export function Window({
       const d = drag.current;
       if (!el || !d || d.pointerId !== event.pointerId) return;
       endDrag(el);
+
+      // `pointercancel` shares this handler, and a cancelled gesture is not a click.
+      if (event.type === 'pointerup' && d.onLink && !dragged.current && def.route) {
+        router.push(def.route);
+        return;
+      }
       if (!isSheet) return;
 
       const y = readTranslate(el).y;
@@ -201,15 +228,18 @@ export function Window({
       }
       el.style.translate = '0 0';
     },
-    [closeWindow, def.key, endDrag, isSheet],
+    [closeWindow, def.key, def.route, endDrag, isSheet, router],
   );
 
+  const Frame = main ? 'main' : 'section';
+
   return (
-    <section
+    <Frame
       ref={ref}
       tabIndex={-1}
       aria-labelledby={titleId}
       data-window={def.key}
+      data-focused={main ? '' : undefined}
       style={{
         zIndex: 20 + stack,
         // The registry's coordinates are for the design's 1280×820 desktop, so they are a
@@ -217,12 +247,17 @@ export function Window({
         // exists. Doing it here rather than in an effect means no first-paint jump.
         // The lower bound clears the icon column: the design composition these coordinates
         // come from has no desktop icons, so `about` at x=44 would open on top of them.
-        left: `clamp(7.5rem, ${def.x}px, calc(100vw - ${def.width}px - 1rem))`,
-        top: `clamp(2.75rem, ${def.y}px, calc(100dvh - 8rem))`,
+        // The window the URL names is the document, so it opens centred instead.
+        left: main
+          ? `clamp(1rem, calc(50vw - ${def.width / 2}px), calc(100vw - ${def.width}px - 1rem))`
+          : `clamp(7.5rem, ${def.x}px, calc(100vw - ${def.width}px - 1rem))`,
+        top: main ? '3.5rem' : `clamp(2.75rem, ${def.y}px, calc(100dvh - 8rem))`,
         width: def.width,
       }}
       onPointerDown={() => raise(def.key)}
-      className="os-window absolute flex max-w-[calc(100vw-2rem)] flex-col overflow-hidden border border-border bg-surface-raised shadow-2xl max-md:inset-x-0! max-md:top-9! max-md:bottom-10! max-md:w-auto! max-md:max-w-none! md:rounded-lg"
+      // Capped so a long document scrolls inside its own window: the desktop clips overflow,
+      // so without this the end of an archive or a post would be unreachable.
+      className="os-window absolute flex max-h-[calc(100dvh-6rem)] max-w-[calc(100vw-2rem)] flex-col overflow-hidden border border-border bg-surface-raised shadow-2xl max-md:inset-x-0! max-md:top-9! max-md:bottom-10! max-md:w-auto! max-md:max-h-none! max-md:max-w-none! md:rounded-lg"
     >
       <div
         onPointerDown={onPointerDown}
@@ -231,9 +266,29 @@ export function Window({
         onPointerCancel={onPointerUp}
         className="flex h-8 flex-none touch-none items-center gap-2 border-b border-border bg-surface-overlay px-2.5 font-mono text-[11px] text-text-secondary select-none md:cursor-grab"
       >
-        <span id={titleId} className="tracking-[0.04em]">
-          {def.label}
-        </span>
+        {main ? (
+          // The focused window is the document, so its title bar is the page's only `h1`.
+          <h1 id={titleId} className="truncate text-[11px] font-normal tracking-[0.04em]">
+            {def.label}
+          </h1>
+        ) : def.route ? (
+          // A background window's title routes to it, promoting it to the focused, server
+          // rendered one (ARCHITECTURE.md). A real link, so it works by keyboard and with
+          // JavaScript off — and `next/link` keeps it a soft navigation when there is any.
+          <Link
+            id={titleId}
+            href={def.route}
+            draggable={false}
+            onClick={(event) => dragged.current && event.preventDefault()}
+            className="truncate tracking-[0.04em] hover:text-accent"
+          >
+            {def.label}
+          </Link>
+        ) : (
+          <span id={titleId} className="truncate tracking-[0.04em]">
+            {def.label}
+          </span>
+        )}
         <button
           type="button"
           aria-label={`Close ${def.label}`}
@@ -246,7 +301,7 @@ export function Window({
       {/* The shell owns the frame; the body is built on the server and passed down, which is
           what keeps window components free of any OS import. */}
       <div className="min-h-24 overflow-auto">{children}</div>
-    </section>
+    </Frame>
   );
 }
 

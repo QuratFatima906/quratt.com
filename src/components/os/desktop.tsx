@@ -16,29 +16,36 @@ import { OsProvider, useOs } from './window-manager';
 /**
  * Window bodies are rendered on the server and handed down as elements. That is what lets
  * `components/windows/*` stay pure and free of any OS import — they never learn that a window
- * manager exists, so P5 can reuse the same components for routes and P6 for markdown twins.
+ * manager exists, so the routes reuse the same components and P6 will reuse them again.
  */
 export type WindowBodies = Partial<Record<WindowKey, ReactNode>>;
 
-export function Desktop({ bodies }: { bodies: WindowBodies }) {
+/**
+ * `children` is the focused window: the one the URL names, rendered by the route's `page.tsx`
+ * on the server (D4). Everything in `bodies` is a background window, rendered from the payload
+ * the layout already fetched, and only when the visitor opens it.
+ */
+export function Desktop({ bodies, children }: { bodies: WindowBodies; children?: ReactNode }) {
   return (
     <OsProvider>
-      <Surface bodies={bodies} />
+      <Surface bodies={bodies}>{children}</Surface>
     </OsProvider>
   );
 }
 
-function Surface({ bodies }: { bodies: WindowBodies }) {
-  const { open, wallpaper, openWindow } = useOs();
+function Surface({ bodies, children }: { bodies: WindowBodies; children?: ReactNode }) {
+  const { open, focused, wallpaper, openWindow } = useOs();
 
   /**
    * Window bodies link to each other with `<OpenLink>`, which renders a real anchor carrying
    * `data-open`. Delegating here means those components never import the window manager —
    * they emit an attribute and the shell decides what it means, which is what lets the same
-   * components serve routes in P5 and markdown twins in P6 untouched.
+   * components serve routes and markdown twins untouched.
    *
-   * Modified clicks are left alone so open-in-new-tab keeps working, and P5 will extend this
-   * to push the route as well as raise the window.
+   * A click inside the desktop opens a *background* window rather than navigating: the URL
+   * names one window and the rest are client state (D4), so following the href here would
+   * collapse the desktop to a single window at a time. The href is still what a crawler,
+   * a middle-click and a JavaScript-free visitor get.
    */
   const onOpenLink = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -53,6 +60,25 @@ function Surface({ bodies }: { bodies: WindowBodies }) {
     [openWindow],
   );
 
+  const windows = (
+    <>
+      <DesktopIcons />
+      {/* The focused window comes first in the DOM: it is the page's content, and a reader
+          without CSS should meet it before the windows stacked behind it. */}
+      {children}
+      {/*
+        Rendered in registry order, stacked by z-index. Mapping the `open` array directly
+        would reorder the DOM on every raise, and moving a node re-runs its `@starting-style`
+        entrance — so every click on a background window would flash it back in.
+      */}
+      {WINDOWS.filter((def) => def.key !== focused && open.includes(def.key)).map((def) => (
+        <Window key={def.key} def={def}>
+          {bodies[def.key]}
+        </Window>
+      ))}
+    </>
+  );
+
   return (
     <div
       data-desktop=""
@@ -61,26 +87,18 @@ function Surface({ bodies }: { bodies: WindowBodies }) {
     >
       <MenuBar />
       {/*
-        ARCHITECTURE.md puts `<main>` on the focused window, but "focused" means "named by the
-        route", and there are no routes until P5 — so in this phase the desktop itself is the
-        main landmark. P5 moves it onto the routed window; nothing else has to change.
+        `<main>` belongs to the focused window (ARCHITECTURE.md#accessibility), which renders it
+        itself. `/` focuses nothing, so there the desktop *is* the document and takes the
+        landmark and the page's one `h1` back.
       */}
-      <main aria-label="Desktop">
-        {/* The desktop's own heading. P4's windows carry their own; P5 decides which one wins
-            on a route that names a window. Until then this keeps `/` from having none. */}
-        <h1 className="sr-only">Qurat ul ain Fatima — qurat.os</h1>
-        <DesktopIcons />
-        {/*
-          Rendered in registry order, stacked by z-index. Mapping the `open` array directly
-          would reorder the DOM on every raise, and moving a node re-runs its `@starting-style`
-          entrance — so every click on a background window would flash it back in.
-        */}
-        {WINDOWS.filter((def) => open.includes(def.key)).map((def) => (
-          <Window key={def.key} def={def} stack={open.indexOf(def.key)}>
-            {bodies[def.key]}
-          </Window>
-        ))}
-      </main>
+      {focused ? (
+        windows
+      ) : (
+        <main aria-label="Desktop">
+          <h1 className="sr-only">Qurat ul ain Fatima — qurat.os</h1>
+          {windows}
+        </main>
+      )}
       <Taskbar />
     </div>
   );

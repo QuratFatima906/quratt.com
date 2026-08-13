@@ -74,5 +74,28 @@ export function contrastRatioOf(a: string, b: string): number {
   return contrastRatio(parsedA, parsedB);
 }
 
+/**
+ * `oklch(...)` to `#rrggbb`.
+ *
+ * The OG card is rasterised by satori, which has no CSS engine and no OKLCH — so the one place
+ * that cannot take a token verbatim converts it here instead of hardcoding a second palette
+ * that would quietly drift from the site's.
+ */
+export function toHex(value: string): string {
+  const parsed = parseOklch(value);
+  if (!parsed) throw new Error(`Not a valid oklch() colour: ${value}`);
+
+  const channels = toLinearSrgb(parsed).map((channel) => {
+    const clamped = Math.min(1, Math.max(0, channel));
+    // sRGB gamma encode — the linear values above are scene-referred, not display-referred.
+    const encoded = clamped <= 0.0031308 ? clamped * 12.92 : 1.055 * clamped ** (1 / 2.4) - 0.055;
+    return Math.round(encoded * 255)
+      .toString(16)
+      .padStart(2, '0');
+  });
+
+  return `#${channels.join('')}`;
+}
+
 /** WCAG AA thresholds. Large text is 18.66px bold or 24px regular; UI covers borders and icons. */
 export const AA = { text: 4.5, largeText: 3, ui: 3 } as const;

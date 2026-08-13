@@ -26,8 +26,8 @@ export type WindowDef = {
   /** What the OS calls the window everywhere it appears. Also its filename in the design. */
   readonly label: string;
   readonly icon: WindowIcon;
-  /** P5 owns routing; this is the URL that will focus the window. */
-  readonly route: string;
+  /** The URL that focuses this window (D4). `null` for a window that has no URL at all. */
+  readonly route: string | null;
   /** `false` renders the launcher disabled with a "coming soon" tooltip (D13). */
   readonly available: boolean;
   /** Opening geometry, in the design's 1280×820 desktop. Clamped to the real viewport on
@@ -49,9 +49,10 @@ export const WINDOWS: readonly WindowDef[] = [
   // `cv` became `resume` in D12 — key, label and route all changed, and no `/cv` is kept.
   { key: 'resume', label: 'resume.pdf', icon: 'pdf', route: '/resume', available: true, width: 400, x: 420, y: 120 }, // prettier-ignore
   { key: 'contact', label: 'say-hi.eml', icon: 'mail', route: '/contact', available: true, width: 360, x: 760, y: 430 }, // prettier-ignore
-  // The route map in ARCHITECTURE.md does not name the toy. `/entropy` is the obvious slug;
-  // P5 decides whether a toy deserves a URL at all.
-  { key: 'toy', label: 'entropy.exe', icon: 'app', route: '/entropy', available: true, width: 220, x: 1044, y: 72 }, // prettier-ignore
+  // The route map in ARCHITECTURE.md does not name the toy, and P5 decided it stays that way:
+  // it holds no content, so a URL for it would be an indexable page with nothing to read on it.
+  // It opens as a background window only.
+  { key: 'toy', label: 'entropy.exe', icon: 'app', route: null, available: true, width: 220, x: 1044, y: 72 }, // prettier-ignore
 ];
 
 /** What sits on the desktop itself, in the design's order. */
@@ -63,4 +64,29 @@ export function windowDef(key: WindowKey): WindowDef {
   const def = BY_KEY.get(key);
   if (!def) throw new Error(`unknown window: ${key}`);
   return def;
+}
+
+/**
+ * The window a URL names — the *focused* window (D4). `null` for `/`, which focuses nothing.
+ *
+ * Nested routes belong to their parent's window: `/projects/quietwatch` is still the
+ * `projects/` window, showing one project instead of the grid. That is why this reads the
+ * registry rather than a second table — one list of routes, and it is the one the menu bar,
+ * the taskbar and the sitemap already agree on.
+ */
+export function keyForPath(pathname: string): WindowKey | null {
+  const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  const match = WINDOWS.find(
+    (w) => w.route !== null && (path === w.route || path.startsWith(`${w.route}/`)),
+  );
+  return match?.key ?? null;
+}
+
+/**
+ * A window whose launcher is disabled (D13) still has working routes — the URLs must not break
+ * the day the owner flips the flag — but it has no real content yet, so it is kept out of the
+ * index and out of the sitemap. Indexing a placeholder is worse than not being indexed.
+ */
+export function isIndexable(key: WindowKey): boolean {
+  return windowDef(key).available;
 }
