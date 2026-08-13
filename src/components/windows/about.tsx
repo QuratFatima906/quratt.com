@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
+
+import { OpenLink } from '@/components/windows/open-link';
 
 import portrait from '@/assets/portrait.webp';
 import type { About } from '@/lib/content/schema';
@@ -41,18 +42,20 @@ export function AboutWindow({ about }: { about: About }) {
         {about.bio2}
       </p>
       <div className="flex flex-wrap gap-[9px] font-mono text-[11px]">
-        <Link
+        <OpenLink
+          window="resume"
           href="/resume"
           className="rounded-[5px] border border-accent px-3 py-[7px] text-accent transition-colors duration-150 hover:bg-surface-accent"
         >
           resume.pdf ↓
-        </Link>
-        <Link
+        </OpenLink>
+        <OpenLink
+          window="contact"
           href="/contact"
           className="rounded-[5px] border border-border-interactive px-3 py-[7px] text-text-secondary transition-colors duration-150 hover:bg-surface-hover"
         >
           hire me →
-        </Link>
+        </OpenLink>
         <a
           href={GITHUB}
           rel="me noreferrer"

@@ -1,6 +1,11 @@
-import Link from 'next/link';
-
 import type { Post } from '@/lib/content/schema';
+
+/*
+ * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
+ * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
+ * console for every link on screen. The href is already correct, so nothing changes when the
+ * route lands beyond restoring prefetching.
+ */
 
 /** 200 wpm is the usual figure for prose read on a screen, and it is what the design implies. */
 const WORDS_PER_MINUTE = 200;
@@ -36,21 +41,21 @@ export function WritingWindow({ recent, total }: { recent: Post[]; total: number
       <ul className="flex flex-col gap-3">
         {recent.map((post) => (
           <li key={post.id} className="flex items-baseline justify-between gap-3.5">
-            <Link href={postHref(post)} className="text-[14.5px] leading-[1.35] hover:text-accent">
+            <a href={postHref(post)} className="text-[14.5px] leading-[1.35] hover:text-accent">
               {post.title}
-            </Link>
+            </a>
             <span className="font-mono text-[10.5px] whitespace-nowrap text-text-muted">
               {post.date}
             </span>
           </li>
         ))}
       </ul>
-      <Link
+      <a
         href="/writing"
         className="mt-4 block font-mono text-[11px] text-accent-alt hover:underline"
       >
         all {total} posts →
-      </Link>
+      </a>
     </div>
   );
 }
@@ -69,12 +74,12 @@ export function ArchiveWindow({ posts }: { posts: Post[] }) {
               {post.date}
             </span>
             <span className="flex-1">
-              <Link
+              <a
                 href={postHref(post)}
                 className="block text-[17px] leading-[1.3] hover:text-accent"
               >
                 {post.title}
-              </Link>
+              </a>
               <span className="mt-1 block text-[14px] leading-[1.5] text-pretty text-text-muted">
                 {post.blurb}
               </span>

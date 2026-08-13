@@ -1,7 +1,12 @@
-import Link from 'next/link';
-
 import { CopyButton } from '@/components/ui/copy-button';
 import type { Talk } from '@/lib/content/schema';
+
+/*
+ * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
+ * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
+ * console for every link on screen. The href is already correct, so nothing changes when the
+ * route lands beyond restoring prefetching.
+ */
 
 /** The design renders venue, year and links as one meta line under the title. */
 const metaLine = (talk: Talk) =>
@@ -18,9 +23,9 @@ export function TalksWindow({ talks }: { talks: Talk[] }) {
           </li>
         ))}
       </ul>
-      <Link href="/talks/invite" className="font-mono text-[11px] text-accent-alt hover:underline">
+      <a href="/talks/invite" className="font-mono text-[11px] text-accent-alt hover:underline">
         want me at yours? →
-      </Link>
+      </a>
     </div>
   );
 }

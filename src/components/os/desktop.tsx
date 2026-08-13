@@ -1,8 +1,11 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useCallback, type MouseEvent, type ReactNode } from 'react';
 
 import { WINDOWS, type WindowKey } from '@/lib/windows';
+
+const isWindowKey = (value: string): value is WindowKey =>
+  WINDOWS.some((def) => def.key === value);
 
 import { DesktopIcons } from './desktop-icons';
 import { MenuBar } from './menu-bar';
@@ -26,11 +29,34 @@ export function Desktop({ bodies }: { bodies: WindowBodies }) {
 }
 
 function Surface({ bodies }: { bodies: WindowBodies }) {
-  const { open, wallpaper } = useOs();
+  const { open, wallpaper, openWindow } = useOs();
+
+  /**
+   * Window bodies link to each other with `<OpenLink>`, which renders a real anchor carrying
+   * `data-open`. Delegating here means those components never import the window manager —
+   * they emit an attribute and the shell decides what it means, which is what lets the same
+   * components serve routes in P5 and markdown twins in P6 untouched.
+   *
+   * Modified clicks are left alone so open-in-new-tab keeps working, and P5 will extend this
+   * to push the route as well as raise the window.
+   */
+  const onOpenLink = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      const link = (event.target as Element).closest<HTMLElement>('[data-open]');
+      const key = link?.dataset.open;
+      if (!key || !isWindowKey(key)) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+
+      event.preventDefault();
+      openWindow(key);
+    },
+    [openWindow],
+  );
 
   return (
     <div
       data-desktop=""
+      onClick={onOpenLink}
       className={`relative h-dvh w-full overflow-hidden bg-surface text-text select-none wall-${wallpaper}`}
     >
       <MenuBar />

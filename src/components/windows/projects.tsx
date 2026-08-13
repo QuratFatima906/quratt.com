@@ -1,6 +1,11 @@
-import Link from 'next/link';
-
 import type { Project } from '@/lib/content/schema';
+
+/*
+ * Destinations that are routes rather than windows use a plain anchor, not `next/link`.
+ * P5 builds these routes; until then `next/link` would prefetch them and log a 404 to the
+ * console for every link on screen. The href is already correct, so nothing changes when the
+ * route lands beyond restoring prefetching.
+ */
 
 /**
  * The dot and the chips are the only place a tag is styled. `data-model.md` names three tags
@@ -42,12 +47,12 @@ export function ProjectsWindow({ featured, total }: { featured: Project[]; total
           <span className="text-sm leading-[1.4] text-text-secondary">{project.desc}</span>
         </div>
       ))}
-      <Link
+      <a
         href="/projects"
         className="mt-0.5 font-mono text-[11px] text-accent-alt hover:underline"
       >
         open all {total} →
-      </Link>
+      </a>
     </div>
   );
 }
@@ -73,7 +78,7 @@ export function ProjectsGrid({
     <div className="px-[30px] pt-[26px] pb-[30px]">
       <div className="mb-5 flex flex-wrap items-center gap-[7px] font-mono text-[11px]">
         {chips.map((chip) => (
-          <Link
+          <a
             key={chip}
             href={chip === 'all' ? basePath : `${basePath}?tag=${chip}`}
             aria-current={chip === active ? 'true' : undefined}
@@ -84,7 +89,7 @@ export function ProjectsGrid({
             }`}
           >
             {chip === 'all' ? `all ${projects.length}` : chip}
-          </Link>
+          </a>
         ))}
         <span className="ml-auto whitespace-nowrap text-text-muted" role="status">
           {shown.length} shown
@@ -110,13 +115,13 @@ export function ProjectsGrid({
             <div className="mt-auto flex gap-1.5 font-mono text-[9.5px] text-text-muted">
               <span className="rounded bg-surface px-[7px] py-[3px]">{project.lang}</span>
               <span className="rounded bg-surface px-[7px] py-[3px]">{project.tag}</span>
-              <Link
+              <a
                 href={`/projects/${projectSlug(project.name)}`}
                 className="ml-auto self-center text-accent-alt hover:underline"
               >
                 open<span aria-hidden="true"> ↗</span>
                 <span className="sr-only"> {project.name}</span>
-              </Link>
+              </a>
             </div>
           </li>
         ))}
