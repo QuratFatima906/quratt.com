@@ -42,7 +42,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P1 tokens & theme | merged | phase/1-tokens-theme | #1 |
 | P2 content layer | done | phase/2-content-layer | #3 |
 | P3 OS shell | done | phase/3-os-shell | #4 |
-| P4 window content | not started | — | — |
+| P4 window content | in review | phase/4-window-content | #5 |
 | P5 routing & SEO | not started | — | — |
 | P6 AI discoverability | not started | — | — |
 | P7 perf & a11y | not started | — | — |
@@ -585,3 +585,54 @@ build, e2e + accessibility, performance budgets, and typecheck/lint/unit all pas
 - **The menu bar nav is `overflow-x: clip; overflow-y: visible`**, deliberately. It has to clip
   horizontally so an unmeasured row cannot spill into the clock, and open downwards or it
   swallows the tooltip. `overflow-hidden` would do both.
+
+### P4 — Window content
+**Agent:** main (after three background agents failed) · **Branch:** phase/4-window-content · **Status:** done
+
+**Done**
+- Ten window components in `src/components/windows/`, all pure and presentational
+- `CopyButton` in `src/components/ui/` — the D7 fallback, used by contact and the invite form
+- Window bodies are rendered on the server in `page.tsx` and passed to the shell as elements;
+  `Window` gained a `children` prop and `Desktop` a `bodies` map
+- Real content in the seed: bio, contact, résumé rows, two Urdu shelf titles
+
+**Success criteria**
+- [x] `pnpm verify` exits 0 — 172 tests across 5 files
+- [x] `pnpm build` exits 0 — `/` still `○ (Static)`, 30d revalidate
+- [x] Unit tests: PRNG determinism (4), reading time (5), plus the existing tag-filter and
+      draft-exclusion tests from P2
+- [x] Zero axe violations with all seven live windows open, **both themes** —
+      `e2e/window-content.spec.ts`, 5/5 passing
+- [x] Phone number absent — grep over `src/` and `.next/` returns nothing, and an e2e test
+      asserts it against the whole document
+- [x] No window imports from `components/os/` — grep returns nothing
+- [x] No raw colours in components — grep returns nothing
+- [x] Urdu verified in a real browser: `lang="ur"`, `dir="rtl"`,
+      `font-family: "Noto Nastaliq Urdu"`, `line-height: 26.4px` (12 × 2.2), font actually
+      loaded. Required temporarily flipping `reads` to available, then reverting.
+- [x] A body-less post renders — `readingTime` falls back to the stored string; 3 of 7
+      seeded posts have `body: null`
+
+**Deviations from plan.md**
+- **MDX rendering moved to P5.** P4 was to render post bodies, but the design has no
+  post-detail window — posts link to `/writing/[slug]`, which is P5's route. Building an MDX
+  renderer with no surface to render onto is speculative. `next-mdx-remote` is installed and
+  `posts.body` is populated; P5 picks it up.
+- **The invite form has no fields.** D7 rules out a backend, and a form that looks like it
+  posts and silently does nothing is worse than no form. It states what to include and
+  prefills a `mailto:` with that structure, so the visitor composes in their own client.
+- **Reading time is computed, not read from `mins`.** The stored string is hand-written and
+  goes stale on the next edit. It strips fenced code and markup first, or a code-heavy post
+  reads as three times its real length.
+- **Urdu is detected by codepoint**, not by a column on the row. Adding an Urdu book is just
+  typing one — no schema change and nothing to forget at the call site.
+
+**Notes for later phases**
+- P5 must move `<main>` from the desktop onto the routed window, and decide which `h1` wins
+  when a route names a window. The desktop currently carries an `sr-only` `h1`.
+- `projectSlug()` in `projects.tsx` derives a slug from the name — there is no slug column on
+  `projects`. P5 either uses it or adds the column.
+- `ResumeWindow` takes an optional `downloadHref`; nothing passes it yet, so the download
+  button does not render. It needs a real PDF the owner publishes deliberately (D14).
+- The three disabled windows are fully built. Enabling one is a single `available: true` in
+  `src/lib/windows.ts` once there is content.

@@ -1,6 +1,11 @@
 /**
- * Placeholder content, verbatim from the design's SEED object. The bracketed values —
- * `[city]`, `[company]`, `[title], [author]` — are intentional: the owner replaces them.
+ * Site content. `about`, `contact`, `cv` and two shelf titles are real (docs/CONTENT.md);
+ * everything still carrying a bracketed value — `[book]`, `[editor]`, the `projects/` grid —
+ * is the design's placeholder, waiting on the owner. `projects/` is the largest gap: the
+ * résumé is employment history only, and filling the grid with employer work would misrepresent
+ * it as independent.
+ *
+ * The phone number on the résumé is not here and never will be (D14).
  *
  * Post bodies are not here. They are authored as MDX in `src/content/posts/<slug>.mdx` and
  * loaded by `scripts/seed.ts` (D6), which is why every post carries `body: null` below.
@@ -11,12 +16,12 @@ export const seed = seedSchema.parse({
   about: {
     name: 'Qurat ul ain Fatima',
     role: 'senior software engineer',
-    meta: '[city] · [timezone] · shipping since [year]',
-    bio1: 'I like the problems that look boring from the outside and turn out to have a trapdoor in them. Schedulers. Cache invalidation. The third rewrite of a migration nobody asked for. I read the whole RFC, including the footnote that ruins your afternoon.',
-    bio2: 'Currently at [company], where I work on [the thing]. Before that: [company], [company], and one startup that is now a cautionary tale I tell at parties.',
+    meta: 'Lahore · PKT · shipping since 2017',
+    bio1: 'I like the problems that look boring from the outside and turn out to have a trapdoor in them. Retries. Cache invalidation. The eleventh service, the one that only misbehaves in the account nobody gave you access to. I read the whole runbook, including the step that ruins your afternoon.',
+    bio2: 'Currently at Shopsense AI, building shoppable image widgets and the detection API behind them. Before that: Afiniti, folding six communication channels into one contact centre, and MarkiTech, on telehealth video that had to survive hospital wifi.',
   },
   contact: {
-    email: '[you]@[domain]',
+    email: 'quratfatima581@gmail.com',
     subject: 'a job / a bug / a bird photo',
     note: 'I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.',
   },
@@ -243,9 +248,9 @@ export const seed = seedSchema.parse({
     },
   ],
   shelf: [
-    { title: '[title], [author]', state: 'now', note: 'p. 140 of 380' },
+    { title: 'آگ کا دریا، قرۃ العین حیدر', state: 'now', note: 'p. 140 of 380' },
     { title: '[title], [author]', state: 'now', note: 'started [month]' },
-    { title: '[title], [author]', state: 'done', note: 'best of the year so far' },
+    { title: 'اداس نسلیں، عبداللہ حسین', state: 'done', note: 'best of the year so far' },
     { title: '[title], [author]', state: 'done', note: 're-read, held up' },
     { title: '[title], [author]', state: 'done', note: 'one chapter too long' },
     { title: '[title], [author]', state: 'soon', note: 'on the desk, guilt-shaped' },
@@ -261,12 +266,24 @@ export const seed = seedSchema.parse({
   ],
   cv: [
     {
-      period: '[yr]–now',
-      role: 'Senior Software Engineer, [company]',
-      note: '[one line on what you own there]',
+      period: 'Aug 2024–now',
+      role: 'Senior Software Engineer, Shopsense AI',
+      note: 'Shoppable image widgets and an LLM-powered detection API, across 11 services in a multi-account AWS deployment.',
     },
-    { period: '[yr]–[yr]', role: 'Software Engineer, [company]', note: '[one line]' },
-    { period: '[yr]–[yr]', role: 'Software Engineer, [company]', note: '[one line]' },
-    { period: '[yr]', role: '[degree], [university]', note: '' },
+    {
+      period: 'Nov 2021–Sep 2024',
+      role: 'Senior Software Engineer, Afiniti',
+      note: 'Six communication channels folded into one contact-centre platform, for AVAYA, Genesys, Apple and Microsoft.',
+    },
+    {
+      period: 'Nov 2019–Oct 2021',
+      role: 'Software Engineer, MarkiTech',
+      note: 'OTN-compliant telehealth audio and video, and the device integrations behind patient monitoring.',
+    },
+    {
+      period: '2015–2017',
+      role: 'MSc Computer Science, Punjab University College of IT',
+      note: "Principal's list, 2017.",
+    },
   ],
 });

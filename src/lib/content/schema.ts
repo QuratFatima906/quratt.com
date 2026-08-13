@@ -205,3 +205,18 @@ export const cv = pgTable('cv', {
   role: text('role').notNull(),
   note: text('note').notNull(),
 });
+
+/*
+ * Row types for the window components. They are `import type` only, so drizzle never reaches a
+ * client bundle — which is what lets `components/windows/*` describe its props with the real
+ * shape instead of re-declaring a structural copy that can silently drift from the column.
+ */
+export type About = typeof about.$inferSelect;
+export type Contact = typeof contact.$inferSelect;
+export type NowLine = typeof now.$inferSelect;
+export type Project = typeof projects.$inferSelect;
+export type Post = typeof posts.$inferSelect;
+export type Talk = typeof talks.$inferSelect;
+export type ShelfItem = typeof shelf.$inferSelect;
+export type Uses = typeof uses.$inferSelect;
+export type CvRow = typeof cv.$inferSelect;

@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useSyncExternalStore } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 
 import type { WindowDef } from '@/lib/windows';
 
@@ -66,7 +73,15 @@ type Drag = {
   velocity: number;
 };
 
-export function Window({ def, stack }: { def: WindowDef; stack: number }) {
+export function Window({
+  def,
+  stack,
+  children,
+}: {
+  def: WindowDef;
+  stack: number;
+  children: ReactNode;
+}) {
   const { focus, closeWindow, raise } = useOs();
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<Drag | null>(null);
@@ -228,10 +243,9 @@ export function Window({ def, stack }: { def: WindowDef; stack: number }) {
           <span aria-hidden="true">×</span>
         </button>
       </div>
-      {/* P4 fills these. The shell only owns the frame. */}
-      <div className="min-h-24 overflow-auto p-6 font-mono text-xs text-text-muted">
-        {def.label}
-      </div>
+      {/* The shell owns the frame; the body is built on the server and passed down, which is
+          what keeps window components free of any OS import. */}
+      <div className="min-h-24 overflow-auto">{children}</div>
     </section>
   );
 }
