@@ -69,5 +69,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return entries
     .filter((entry) => !entry.window || isIndexable(entry.window))
-    .map(({ window: _window, ...entry }) => entry);
+    .map((entry) => ({
+      url: entry.url,
+      lastModified: entry.lastModified,
+      priority: entry.priority,
+    }));
 }

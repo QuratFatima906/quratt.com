@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   useCallback,
   useEffect,
@@ -72,6 +73,8 @@ type Drag = {
   lastY: number;
   lastAt: number;
   velocity: number;
+  /** The gesture started on the title link, so a tap that never moved should navigate. */
+  onLink: boolean;
 };
 
 export function Window({
@@ -88,6 +91,7 @@ export function Window({
   children: ReactNode;
 }) {
   const { open, focus, closeWindow, raise } = useOs();
+  const router = useRouter();
   const stack = Math.max(0, open.indexOf(def.key));
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<Drag | null>(null);
@@ -118,6 +122,9 @@ export function Window({
       // Pointer capture retargets the following `click` at the capturing element, so starting
       // a drag from the close button would swallow its activation entirely.
       if ((event.target as Element).closest('button')) return;
+      // The title link is swallowed the same way, but the whole bar has to stay draggable —
+      // so the grab is allowed to start there and a tap that never moved navigates on release.
+      const onLink = Boolean((event.target as Element).closest('a'));
       const el = ref.current;
       if (!el || drag.current) return; // ignore a second finger mid-drag, or it jumps
 
@@ -145,6 +152,7 @@ export function Window({
         lastY: event.clientY,
         lastAt: event.timeStamp,
         velocity: 0,
+        onLink,
       };
     },
     [],
@@ -198,6 +206,12 @@ export function Window({
       const d = drag.current;
       if (!el || !d || d.pointerId !== event.pointerId) return;
       endDrag(el);
+
+      // `pointercancel` shares this handler, and a cancelled gesture is not a click.
+      if (event.type === 'pointerup' && d.onLink && !dragged.current && def.route) {
+        router.push(def.route);
+        return;
+      }
       if (!isSheet) return;
 
       const y = readTranslate(el).y;
@@ -214,7 +228,7 @@ export function Window({
       }
       el.style.translate = '0 0';
     },
-    [closeWindow, def.key, endDrag, isSheet],
+    [closeWindow, def.key, def.route, endDrag, isSheet, router],
   );
 
   const Frame = main ? 'main' : 'section';

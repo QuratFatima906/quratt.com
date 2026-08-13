@@ -39,8 +39,9 @@ const MDX = {
     <code className="rounded bg-surface-overlay px-1 py-0.5 font-mono text-[12.5px]" {...props} />
   ),
   // Long plans and SQL are wider than the window, so the block scrolls rather than the page.
+  // `tabIndex` because a scrollable region has to be reachable by keyboard (WCAG 2.1.1).
   pre: (props: React.ComponentProps<'pre'>) => (
-    <pre className="my-4 overflow-x-auto rounded-md border border-border bg-surface-overlay p-3.5 font-mono text-[12px] leading-[1.6] [&_code]:bg-transparent [&_code]:p-0" {...props} />
+    <pre tabIndex={0} className="my-4 overflow-x-auto rounded-md border border-border bg-surface-overlay p-3.5 font-mono text-[12px] leading-[1.6] [&_code]:bg-transparent [&_code]:p-0" {...props} />
   ),
   hr: (props: React.ComponentProps<'hr'>) => (
     <hr className="my-6 border-0 border-t border-border" {...props} />
