@@ -44,7 +44,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P3 OS shell | done | phase/3-os-shell | #4 |
 | P4 window content | in review | phase/4-window-content | #5 |
 | P5 routing & SEO | in review | phase/5-routing-seo | #6 |
-| P6 AI discoverability | not started | — | — |
+| P6 AI discoverability | in review | phase/6-ai-discoverability | #7 |
 | P7 perf & a11y | not started | — | — |
 | P8 deploy | not started | — | — |
 | P9 admin | deferred | — | — |
@@ -679,3 +679,41 @@ P6 exists to serve.
 - The sitemap renders `NEXT_PUBLIC_SITE_URL`, which is `https://quratt.com` in production and
   localhost locally. Preview falls back to `VERCEL_URL`.
 - `/og` is the only dynamic route, by design — OG cards are rasterised per request.
+
+### P6 — AI discoverability
+**Agent:** main · **Branch:** phase/6-ai-discoverability · **Status:** done
+
+**Done**
+- `src/lib/seo/markdown.ts` — one builder producing every page's markdown from the database.
+  It feeds all three consumers, which is the whole point: three hand-maintained copies of the
+  same content drift within a week, and a stale `llms.txt` is worse than none.
+- `/llms.txt` — 2.3 KB, blockquote first, grouped by section
+- `/llms-full.txt` — every document concatenated, `---` separated
+- Markdown twins at `/about.md`, `/writing/<slug>.md`, etc., via a `next.config.ts` rewrite
+- `robots.ts` naming fourteen AI crawlers explicitly
+
+**Success criteria**
+- [x] `/llms.txt` under 5 KB (2348 bytes) and every link in it resolves 200 — asserted per link
+- [x] `/llms-full.txt` matches the twins — the test diffs them, so they cannot drift
+- [x] Adding content changes all three files with no code edit — all generated from queries
+- [x] `robots.txt` allows each named agent — asserted per user-agent
+- [x] `pnpm build` green; `llms.txt`, `llms-full.txt` and the twins all prerendered
+
+**Two bugs the verification caught**
+1. **`cacheComponents` forbids `export const dynamic`.** Route handlers cache by putting
+   `'use cache'` on a string-returning function instead — a `Response` cannot cross that
+   boundary. P5's feed routes had already found this; I had not read them first.
+2. **Every blank line was being stripped from the markdown.** The `join` helper filtered on
+   truthiness, and `''` is falsy — so a deliberate blank line separating a heading from its
+   paragraph was dropped, welding blocks together. Markdown without blank lines is not
+   markdown, and every consumer of these files is a parser. Now filtered on
+   `null`/`undefined` only, with a test pinning the blank line after a heading.
+
+**Decisions**
+- `/md/` (the rewrite target) and `/og` are disallowed in robots. The twins are reachable only
+  through their `.md` path, so the same content never has two indexable URLs.
+- The three disabled windows are absent from `llms.txt` and the sitemap, matching the
+  `noindex` P5 gave their pages. One registry flag drives all three; they cannot disagree.
+- `llms.txt` is documented in-file as cheap insurance rather than a ranking lever — 2026 data
+  shows no measurable citation uplift from it alone. P5's JSON-LD and semantic HTML are what
+  actually move visibility.
