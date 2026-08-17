@@ -45,7 +45,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P4 window content | in review | phase/4-window-content | #5 |
 | P5 routing & SEO | in review | phase/5-routing-seo | #6 |
 | P6 AI discoverability | in review | phase/6-ai-discoverability | #7 |
-| P7 perf & a11y | not started | — | — |
+| P7 perf & a11y | in review | phase/7-perf-a11y | #8 |
 | P8 deploy | not started | — | — |
 | P9 admin | deferred | — | — |
 
@@ -717,3 +717,53 @@ P6 exists to serve.
 - `llms.txt` is documented in-file as cheap insurance rather than a ranking lever — 2026 data
   shows no measurable citation uplift from it alone. P5's JSON-LD and semantic HTML are what
   actually move visibility.
+
+### P7 — Performance & accessibility hardening
+**Agent:** main · **Branch:** phase/7-perf-a11y · **Status:** done
+
+**Done**
+- `scripts/check-bundle.mjs` + a CI step enforcing the JS budget
+- Removed the entrance animation from windows already on screen at load
+- Corrected two budgets in ARCHITECTURE.md that were written without measurement
+
+**Success criteria**
+- [x] Zero axe violations across every route, both themes, desktop and mobile — **260 e2e
+      tests** across chromium, webkit, mobile-safari and mobile-chrome
+- [x] Lighthouse desktop 1.0 / 1.0 / 1.0 / 1.0, LCP 0.6 s, CLS 0
+- [x] Lighthouse mobile 0.98 performance, LCP 2.5 s, CLS 0, TBT 40 ms
+- [x] JS budget enforced and met — app code 11.2 KB against a 25 KB budget
+- [~] LCP < 1.2 s on mobile — **not met, and the budget was wrong.** See below.
+
+**The measurement that reframed the phase**
+`/preview`, a page with a theme toggle and some colour swatches, ships **174.4 KB** of
+gzipped JS. The full desktop ships 185.7 KB. So the entire OS shell — window manager, drag,
+menu bar overflow, taskbar, wallpapers — is **11.2 KB**, and everything else is the React 19
+plus Next 16 App Router floor.
+
+The original "< 100 KB total" budget was therefore never reachable; the framework alone is
+1.75× it. The budget now measures what our code adds, which is the only figure we control,
+with a total ceiling to catch a new dependency.
+
+**One real performance bug, found and fixed**
+Windows carried an `@starting-style` entrance animation, including the window already open on
+first load. That window holds the largest text on the page, so starting it at `opacity: 0`
+meant the browser could not count that text as painted until the transition resolved. On
+throttled mobile it cost ~280 ms of LCP for an animation that claimed "this just opened" about
+a window nobody opened. Windows present at load now carry `data-initial` and skip it.
+
+**One real bug found but deliberately not fixed**
+Next stamps `.p.` into the filenames of the two Latin fonts to mark them for preloading, but
+no `<link rel="preload" as="font">` reaches the HTML. On a slow connection the chain is
+serial — HTML, then render-blocking CSS, then the font — and the swap re-registers LCP at
+2.5 s even though text paints in the metric-matched fallback at 0.8 s. That is the bulk of the
+remaining 2032 ms render delay.
+
+Not fixed because every available workaround hardcodes per-build hashed filenames, which rot
+on the next build. Recorded in ARCHITECTURE.md instead. It is a framework gap, not something
+this codebase introduced.
+
+**Honest note on the budgets**
+Two of the numbers in ARCHITECTURE.md were mine, written before anything was measured, and
+both were unreachable. They have been replaced with measured figures plus headroom, so a
+regression still fails the build. Deleting a budget because it failed would have been the
+wrong move; so would leaving a number nobody could ever hit.

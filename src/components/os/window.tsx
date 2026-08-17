@@ -90,7 +90,7 @@ export function Window({
   main?: boolean;
   children: ReactNode;
 }) {
-  const { open, focus, closeWindow, raise } = useOs();
+  const { open, focus, closeWindow, raise, initial } = useOs();
   const router = useRouter();
   const stack = Math.max(0, open.indexOf(def.key));
   const ref = useRef<HTMLElement>(null);
@@ -239,6 +239,7 @@ export function Window({
       tabIndex={-1}
       aria-labelledby={titleId}
       data-window={def.key}
+      data-initial={initial.includes(def.key) ? '' : undefined}
       data-focused={main ? '' : undefined}
       style={{
         zIndex: 20 + stack,
