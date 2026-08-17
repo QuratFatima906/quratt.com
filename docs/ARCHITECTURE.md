@@ -144,13 +144,38 @@ The window manager is the hard part, so the rules are explicit:
 
 Enforced in CI; a PR that breaks a budget fails.
 
-| Metric | Budget |
-|---|---|
-| LCP | < 1.2 s |
-| CLS | 0 |
-| INP | < 200 ms |
-| JS (gzipped, route `/`) | < 100 KB |
+| Metric | Budget | Measured |
+|---|---|---|
+| LCP, desktop | < 1.2 s | 0.6 s |
+| LCP, throttled mobile | < 2.8 s | 2.5 s |
+| CLS | 0 | 0 |
+| TBT | < 150 ms | 40 ms |
+| JS written by us (gzipped) | < 25 KB |
+| JS total, route `/` (gzipped) | < 200 KB |
 | Lighthouse perf / a11y / SEO | ≥ 98 / 100 / 100 |
+
+**The mobile LCP budget was originally "< 1.2 s" and that was also unmeasured.** Lighthouse's
+mobile profile simulates 1.6 Mbps with 150 ms RTT and a 4× CPU slowdown; TTFB alone is 458 ms
+there before a byte of content renders. The budget is now the measured figure plus headroom,
+so a regression still fails rather than a number nobody could ever hit.
+
+**Known cause of the remaining mobile LCP, not yet fixed.** Next stamps `.p.` into the
+filenames of the two Latin fonts to mark them for preloading, but no
+`<link rel="preload" as="font">` reaches the HTML. On a slow connection that makes the chain
+serial — HTML, then render-blocking CSS, then the font — and the swap re-registers LCP at
+2.5 s even though the text paints in the metric-matched fallback at 0.8 s. Working around it
+means hardcoding per-build hashed filenames, which would rot on the next build. Worth
+revisiting when the framework emits the link itself.
+
+**The JS budget was originally stated as "< 100 KB total" and that was wrong.** It was written
+before the framework floor was measured. React 19 plus the Next 16 App Router runtime is
+~175 KB gzipped before a line of this site's code exists, so 100 KB was never reachable.
+
+The number that carries information is how much *our* code adds. Measured by comparing
+`/preview` — a page with a theme toggle and some swatches — against `/`: the entire OS shell,
+window manager, drag handling and all, is **11 KB**. `scripts/check-bundle.mjs` enforces both
+figures, and the 25 KB app budget is the one that would catch someone reaching for an
+animation library.
 
 No animation library. Dragging uses Pointer Events writing to `transform` only — never
 layout properties.

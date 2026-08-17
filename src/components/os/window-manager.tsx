@@ -29,6 +29,12 @@ type Os = {
   raise: (key: WindowKey) => void;
   wallpaper: Wallpaper;
   setWallpaper: (wallpaper: Wallpaper) => void;
+  /**
+   * Windows already on screen when the page loaded. They skip the entrance animation: it would
+   * claim they just opened, and starting the largest text on the page at `opacity: 0` delays
+   * LCP by the length of the transition.
+   */
+  initial: readonly WindowKey[];
 };
 
 const OsContext = createContext<Os | null>(null);
@@ -67,6 +73,11 @@ export function OsProvider({
     () => (focused && !stored.includes(focused) ? [...stored, focused] : stored),
     [stored, focused],
   );
+
+  // Captured on the first render and never updated, so it survives every later open and close.
+  // `useState` rather than a ref: reading a ref during render is not safe, and this value is
+  // read on every render to decide whether a window animates in.
+  const [initial] = useState(open);
 
   /**
    * Moves a window to the top of the stack, materialising the focused window into the list on
@@ -162,8 +173,9 @@ export function OsProvider({
       raise,
       wallpaper,
       setWallpaper,
+      initial,
     }),
-    [open, focused, focus, openWindow, closeWindow, closeAll, raise, wallpaper],
+    [open, focused, focus, openWindow, closeWindow, closeAll, raise, wallpaper, initial],
   );
 
   return <OsContext.Provider value={value}>{children}</OsContext.Provider>;

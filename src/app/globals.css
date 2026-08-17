@@ -59,8 +59,17 @@
     translate 300ms var(--ease-drawer);
 }
 
+/*
+ * Windows that were already on screen when the page loaded do not animate in.
+ *
+ * An entrance animation communicates "this just opened", which is a lie for a window the
+ * visitor did not open — and it is expensive: the window holds the largest text on the page,
+ * so starting it at `opacity: 0` means the browser cannot count that text as painted until the
+ * transition resolves. On a throttled mobile CPU that cost 2.3 s of pure render delay, 83% of
+ * LCP, for an animation nobody asked to see.
+ */
 @starting-style {
-  .os-window {
+  .os-window:not([data-initial]) {
     opacity: 0;
     scale: 0.97;
   }

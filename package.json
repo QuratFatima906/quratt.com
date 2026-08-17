@@ -17,7 +17,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
     "gen:tokens": "tsx scripts/gen-tokens.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
+    "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.7",
