@@ -105,6 +105,28 @@ environment — `http://localhost:3000` locally, the deployment URL in preview,
 `pnpm typecheck` runs `next typegen` first. Next 16 generates the route types
 (`LayoutProps`, `PageProps`) that layouts and pages depend on, and `tsc` fails without them.
 
+## A stale local server will lie to you
+
+`next start` renames its own process to `next-server (v16.3.0)`. So `pkill -f "next start"`
+matches **nothing**, exits 0, and leaves the old server holding port 3000. The next `pnpm start`
+dies with `EADDRINUSE` — easy to miss when it is backgrounded — and every measurement after that
+is taken against whatever build was current whenever that server started.
+
+It fails loudly only if the old build's chunks were deleted. Otherwise it answers 200 to
+everything and reports the wrong numbers. This cost three wrong measurements in one sitting
+during P8, including a Lighthouse regression chased against a build that no longer existed.
+
+Kill by port, never by name:
+
+```bash
+lsof -ti tcp:3000 | xargs kill
+```
+
+`scripts/check-bundle.mjs` now refuses to measure a local server whose chunks are not in `.next/`,
+so the bundle budget cannot be reported against a stale build. Lighthouse has no such guard —
+`lighthouserc.json` starts its own server in CI, but a local `lhci autorun` will happily attach
+to whatever is on the port.
+
 ## Secrets
 
 Nothing secret is committed. `.env*` is gitignored except `.env.example`, which holds keys

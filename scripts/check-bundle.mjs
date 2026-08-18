@@ -13,6 +13,7 @@
  *
  * Run against a running production server: `node scripts/check-bundle.mjs [origin]`
  */
+import { existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const origin = process.argv[2] ?? 'http://localhost:3000';
@@ -22,13 +23,53 @@ const APP_BUDGET_KB = 25;
 /** Total for the desktop. Tracks the framework; raise it deliberately on a Next major. */
 const TOTAL_BUDGET_KB = 200;
 
+/**
+ * A failed fetch must never be measured. An error body gzips to almost nothing, so silently
+ * accepting one turns a broken server into a passing budget — which is how a stale `next start`
+ * on port 3000, serving HTML whose chunks a later build had already replaced, once reported
+ * "budget met" while a fifth of the JavaScript 500ed.
+ */
+async function get(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  return res;
+}
+
+/**
+ * A local server that outlived the build it was started from is the most expensive trap here,
+ * because it answers 200 to everything and quietly reports the *previous* build's numbers.
+ * `next start` renames its process to `next-server (vX)`, so `pkill -f "next start"` matches
+ * nothing and the old server keeps the port — which is exactly how three measurements in one
+ * sitting came back wrong. Kill by port instead: `lsof -ti tcp:3000 | xargs kill`.
+ *
+ * Chunk filenames are content-hashed, so a chunk the server serves but the local build does not
+ * contain proves the two disagree. Only meaningful against a local origin; a remote deployment
+ * legitimately has no `.next/` here.
+ */
+function assertServerMatchesBuild(srcs) {
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:|$)/.test(origin);
+  if (!isLocal || !existsSync('.next')) return;
+
+  const missing = srcs.filter((src) => !existsSync(`.next${src.replace('/_next', '')}`));
+  if (missing.length) {
+    throw new Error(
+      `server at ${origin} is serving a different build than .next/ — it references ` +
+        `${missing.length} chunk(s) this build does not contain, e.g. ${missing[0]}.\n` +
+        `  A stale server is holding the port. Kill it by port, not by name:\n` +
+        `    lsof -ti tcp:3000 | xargs kill`,
+    );
+  }
+}
+
 async function bytesFor(path) {
-  const html = await (await fetch(new URL(path, origin))).text();
+  const html = await (await get(new URL(path, origin))).text();
   const srcs = [...html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map((m) => m[1]);
+  if (!srcs.length) throw new Error(`no script tags found at ${path} — is this the right origin?`);
+  assertServerMatchesBuild(srcs);
 
   let total = 0;
   for (const src of new Set(srcs)) {
-    const body = Buffer.from(await (await fetch(new URL(src, origin))).arrayBuffer());
+    const body = Buffer.from(await (await get(new URL(src, origin))).arrayBuffer());
     // Measure what a browser actually receives, not what is on disk.
     total += gzipSync(body).length;
   }

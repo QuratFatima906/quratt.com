@@ -1,5 +1,7 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque, JetBrains_Mono, Noto_Nastaliq_Urdu } from 'next/font/google';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
@@ -58,6 +60,19 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             Entity resolution is the highest-value structured data here — everything else on
             the site is a claim *about* this person. */}
         <JsonLd data={person()} />
+        {/* Only on Vercel. Both inject `<script src="/_vercel/…">` from an effect after
+            hydration, and that path is served by the platform, not by this app — so anywhere
+            else it is a guaranteed 404. Lighthouse counts that console error and drops
+            best-practices to 0.96, which is how the first attempt at this failed CI.
+            `VERCEL_ENV` is read while prerendering, so off-platform they are not in the tree
+            at all. On a deployment the script is first-party: no third-party origin, no
+            cookie, ~1.5 KB gzipped, fetched after the page is interactive. */}
+        {process.env.VERCEL_ENV && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );

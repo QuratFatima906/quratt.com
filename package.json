@@ -21,6 +21,8 @@
     "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "drizzle-orm": "^0.44.7",
     "next": "16.3.0",
     "next-mdx-remote": "^6.0.0",

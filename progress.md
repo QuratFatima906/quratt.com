@@ -767,3 +767,100 @@ Two of the numbers in ARCHITECTURE.md were mine, written before anything was mea
 both were unreachable. They have been replaced with measured figures plus headroom, so a
 regression still fails the build. Deleting a budget because it failed would have been the
 wrong move; so would leaving a number nobody could ever hit.
+
+### P8 — Deploy
+**Agent:** main · **Branch:** phase/8-deploy · **Status:** in progress
+
+**Done**
+- First deployment ever: the project had been linked for six days with zero deployments.
+  Live on `https://quratt-com.vercel.app`, built on Vercel against the Neon production branch.
+- `quratt.com` and `www.quratt.com` attached to the project; intended nameservers
+  `ns1`/`ns2.vercel-dns.com`
+- `docs/dns-snapshot.md` — the pre-delegation zone, captured from public DNS
+- `docs/RUNBOOK.md` — deploy, roll back, rotate a secret, restore the database, DNS
+- Vercel Analytics + Speed Insights in the root layout
+- `scripts/check-bundle.mjs` no longer measures failed responses (below)
+
+**The DNS risk D9 accepted turned out to be zero**
+D9 accepted that nameserver delegation would break any existing MX, TXT or subdomain record.
+Measuring the zone rather than assuming it: `quratt.com` publishes **no MX, no TXT, no CAA, no
+AAAA, no SPF/DKIM/DMARC**, and none of fifteen probed subdomains resolve. The only records are
+GoDaddy's two parking A records and `_domainconnect`, GoDaddy's own setup helper. Nothing needs
+recreating on Vercel. Owner confirmed no mail is in use or planned, which is the part `dig`
+cannot see — a purchased-but-unconfigured mailbox publishes no MX either.
+
+**A budget gate that passed while measuring nothing**
+Measuring the bundle after adding Analytics, app code came out at **−0.4 KB** against P7's
+11.2 KB, and the total appeared to *drop* 20 KB. Neither was real. A `next start` left running
+on port 3000 by an earlier session had won the port — my `pnpm start` died with `EADDRINUSE`
+and I never checked — so the HTML came from a build whose chunks `pnpm build` had since
+replaced. Two of the eight chunks 500ed.
+
+`check-bundle.mjs` counted them as zero bytes and printed "JS budget met". It fetched without
+ever checking `res.ok`, and a 21-byte error body gzips to nothing. So the gate P7 added to catch
+regressions would have reported green against a server serving a fifth of its JavaScript as
+errors. It now throws on any non-OK response, and on a page with no script tags at all.
+
+Verified by pointing it at a server that answers 500 to everything: exit code 1, where it
+previously exited 0.
+
+**Real numbers, measured against a server that was actually serving**
+| | before | after Analytics |
+|---|---|---|
+| framework floor (`/preview`) | 174.7 KB | 176.2 KB |
+| app code | 11.3 KB | 11.2 KB |
+| total for `/` | 185.9 KB | 187.4 KB |
+
+Analytics and Speed Insights cost ~1.5 KB gzipped. They sit in the root layout, so they land on
+both measured pages and the app-code delta is unchanged — the total is where they show up.
+Headroom against the 200 KB ceiling is now 12.6 KB.
+
+**Blocked on browser steps** — the Vercel GitHub App is not authorised for the repo, so
+`vercel git connect` fails and there is no preview-per-PR yet; the `www` → apex 308 redirect has
+no CLI equivalent; and the GoDaddy nameserver change is by definition manual. Production deploys
+from this session are also gated by the permission classifier.
+
+**Two more bugs, found by shipping**
+
+*Analytics broke the Lighthouse gate.* `<Analytics />` and `<SpeedInsights />` render nothing
+into the server HTML — they inject `<script src="/_vercel/…">` from an effect after hydration.
+That path is served by the platform, so off Vercel it is a guaranteed 404, which Lighthouse
+counts as a console error: best-practices 1.0 → 0.96, failing CI. Now gated on `VERCEL_ENV`,
+read while prerendering, so off-platform they never enter the tree at all. The code comment
+asserting they were "inert off Vercel" was mine and was simply wrong.
+
+*No CI job had a timeout.* The e2e job hung 28 minutes on `playwright install-deps`, which
+shells out to apt, before a single test ran. GitHub's default is six hours. All four jobs are
+now bounded, sized from measured durations (verify 22s, build 1m4s, lighthouse 1m23s, e2e
+4m29s). The re-run finished in 4m29s, confirming the hang was infrastructure, not code.
+
+**The trap that cost the most**
+`next start` renames its process to `next-server (v16.3.0)`, so `pkill -f "next start"` matches
+nothing and exits 0. A server started at 13:34 held port 3000 for the rest of the session,
+serving a build whose chunks had since been replaced. Three separate measurements were taken
+against it before it was caught — including a Lighthouse regression chased against a build that
+no longer existed on disk. `check-bundle.mjs` now refuses to measure a local server whose chunks
+are absent from `.next/`, and says to kill by port. Recorded in ENVIRONMENT.md.
+
+**A secret-handling gap**
+`vercel env pull prod.env` writes live credentials to a filename `.env*` does not match. The
+files were deleted and `*.env` added to `.gitignore`; nothing was committed.
+
+**Success criteria**
+- [ ] `https://quratt.com` and `https://www.quratt.com` both serve, `www` redirects —
+      domains attached, nameservers still at GoDaddy. Delegation and the 308 are manual.
+- [~] A PR produces a working preview URL with its own database branch — **half met.** PR #9
+      produced a preview in 34 s, but preview and production resolve to the *same* Neon
+      endpoint (`ep-flat-union-aub31tpr-pooler`); `DATABASE_URL` and every Postgres variable are
+      byte-identical across the two. Preview branching is not enabled, so a preview deployment
+      can currently write to production data.
+- [ ] Production Lighthouse still meets the P7 budgets — met locally against a verified-current
+      server (best-practices 1.0, budgets green); not yet re-run against production.
+- [ ] A rollback is performed once, successfully, and written up in the runbook — the procedure
+      is written; the drill needs a production deploy, which the permission classifier blocked.
+
+**Outstanding, all requiring a browser**
+1. Enable Neon preview branching (store `store_znOXhKXZaRgrhqaD`) — previews write to prod today
+2. `www` → apex 308 (Vercel → Domains; no CLI equivalent)
+3. GoDaddy nameservers → `ns1`/`ns2.vercel-dns.com`
+4. Approve a production deploy so the rollback drill can run
