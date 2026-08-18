@@ -820,8 +820,47 @@ Headroom against the 200 KB ceiling is now 12.6 KB.
 no CLI equivalent; and the GoDaddy nameserver change is by definition manual. Production deploys
 from this session are also gated by the permission classifier.
 
+**Two more bugs, found by shipping**
+
+*Analytics broke the Lighthouse gate.* `<Analytics />` and `<SpeedInsights />` render nothing
+into the server HTML — they inject `<script src="/_vercel/…">` from an effect after hydration.
+That path is served by the platform, so off Vercel it is a guaranteed 404, which Lighthouse
+counts as a console error: best-practices 1.0 → 0.96, failing CI. Now gated on `VERCEL_ENV`,
+read while prerendering, so off-platform they never enter the tree at all. The code comment
+asserting they were "inert off Vercel" was mine and was simply wrong.
+
+*No CI job had a timeout.* The e2e job hung 28 minutes on `playwright install-deps`, which
+shells out to apt, before a single test ran. GitHub's default is six hours. All four jobs are
+now bounded, sized from measured durations (verify 22s, build 1m4s, lighthouse 1m23s, e2e
+4m29s). The re-run finished in 4m29s, confirming the hang was infrastructure, not code.
+
+**The trap that cost the most**
+`next start` renames its process to `next-server (v16.3.0)`, so `pkill -f "next start"` matches
+nothing and exits 0. A server started at 13:34 held port 3000 for the rest of the session,
+serving a build whose chunks had since been replaced. Three separate measurements were taken
+against it before it was caught — including a Lighthouse regression chased against a build that
+no longer existed on disk. `check-bundle.mjs` now refuses to measure a local server whose chunks
+are absent from `.next/`, and says to kill by port. Recorded in ENVIRONMENT.md.
+
+**A secret-handling gap**
+`vercel env pull prod.env` writes live credentials to a filename `.env*` does not match. The
+files were deleted and `*.env` added to `.gitignore`; nothing was committed.
+
 **Success criteria**
-- [ ] `https://quratt.com` and `https://www.quratt.com` both serve, `www` redirects
-- [ ] A PR produces a working preview URL with its own database branch
-- [ ] Production Lighthouse still meets the P7 budgets
-- [ ] A rollback is performed once, successfully, and written up in the runbook
+- [ ] `https://quratt.com` and `https://www.quratt.com` both serve, `www` redirects —
+      domains attached, nameservers still at GoDaddy. Delegation and the 308 are manual.
+- [~] A PR produces a working preview URL with its own database branch — **half met.** PR #9
+      produced a preview in 34 s, but preview and production resolve to the *same* Neon
+      endpoint (`ep-flat-union-aub31tpr-pooler`); `DATABASE_URL` and every Postgres variable are
+      byte-identical across the two. Preview branching is not enabled, so a preview deployment
+      can currently write to production data.
+- [ ] Production Lighthouse still meets the P7 budgets — met locally against a verified-current
+      server (best-practices 1.0, budgets green); not yet re-run against production.
+- [ ] A rollback is performed once, successfully, and written up in the runbook — the procedure
+      is written; the drill needs a production deploy, which the permission classifier blocked.
+
+**Outstanding, all requiring a browser**
+1. Enable Neon preview branching (store `store_znOXhKXZaRgrhqaD`) — previews write to prod today
+2. `www` → apex 308 (Vercel → Domains; no CLI equivalent)
+3. GoDaddy nameservers → `ns1`/`ns2.vercel-dns.com`
+4. Approve a production deploy so the rollback drill can run
