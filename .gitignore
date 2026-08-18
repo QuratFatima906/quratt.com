@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# `vercel env pull <name>` writes wherever it is told, and a name like `prod.env` does not
+# match `.env*`. These are real credentials, so match the suffix too.
+*.env
 
 # vercel
 .vercel
