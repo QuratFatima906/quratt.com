@@ -1,5 +1,7 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque, JetBrains_Mono, Noto_Nastaliq_Urdu } from 'next/font/google';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
@@ -58,6 +60,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             Entity resolution is the highest-value structured data here — everything else on
             the site is a claim *about* this person. */}
         <JsonLd data={person()} />
+        {/* Both are inert off Vercel — they render nothing locally and in CI, and on a
+            deployment they inject a first-party script from `/_vercel/`, so no third-party
+            origin is contacted and no cookie is set. Neither is counted by
+            `scripts/check-bundle.mjs`, which only measures `/_next/static` chunks; the real
+            cost is ~2 KB of deferred script that arrives after the page is interactive. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

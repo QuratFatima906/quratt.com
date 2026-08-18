@@ -22,13 +22,26 @@ const APP_BUDGET_KB = 25;
 /** Total for the desktop. Tracks the framework; raise it deliberately on a Next major. */
 const TOTAL_BUDGET_KB = 200;
 
+/**
+ * A failed fetch must never be measured. An error body gzips to almost nothing, so silently
+ * accepting one turns a broken server into a passing budget — which is how a stale `next start`
+ * on port 3000, serving HTML whose chunks a later build had already replaced, once reported
+ * "budget met" while a fifth of the JavaScript 500ed.
+ */
+async function get(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  return res;
+}
+
 async function bytesFor(path) {
-  const html = await (await fetch(new URL(path, origin))).text();
+  const html = await (await get(new URL(path, origin))).text();
   const srcs = [...html.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map((m) => m[1]);
+  if (!srcs.length) throw new Error(`no script tags found at ${path} — is this the right origin?`);
 
   let total = 0;
   for (const src of new Set(srcs)) {
-    const body = Buffer.from(await (await fetch(new URL(src, origin))).arrayBuffer());
+    const body = Buffer.from(await (await get(new URL(src, origin))).arrayBuffer());
     // Measure what a browser actually receives, not what is on disk.
     total += gzipSync(body).length;
   }
