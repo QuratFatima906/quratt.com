@@ -17,9 +17,31 @@ confirms it. All commands run from the repository root, which holds `.vercel/pro
 
 ## Deploy
 
-Normal path: **merge to `main`.** Vercel's Git integration builds and promotes it. A pull
-request gets its own preview URL and its own Neon database branch, so a preview can never write
-to production data.
+Normal path: **merge to `main`.** Vercel's Git integration builds it. A pull request gets its
+own preview URL and its own Neon database branch, so a preview can never write to production
+data.
+
+**The build is not the deploy.** Merging reliably produces a production *build* from the right
+commit; it does not reliably move `quratt.com` onto it. On 2026-08-19 two merges built cleanly
+and the apex went on serving a day-old deployment, because the rollback drill earlier that
+morning had promoted a deployment by hand and the domain stayed where it was put. Nothing
+errored — `aliasError` was null on every build, GitHub showed a green Production deployment,
+and the site was stale for four hours.
+
+So the last step of a deploy is checking that it *is* one:
+
+```bash
+vercel inspect https://quratt.com | grep -E 'url|created'   # which deployment is actually live
+```
+
+If that is not the deployment you just merged:
+
+```bash
+vercel promote <deployment-url>     # ~2s, moves the alias
+```
+
+Assume the domain needs promoting after any manual `promote` or `rollback`, until a merge is
+observed moving it on its own.
 
 Out-of-band, from a working tree:
 
@@ -37,8 +59,15 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://quratt.com/
 ```
 
 A production deploy that builds is not yet a production deploy that works. The build only proves
-the pages prerendered — it says nothing about the database being reachable at request time or the
-domain resolving. Check the URL.
+the pages prerendered — it says nothing about the database being reachable at request time, the
+domain resolving, or the alias having moved to this build rather than an older one.
+
+Check something that differs between the old build and the new one, not just that the URL
+answers 200. A stale deployment serves 200 perfectly well:
+
+```bash
+curl -sS https://quratt.com/ | grep -o '<some string only the new build has>'
+```
 
 ### If the build fails
 
@@ -157,33 +186,28 @@ Order matters: **seed first, deploy second.** The reverse builds against stale r
 like the seed silently failed. `cacheLife('max')` means a prerendered page otherwise sits
 there indefinitely.
 
-> ### ⚠️ Local development shares production's database
+> ### Local development has its own database
 >
-> As of 2026-08-19, `DATABASE_URL` in `.env.local` is the production one — same Neon host,
-> database and credentials.
+> `.env.local` points at the Neon `dev` branch (`ep-sparkling-resonance-…`), not production
+> (`ep-flat-union-…`). Seeding locally changes what you see and nothing else.
 >
-> Prove it the strong way, not the weak one. Comparing `vercel env pull` output is **not**
-> sufficient: Neon injects branch credentials by webhook at deploy time and never stores them
-> in project settings, so that command returns the shared value whether or not branching is
-> on — the trap this phase already fell into twice (`progress.md`). Evidence that actually
-> distinguishes the two cases is a row:
+> **This means publishing content is now two steps.** Editing `src/content/seed.ts` and running
+> `pnpm db:seed` updates `dev` only. To publish, seed against production:
 >
 > ```bash
-> pnpm db:seed                                    # writes via .env.local
-> # then read the same row back through the production connection string.
-> # If the edit is there, they are one database.
+> vercel env pull .env.production.local --environment=production
+> env $(grep -E '^DATABASE_URL=' .env.production.local | xargs) pnpm db:seed
+> rm .env.production.local          # it holds live credentials
 > ```
 >
-> Two consequences while this is true:
+> Then redeploy so the pages prerender against the new rows.
 >
-> - `pnpm db:seed` on a laptop writes to the live site. There is no local copy to rehearse
->   against, and no undo.
-> - The upside is that the step above is the whole procedure. There is no separate production
->   seed to remember, which is exactly why it is easy not to notice.
->
-> Preview deployments *are* isolated — each gets its own Neon branch (`ENVIRONMENT.md`). It is
-> only local development that is not. Giving local its own branch is the fix; until then,
-> treat every `db:seed` as a production write.
+> Until 2026-08-19 these were the same database and `pnpm db:seed` on a laptop wrote straight
+> to the live site. If you ever suspect that has come back, prove it with a row rather than by
+> comparing `vercel env pull` output — Neon injects branch credentials by webhook and never
+> stores them, so that comparison returns the shared value either way. Write a canary to the
+> local database and read it back through the production string; if it is there, they are one
+> database.
 
 ---
 
