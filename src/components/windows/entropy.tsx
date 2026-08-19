@@ -8,6 +8,9 @@ import { useState } from 'react';
  * The generator is the design's own linear congruential one, kept rather than swapped for
  * `Math.random()` for two reasons — a seed makes the grid reproducible in a test, and a
  * server render and its hydration must agree on the same 36 cells or React throws.
+ *
+ * The seed is state, not content: it counts rerolls and picks the palette, and it is not
+ * shown or announced anywhere. Nobody needs to know which roll they are on.
  */
 const CELLS = 36;
 
@@ -38,7 +41,7 @@ export function EntropyWindow() {
       <button
         type="button"
         onClick={() => setSeed((s) => s + 1)}
-        aria-label={`Reroll the grid. Current seed ${seed}.`}
+        aria-label="Reroll the grid"
         className="block w-full cursor-pointer"
       >
         {/* Purely decorative output — describing 36 coloured squares helps nobody. */}
@@ -49,7 +52,7 @@ export function EntropyWindow() {
         </span>
       </button>
       <p aria-hidden="true" className="mt-[11px] font-mono text-[9.5px] text-text-muted">
-        click to reroll · seed {seed}
+        click to reroll
       </p>
     </div>
   );
