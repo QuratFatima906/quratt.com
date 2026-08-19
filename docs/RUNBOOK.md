@@ -17,9 +17,31 @@ confirms it. All commands run from the repository root, which holds `.vercel/pro
 
 ## Deploy
 
-Normal path: **merge to `main`.** Vercel's Git integration builds and promotes it. A pull
-request gets its own preview URL and its own Neon database branch, so a preview can never write
-to production data.
+Normal path: **merge to `main`.** Vercel's Git integration builds it. A pull request gets its
+own preview URL and its own Neon database branch, so a preview can never write to production
+data.
+
+**The build is not the deploy.** Merging reliably produces a production *build* from the right
+commit; it does not reliably move `quratt.com` onto it. On 2026-08-19 two merges built cleanly
+and the apex went on serving a day-old deployment, because the rollback drill earlier that
+morning had promoted a deployment by hand and the domain stayed where it was put. Nothing
+errored — `aliasError` was null on every build, GitHub showed a green Production deployment,
+and the site was stale for four hours.
+
+So the last step of a deploy is checking that it *is* one:
+
+```bash
+vercel inspect https://quratt.com | grep -E 'url|created'   # which deployment is actually live
+```
+
+If that is not the deployment you just merged:
+
+```bash
+vercel promote <deployment-url>     # ~2s, moves the alias
+```
+
+Assume the domain needs promoting after any manual `promote` or `rollback`, until a merge is
+observed moving it on its own.
 
 Out-of-band, from a working tree:
 
@@ -37,8 +59,15 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://quratt.com/
 ```
 
 A production deploy that builds is not yet a production deploy that works. The build only proves
-the pages prerendered — it says nothing about the database being reachable at request time or the
-domain resolving. Check the URL.
+the pages prerendered — it says nothing about the database being reachable at request time, the
+domain resolving, or the alias having moved to this build rather than an older one.
+
+Check something that differs between the old build and the new one, not just that the URL
+answers 200. A stale deployment serves 200 perfectly well:
+
+```bash
+curl -sS https://quratt.com/ | grep -o '<some string only the new build has>'
+```
 
 ### If the build fails
 
