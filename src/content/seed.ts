@@ -22,7 +22,7 @@ export const seed = seedSchema.parse({
   },
   contact: {
     email: 'quratfatima581@gmail.com',
-    subject: 'a job / a bug / a bird photo',
+    subject: 'a job / a bug / a cat photo',
     note: 'I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.',
   },
   nowUpdated: '19 Aug 2026',
