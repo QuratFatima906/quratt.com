@@ -25,12 +25,12 @@ export const seed = seedSchema.parse({
     subject: 'a job / a bug / a bird photo',
     note: 'I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.',
   },
-  nowUpdated: '[date]',
+  nowUpdated: '19 Aug 2026',
   now: [
-    { line: 'reading [book]' },
-    { line: 'rewriting my [x] parser, 3rd time' },
-    { line: 'learning [instrument], badly' },
-    { line: 'open to staff roles' },
+    { line: 'reading The Kite Runner — everyone warned me about chapter seven' },
+    { line: 'rewriting my portfolio, which is the thing you are currently standing in' },
+    { line: 'learning AI automation, mostly by automating things nobody asked me to' },
+    { line: 'open to senior software engineer roles — I bring my own runbook' },
   ],
   projects: [
     {
@@ -258,10 +258,11 @@ export const seed = seedSchema.parse({
     { title: '[title], [author]', state: 'gave up', note: "it wasn't you, it was chapter four" },
   ],
   uses: [
-    { label: 'editor', value: '[editor], same config since [year]' },
-    { label: 'shell', value: '[shell] and too many aliases' },
-    { label: 'machine', value: '[laptop]' },
-    { label: 'keyboard', value: '[keyboard], loud on purpose' },
+    { label: 'editor', value: 'VS Code — came back from Cursor, we are still friends' },
+    { label: 'shell', value: 'zsh, and an alias for every command I refuse to learn' },
+    { label: 'machine', value: 'MacBook Pro, M2 Pro, 14-inch, 2023. The fans and I have never met' },
+    { label: 'monitor', value: 'Samsung 49" Odyssey OLED G9 — and I still centre one window' },
+    { label: 'keyboard', value: 'Aula F75, wireless, mechanical, loud on purpose' },
     { label: 'notes', value: 'a plain text file, obviously' },
   ],
   cv: [

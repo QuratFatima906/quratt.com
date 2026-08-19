@@ -11,10 +11,14 @@ export function NowWindow({ lines, updated }: { lines: NowLine[]; updated: strin
       <p className="mb-1.5 text-text-muted">{`// updated ${updated}`}</p>
       <ul>
         {lines.map((line) => (
-          <li key={line.id}>
+          // A flex row rather than a text prefix, so a line that wraps hangs under itself
+          // instead of running back under the arrow.
+          <li key={line.id} className="flex gap-1.5">
             {/* The arrow is decoration; a screen reader should hear the line, not "right arrow". */}
-            <span aria-hidden="true">→ </span>
-            {line.line}
+            <span aria-hidden="true" className="flex-none">
+              →
+            </span>
+            <span>{line.line}</span>
           </li>
         ))}
       </ul>
