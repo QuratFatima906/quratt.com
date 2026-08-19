@@ -159,13 +159,19 @@ there indefinitely.
 
 > ### ⚠️ Local development shares production's database
 >
-> As of 2026-08-19, `DATABASE_URL` in `.env.local` is byte-identical to the production value
-> in Vercel — same Neon host, same database, same credentials. Verify before assuming
-> otherwise:
+> As of 2026-08-19, `DATABASE_URL` in `.env.local` is the production one — same Neon host,
+> database and credentials.
+>
+> Prove it the strong way, not the weak one. Comparing `vercel env pull` output is **not**
+> sufficient: Neon injects branch credentials by webhook at deploy time and never stores them
+> in project settings, so that command returns the shared value whether or not branching is
+> on — the trap this phase already fell into twice (`progress.md`). Evidence that actually
+> distinguishes the two cases is a row:
 >
 > ```bash
-> vercel env pull .env.production.local --environment=production
-> # compare against .env.local, then: rm .env.production.local
+> pnpm db:seed                                    # writes via .env.local
+> # then read the same row back through the production connection string.
+> # If the edit is there, they are one database.
 > ```
 >
 > Two consequences while this is true:
