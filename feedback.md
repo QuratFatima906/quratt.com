@@ -12,6 +12,11 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
 | 6 | Taskbar becomes an icons-only dock — no "open" label, no counter | ✅ |
 | 7 | `now.txt` content rewritten | ✅ |
 | 8 | `uses.txt` content rewritten | ✅ |
+| 9 | `qurat` treated as a logo — spaced off the sections, and clickable | ✅ |
+| 10 | Drop the seed readout from `entropy.exe` | ✅ |
+| 11 | Dock icons hold their position when a window is raised | ✅ |
+| 12 | Remove `close all` entirely | ✅ |
+| 13 | The two primary CTAs match in colour and height | ✅ |
 
 ## Decisions taken with the owner
 
@@ -49,6 +54,34 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
    than running back under the arrow.
 8. **`uses.txt`.** Term column pinned to `9ch`, which in a monospaced face is exactly nine
    characters — the separators line up into a column, which is the point of a text file.
+
+## Round 1b — follow-ups from the same session
+
+9. **Logo.** `<span>` → `next/link` to `/`, with `mr-3` on top of the row's gap and looser
+   tracking. `/` is the desktop with nothing focused; open windows stay open, as they would
+   on a real machine.
+10. **Entropy seed.** Gone from the caption and from the button's `aria-label`. The seed is
+    still state — it counts rerolls and picks the palette — it is just not content.
+11. **Dock order.** It was built from `open`, which is the z-order, and raising a window
+    moves its key to the end of that array. It now renders `WINDOWS.filter(open.includes)`,
+    so an icon's slot is a property of the window rather than of what you touched last, and
+    the dock agrees with the menu bar's order.
+12. **`close all` removed** from the desktop bar and the mobile panel, and `closeAll` deleted
+    from the window manager — nothing called it any more. Each window closes on its own ×.
+13. **CTAs.** `send →` was `bg-accent-alt` at 12px (inherited from the mail draft's type
+    scale); `download the real one ↓` was `bg-accent` at 11px. Both now pull from one `CTA`
+    constant that pins colour, size *and* line-height, so neither can inherit its way out of
+    the shape again. Measured identical: 34.39px tall, same background in both themes.
+
+### Also fixed along the way
+
+- **`sslmode=verify-full`.** Neon's `sslmode=require` makes `pg` warn on every connection,
+  and Next 16's dev overlay renders that warning as a full-screen console error.
+  `verify-full` silences it and pins the stronger behaviour before pg v9 changes the default.
+- **An axe flake.** `window-content.spec.ts` ran axe without waiting for the window fade to
+  finish, so contrast was occasionally measured against translucent text. It failed once on
+  mobile-safari and passed three times in a row on the same build — the wait that
+  `os-shell.spec.ts` already had is now in both.
 
 ## Left undone, deliberately
 
