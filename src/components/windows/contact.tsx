@@ -36,7 +36,7 @@ export function ContactWindow({ contact }: { contact: Contact }) {
         </span>
       </p>
 
-      <a href={mailto} className={`mt-3.5 ${CTA}`}>
+      <a href={mailto} className={`mt-3.5 bg-accent-alt ${CTA}`}>
         send →
       </a>
     </div>

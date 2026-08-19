@@ -38,7 +38,7 @@ export function ResumeWindow({ rows }: { rows: CvRow[] }) {
         ))}
       </ol>
 
-      <a href={RESUME_PDF} download className={`mt-[18px] ${CTA}`}>
+      <a href={RESUME_PDF} download className={`mt-[18px] bg-accent ${CTA}`}>
         download the real one ↓
       </a>
     </div>

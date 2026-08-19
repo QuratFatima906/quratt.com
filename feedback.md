@@ -16,10 +16,11 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
 | 10 | Drop the seed readout from `entropy.exe` | ✅ |
 | 11 | Dock icons hold their position when a window is raised | ✅ |
 | 12 | Remove `close all` entirely | ✅ |
-| 13 | The two primary CTAs match in colour and height | ✅ |
+| 13 | The two primary CTAs match in height (colour reverted by #17) | ✅ |
 | 14 | "a bird photo" → "a cat photo" | ✅ |
 | 15 | A distinct icon per window, for the dock | ✅ |
 | 16 | The copy button becomes a copy icon | ✅ |
+| 17 | `send →` back to purple, without losing the matched height | ✅ |
 
 ## Decisions taken with the owner
 
@@ -88,6 +89,11 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
     prop moved from visible text to `aria-label`, where it stays put whatever the icon is
     doing — the `role="status"` region was already doing the announcing, which is what makes
     an icon-only control safe here. 24px square, the SC 2.5.8 floor for a pointer target.
+
+17. **Purple send.** The shared `CTA` constant is shape only now — padding, radius, size,
+    line-height, the `on-accent` ink — and each call site brings its own fill: `accent-alt`
+    for send, `accent` for download. The thing they must never diverge on again is height,
+    and they no longer can. Measured 34.39px for both, in both themes.
 
 ### Also fixed along the way
 

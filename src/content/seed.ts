@@ -27,7 +27,7 @@ export const seed = seedSchema.parse({
   },
   nowUpdated: '19 Aug 2026',
   now: [
-    { line: 'reading The Kite Runner — everyone warned me about chapter seven' },
+    { line: 'reading The Kite Runner — everyone warned me about chapter seven, not there yet' },
     { line: 'rewriting my portfolio, which is the thing you are currently standing in' },
     { line: 'learning AI automation, mostly by automating things nobody asked me to' },
     { line: 'open to senior software engineer roles — I bring my own runbook' },
