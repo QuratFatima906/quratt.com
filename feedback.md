@@ -17,6 +17,9 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
 | 11 | Dock icons hold their position when a window is raised | ✅ |
 | 12 | Remove `close all` entirely | ✅ |
 | 13 | The two primary CTAs match in colour and height | ✅ |
+| 14 | "a bird photo" → "a cat photo" | ✅ |
+| 15 | A distinct icon per window, for the dock | ✅ |
+| 16 | The copy button becomes a copy icon | ✅ |
 
 ## Decisions taken with the owner
 
@@ -73,6 +76,19 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
     constant that pins colour, size *and* line-height, so neither can inherit its way out of
     the shape again. Measured identical: 34.39px tall, same background in both themes.
 
+14. **Cat photo.** `contact.subject` in the seed, and the `/contact` page description that
+    repeats it. The `birdcount` project is a different thing and was left alone.
+15. **Ten window icons.** Six windows shared one generic sheet, so the dock was a row of
+    identical paper. Each window now has its own mark — person, folder, pen, mic, book,
+    clock, sliders, download, envelope, grid — drawn as SVG on a 24×24 grid rather than as
+    borders and padding, because the same drawing has to hold at 14px in the dock and 24px
+    on the desktop and a border does not scale, it just gets chunkier. The marks say what
+    the window *is*; the tile around them already says "file".
+16. **Copy icon.** Two overlapping squares, swapping to a check for two seconds. The `label`
+    prop moved from visible text to `aria-label`, where it stays put whatever the icon is
+    doing — the `role="status"` region was already doing the announcing, which is what makes
+    an icon-only control safe here. 24px square, the SC 2.5.8 floor for a pointer target.
+
 ### Also fixed along the way
 
 - **`sslmode=verify-full`.** Neon's `sslmode=require` makes `pg` warn on every connection,
@@ -91,6 +107,9 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
   it back and the bar can grow to 48px.
 - **The dock reorders on raise**, because it mirrors stacking order. A real dock keeps a
   fixed order. Pre-existing behaviour, not touched.
+- **The icon marks are monochrome.** The old PDF badge was red and the app tile carried two
+  accents; a set of ten reads better uniform, and it matches the site's one-accent language.
+  Say so if you want colour back on any of them.
 - **The redundant `font-mono` classes** scattered through the window components now resolve
   to the family they would inherit anyway. Harmless; not worth the diff to remove.
 
