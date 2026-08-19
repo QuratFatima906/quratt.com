@@ -70,11 +70,15 @@ serverless concurrency.
 Each preview deployment gets its own Neon database branch, so a preview can never write to
 production data.
 
-**Local development is not isolated in the same way.** As of 2026-08-19 the `DATABASE_URL` in
-`.env.local` is the production one, so `pnpm db:seed` from a laptop writes to the live site —
-confirmed by seeding through `.env.local` and reading the changed rows back through the
-production connection string. See the warning under *Publish a content change* in
-`RUNBOOK.md`; a Neon branch for local work is the fix.
+**Local development has its own Neon branch too**, named `dev`, created 2026-08-19. `.env.local`
+points at it and every `PG*`/`POSTGRES_*` variable in that file was moved with it, so a stray
+`psql` or `drizzle-kit` cannot reach production either. Isolation was verified by writing a
+canary row to `dev` and confirming production was untouched.
+
+It is set to **never auto-delete** — it is permanent infrastructure, not a throwaway. Before
+this branch existed, `.env.local` was production and `pnpm db:seed` from a laptop wrote to the
+live site. See *Publish a content change* in `RUNBOOK.md` for the two-step publish this now
+requires.
 
 Read over the Postgres wire protocol by `pg`, not by Neon's HTTP driver — see
 `src/lib/content/db.ts` for why. The same string works against a local Postgres, so there is

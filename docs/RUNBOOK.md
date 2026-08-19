@@ -186,33 +186,28 @@ Order matters: **seed first, deploy second.** The reverse builds against stale r
 like the seed silently failed. `cacheLife('max')` means a prerendered page otherwise sits
 there indefinitely.
 
-> ### ⚠️ Local development shares production's database
+> ### Local development has its own database
 >
-> As of 2026-08-19, `DATABASE_URL` in `.env.local` is the production one — same Neon host,
-> database and credentials.
+> `.env.local` points at the Neon `dev` branch (`ep-sparkling-resonance-…`), not production
+> (`ep-flat-union-…`). Seeding locally changes what you see and nothing else.
 >
-> Prove it the strong way, not the weak one. Comparing `vercel env pull` output is **not**
-> sufficient: Neon injects branch credentials by webhook at deploy time and never stores them
-> in project settings, so that command returns the shared value whether or not branching is
-> on — the trap this phase already fell into twice (`progress.md`). Evidence that actually
-> distinguishes the two cases is a row:
+> **This means publishing content is now two steps.** Editing `src/content/seed.ts` and running
+> `pnpm db:seed` updates `dev` only. To publish, seed against production:
 >
 > ```bash
-> pnpm db:seed                                    # writes via .env.local
-> # then read the same row back through the production connection string.
-> # If the edit is there, they are one database.
+> vercel env pull .env.production.local --environment=production
+> env $(grep -E '^DATABASE_URL=' .env.production.local | xargs) pnpm db:seed
+> rm .env.production.local          # it holds live credentials
 > ```
 >
-> Two consequences while this is true:
+> Then redeploy so the pages prerender against the new rows.
 >
-> - `pnpm db:seed` on a laptop writes to the live site. There is no local copy to rehearse
->   against, and no undo.
-> - The upside is that the step above is the whole procedure. There is no separate production
->   seed to remember, which is exactly why it is easy not to notice.
->
-> Preview deployments *are* isolated — each gets its own Neon branch (`ENVIRONMENT.md`). It is
-> only local development that is not. Giving local its own branch is the fix; until then,
-> treat every `db:seed` as a production write.
+> Until 2026-08-19 these were the same database and `pnpm db:seed` on a laptop wrote straight
+> to the live site. If you ever suspect that has come back, prove it with a row rather than by
+> comparing `vercel env pull` output — Neon injects branch credentials by webhook and never
+> stores them, so that comparison returns the shared value either way. Write a canary to the
+> local database and read it back through the production string; if it is there, they are one
+> database.
 
 ---
 
