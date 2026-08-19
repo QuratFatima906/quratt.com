@@ -19,6 +19,8 @@ export function Launcher({
   className,
   disabledClassName,
   tooltipClassName = 'top-full left-0 mt-1',
+  ariaLabel,
+  plain = false,
   children,
 }: {
   windowKey: WindowKey;
@@ -27,6 +29,10 @@ export function Launcher({
   disabledClassName?: string;
   /** Where the tooltip sits relative to the trigger. */
   tooltipClassName?: string;
+  /** The accessible name when `children` is an icon with no text of its own. */
+  ariaLabel?: string;
+  /** The menu form: show `menuLabel` (no file-type suffix) instead of `label`. */
+  plain?: boolean;
   children?: ReactNode;
 }) {
   const def = windowDef(windowKey);
@@ -36,8 +42,13 @@ export function Launcher({
 
   if (def.available) {
     return (
-      <button type="button" className={className} onClick={() => openWindow(def.key)}>
-        {children ?? def.label}
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        className={className}
+        onClick={() => openWindow(def.key)}
+      >
+        {children ?? (plain ? def.menuLabel : def.label)}
       </button>
     );
   }
@@ -59,13 +70,14 @@ export function Launcher({
       <button
         type="button"
         aria-disabled="true"
+        aria-label={ariaLabel}
         aria-describedby={tip ? tipId : undefined}
         className={`${className ?? ''} ${disabledClassName ?? ''} cursor-not-allowed`}
         onClick={(event) => event.preventDefault()}
         onFocus={() => setTip(true)}
         onBlur={() => setTip(false)}
       >
-        {children ?? def.label}
+        {children ?? (plain ? def.menuLabel : def.label)}
       </button>
       {tip && (
         <span

@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-/** The seven windows a visitor can actually open; the other three ship disabled (D13). */
-const LIVE = ['about.md', 'projects/', 'now.txt', 'uses.txt', 'resume.pdf', 'say-hi.eml', 'entropy.exe'];
+/** The six windows a visitor can open from the menu; contact is opened from the email icon. */
+const LIVE = ['about', 'projects', 'now', 'uses', 'resume', 'entropy'];
 
 /**
  * Below the breakpoint the menu bar collapses to a hamburger (D3), so the launcher for a given
@@ -56,9 +56,11 @@ for (const theme of ['dark', 'light'] as const) {
 
 test('the contact window offers a copy fallback, not just a mailto', async ({ page }) => {
   await page.goto('/');
-  await launch(page, 'say-hi.eml');
+  // Contact is not in the menu — it is the email icon beside the wallpaper picker.
+  await openPanel(page);
+  await page.getByRole('button', { name: 'say hi', exact: true }).filter({ visible: true }).first().click();
 
-  const window = page.locator('section[aria-labelledby]').filter({ hasText: 'say-hi.eml' });
+  const window = page.locator('section[aria-labelledby]').filter({ hasText: 'say-hi' });
   // mailto silently does nothing for webmail users, so the copy path is the real fallback (D7).
   await expect(window.getByRole('link', { name: /send/ })).toHaveAttribute('href', /^mailto:/);
   await expect(window.getByRole('button', { name: 'copy' })).toBeVisible();
@@ -66,7 +68,7 @@ test('the contact window offers a copy fallback, not just a mailto', async ({ pa
 
 test('the resume never renders the phone number', async ({ page }) => {
   await page.goto('/');
-  await launch(page, 'resume.pdf');
+  await launch(page, 'resume');
   // D14 is absolute — assert against the whole document, not just the window.
   await expect(page.locator('body')).not.toContainText('6298871');
 });
@@ -75,7 +77,7 @@ test('windows whose content is not ready are reachable but inert', async ({ page
   await page.goto('/');
   const before = await page.locator('section[aria-labelledby]').count();
 
-  for (const label of ['writes.md', 'talks.md', 'reads.md']) {
+  for (const label of ['writes', 'talks', 'reads']) {
     await openPanel(page);
 
     const button = page

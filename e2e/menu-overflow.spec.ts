@@ -17,10 +17,10 @@ test('menu bar overflow is correct at every named width', async ({ page }) => {
     if (hidden) {
       await page.getByRole('button', { name: 'Menu' }).click();
       // Every button in the panel is a window now — the wallpaper picker beneath them is
-      // radio inputs, and `close all` is gone.
+      // radio inputs, and `close all` is gone. Nine windows: contact moved to the email icon.
       const items = await page.getByRole('navigation', { name: 'Sections' }).getByRole('button').allInnerTexts();
       report.push(`${width}: hamburger, ${items.length} items in the panel`);
-      expect(items.length).toBe(10);
+      expect(items.length).toBe(9);
       continue;
     }
 
@@ -36,7 +36,7 @@ test('menu bar overflow is correct at every named width', async ({ page }) => {
 
     expect(overflows, `items must not spill out of the nav at ${width}`).toBeLessThanOrEqual(1);
     const hiddenCount = moreText ? Number(moreText.match(/\((\d+)\)/)![1]) : 0;
-    expect(shown.length + hiddenCount, `every window is accounted for at ${width}`).toBe(10);
+    expect(shown.length + hiddenCount, `every window is accounted for at ${width}`).toBe(9);
   }
   console.log('\n' + report.join('\n') + '\n');
 });

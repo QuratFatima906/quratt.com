@@ -13,7 +13,7 @@ test.describe('desktop', () => {
     await page.goto('/');
     await expect(openWindows(page)).toHaveAttribute('data-window', 'about');
 
-    for (const label of ['projects/', 'now.txt', 'entropy.exe']) await menu(page, label).click();
+    for (const label of ['projects', 'now', 'entropy']) await menu(page, label).click();
     await expect(openWindows(page)).toHaveCount(4);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(4);
 
@@ -24,13 +24,13 @@ test.describe('desktop', () => {
 
     // Every window opens dead centre on top of the last, so a buried one cannot be clicked
     // at all — the dock is the only way to raise it, which is precisely why it exists.
-    await taskbar(page).getByRole('button', { name: 'about.md' }).click();
+    await taskbar(page).getByRole('button', { name: 'about' }).click();
     expect(await zOf('about')).toBeGreaterThan(await zOf('toy'));
 
-    // Centred windows bury each other completely, so `now.txt` has to be raised before its
+    // Centred windows bury each other completely, so `now` has to be raised before its
     // own × is reachable at all. That round trip is the dock earning its place.
-    await taskbar(page).getByRole('button', { name: 'now.txt' }).click();
-    await page.getByRole('region', { name: 'now.txt' }).getByRole('button', { name: 'Close now.txt' }).click();
+    await taskbar(page).getByRole('button', { name: 'now' }).click();
+    await page.getByRole('region', { name: 'now' }).getByRole('button', { name: 'Close now' }).click();
     await expect(openWindows(page)).toHaveCount(3);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(3);
 
@@ -59,7 +59,7 @@ test.describe('desktop', () => {
 
     // Nothing closes everything at once any more — each window goes on its own terms, which
     // means raising it from the dock first, because a centred window buries the one below it.
-    for (const label of ['about.md', 'projects/', 'entropy.exe']) {
+    for (const label of ['about', 'projects', 'entropy']) {
       await taskbar(page).getByRole('button', { name: label }).click();
       await page
         .getByRole('region', { name: label })
@@ -76,7 +76,7 @@ test.describe('desktop', () => {
     browserName,
   }) => {
     await page.goto('/');
-    const opener = menu(page, 'uses.txt');
+    const opener = menu(page, 'uses');
     await opener.focus();
     await page.keyboard.press('Enter');
 
@@ -84,8 +84,8 @@ test.describe('desktop', () => {
     await expect(window).toBeFocused();
 
     const close = page
-      .getByRole('region', { name: 'uses.txt' })
-      .getByRole('button', { name: 'Close uses.txt' });
+      .getByRole('region', { name: 'uses' })
+      .getByRole('button', { name: 'Close uses' });
     // WebKit puts buttons in the tab order only when macOS Full Keyboard Access is on, and
     // Playwright cannot toggle that. The rest of the journey is identical either way.
     if (browserName === 'webkit') await close.focus();
@@ -95,7 +95,7 @@ test.describe('desktop', () => {
       // button — so the keyboard can do everything the pointer can.
       await page.keyboard.press('Tab');
       await expect(
-        page.getByRole('region', { name: 'uses.txt' }).getByRole('link', { name: 'uses.txt' }),
+        page.getByRole('region', { name: 'uses' }).getByRole('link', { name: 'uses' }),
       ).toBeFocused();
       await page.keyboard.press('Tab');
     }
@@ -108,7 +108,7 @@ test.describe('desktop', () => {
 
   test('unavailable windows stay reachable, say why, and open nothing', async ({ page }) => {
     await page.goto('/');
-    const writes = menu(page, 'writes.md');
+    const writes = menu(page, 'writes');
 
     await expect(writes).toHaveAttribute('aria-disabled', 'true');
     // Not the `disabled` attribute: that would take it out of the tab order, and then the
@@ -178,10 +178,10 @@ test.describe('desktop', () => {
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
 
-      for (const label of ['projects/', 'resume.pdf']) await menu(page, label).click();
+      for (const label of ['projects', 'resume']) await menu(page, label).click();
       await expect(openWindows(page)).toHaveCount(3);
       // A tooltip is part of the page too, so open one before the sweep.
-      await menu(page, 'talks.md').focus();
+      await menu(page, 'talks').focus();
       await expect(page.getByRole('tooltip')).toBeVisible();
       // Windows fade in over 160ms, and axe measures contrast against what is on screen —
       // running mid-transition reads translucent text as failing a ratio it passes at rest.
@@ -236,7 +236,7 @@ test.describe('mobile', () => {
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('navigation', { name: 'Sections' }).getByRole('button')).toHaveCount(
-      10, // one per window, and nothing else — `close all` is gone
+      9, // one per menu window — contact moved to the email icon
     );
   });
 

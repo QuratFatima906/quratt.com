@@ -29,8 +29,8 @@ const nastaliq = Noto_Nastaliq_Urdu({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Qurat ul ain Fatima',
-    template: '%s · Qurat ul ain Fatima',
+    default: 'Qurat ul Ain Fatima',
+    template: '%s · Qurat ul Ain Fatima',
   },
   description: 'Senior software engineer. Portfolio, writing, projects and reading.',
   alternates: { types: { 'application/rss+xml': '/feed.xml' } },

@@ -9,7 +9,7 @@ import { isIndexable, windowDef } from '@/lib/windows';
 export const metadata = pageMetadata({
   title: 'Invite me to speak',
   description:
-    'Send Qurat ul ain Fatima the event, the date and a paragraph on the topic. That is plenty.',
+    'Send Qurat ul Ain Fatima the event, the date and a paragraph on the topic. That is plenty.',
   path: '/talks/invite',
   index: isIndexable('talks'),
 });

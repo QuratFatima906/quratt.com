@@ -40,7 +40,7 @@ test('markdown twins are served as markdown, and a missing one 404s', async ({ r
   const ok = await request.get('/about.md');
   expect(ok.status()).toBe(200);
   expect(ok.headers()['content-type']).toContain('text/markdown');
-  expect(await ok.text()).toContain('# Qurat ul ain Fatima');
+  expect(await ok.text()).toContain('# Qurat ul Ain Fatima');
 
   expect((await request.get('/no-such-page.md')).status()).toBe(404);
 });

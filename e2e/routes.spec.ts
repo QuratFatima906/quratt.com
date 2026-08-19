@@ -7,19 +7,19 @@ import { expect, test, type Page } from '@playwright/test';
  * fail a reader, and the whole phase exists to make the OS readable without JavaScript.
  */
 const ROUTES: [path: string, h1: string, content: string][] = [
-  ['/', 'Qurat ul ain Fatima — qurat', 'trapdoor'],
-  ['/about', 'about.md', 'trapdoor'],
-  ['/projects', 'projects/', 'quietwatch'],
+  ['/', 'Qurat ul Ain Fatima — qurat', 'trapdoor'],
+  ['/about', 'about', 'trapdoor'],
+  ['/projects', 'projects', 'quietwatch'],
   ['/projects/quietwatch', 'quietwatch', 'only pings you when it actually matters'],
-  ['/writing', 'writes.md', 'The bug was in the calendar, obviously'],
+  ['/writing', 'writes', 'The bug was in the calendar, obviously'],
   ['/writing/postgres-told-me-the-truth', "Postgres told me the truth, I just didn't listen", 'Rows Removed by Filter'], // prettier-ignore
-  ['/talks', 'talks.md', 'Everything I know about queues'],
+  ['/talks', 'talks', 'Everything I know about queues'],
   ['/talks/invite', 'invite-qurat.form', 'Yes, probably.'],
-  ['/reads', 'reads.md', 'best of the year so far'],
-  ['/now', 'now.txt', 'senior software engineer roles'],
-  ['/uses', 'uses.txt', 'editor'],
-  ['/resume', 'resume.pdf', 'Shopsense'],
-  ['/contact', 'say-hi.eml', 'quratfatima581@gmail.com'],
+  ['/reads', 'reads', 'best of the year so far'],
+  ['/now', 'now', 'senior software engineer roles'],
+  ['/uses', 'uses', 'editor'],
+  ['/resume', 'resume', 'Shopsense'],
+  ['/contact', 'say-hi', 'quratfatima581@gmail.com'],
 ];
 
 /** The three windows that ship disabled hold placeholder content, so they are not indexed. */
@@ -59,13 +59,13 @@ test.describe('with JavaScript disabled', () => {
 
   test('links between windows are real URLs, not handlers', async ({ page }) => {
     await page.goto('/about');
-    const link = page.getByRole('link', { name: /resume\.pdf/ });
+    const link = page.getByRole('link', { name: /resume/ });
     await expect(link).toHaveAttribute('href', '/resume');
     // Forced because Playwright's stability check runs `requestAnimationFrame` in the page's
     // main world, which cannot execute with scripting off — not because the link is obscured.
     await link.click({ force: true });
     await expect(page).toHaveURL('/resume');
-    await expect(page.locator('h1')).toHaveText('resume.pdf');
+    await expect(page.locator('h1')).toHaveText('resume');
   });
 });
 
@@ -134,12 +134,12 @@ test.describe('navigation', () => {
     // `display: none` subtree is out of the accessibility tree and out of every crawler's
     // reach. The served HTML for each URL still carries exactly one `h1` — the route-map
     // tests above assert that on a cold load.
-    await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'now.txt', exact: true }).click(); // prettier-ignore
-    await page.getByRole('link', { name: 'now.txt', exact: true }).click();
+    await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'now', exact: true }).click(); // prettier-ignore
+    await page.getByRole('link', { name: 'now', exact: true }).click();
 
     await expect(page).toHaveURL('/now');
     await expect(page.locator('main[data-window="now"]')).toBeVisible();
-    await expect(page.locator('h1:visible')).toHaveText('now.txt');
+    await expect(page.locator('h1:visible')).toHaveText('now');
     expect(await page.evaluate(() => (window as unknown as { alive?: boolean }).alive)).toBe(true);
 
     await page.goBack();
@@ -155,7 +155,7 @@ test.describe('navigation', () => {
 
   test('closing the focused window returns to the desktop', async ({ page }) => {
     await page.goto('/uses');
-    await page.getByRole('button', { name: 'Close uses.txt' }).first().click();
+    await page.getByRole('button', { name: 'Close uses' }).first().click();
     await expect(page).toHaveURL('/');
     await expect(page.locator('main[data-window]')).toHaveCount(0);
   });
