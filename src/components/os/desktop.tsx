@@ -9,7 +9,7 @@ const isWindowKey = (value: string): value is WindowKey =>
 
 import { DesktopIcons } from './desktop-icons';
 import { MenuBar } from './menu-bar';
-import { Taskbar } from './taskbar';
+import { Dock } from './dock';
 import { Window } from './window';
 import { OsProvider, useOs } from './window-manager';
 
@@ -99,7 +99,7 @@ function Surface({ bodies, children }: { bodies: WindowBodies; children?: ReactN
           {windows}
         </main>
       )}
-      <Taskbar />
+      <Dock />
     </div>
   );
 }

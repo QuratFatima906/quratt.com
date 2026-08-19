@@ -70,6 +70,11 @@ serverless concurrency.
 Each preview deployment gets its own Neon database branch, so a preview can never write to
 production data.
 
+**Local development is not isolated in the same way.** As of 2026-08-19 the `DATABASE_URL` in
+`.env.local` is the production one, so `pnpm db:seed` from a laptop writes to the live site.
+See the warning under *Publish a content change* in `RUNBOOK.md`; a Neon branch for local work
+is the fix.
+
 Read over the Postgres wire protocol by `pg`, not by Neon's HTTP driver — see
 `src/lib/content/db.ts` for why. The same string works against a local Postgres, so there is
 one code path and no local proxy.

@@ -15,7 +15,9 @@ import { db } from '../src/lib/content/db';
 import * as t from '../src/lib/content/schema';
 import { postSchema } from '../src/lib/content/schema';
 
-// Next loads `.env.local` for the app; a plain node script has to ask.
+// Next loads `.env.local` for the app; a plain node script has to ask. `loadEnvFile` does not
+// overwrite a variable that is already set, so `DATABASE_URL=… pnpm db:seed` still targets
+// whatever the caller named — which is what lets one command point at another database.
 if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 
 // Identity and timestamps are the database's business; only content columns are overwritten.

@@ -1,7 +1,7 @@
 /**
  * The window registry — the single source of truth for what the OS can open (D8).
  *
- * The menu bar, the desktop icons and the taskbar all read this one array, which is what
+ * The menu bar, the desktop icons and the dock all read this one array, which is what
  * keeps them from drifting apart: the design carried the same list twice, as `MENU` and
  * `LABELS`. Availability comes from the table in `docs/CONTENT.md`; P5 attaches the routes.
  */
@@ -82,7 +82,7 @@ export function windowDef(key: WindowKey): WindowDef {
  * Nested routes belong to their parent's window: `/projects/quietwatch` is still the
  * `projects/` window, showing one project instead of the grid. That is why this reads the
  * registry rather than a second table — one list of routes, and it is the one the menu bar,
- * the taskbar and the sitemap already agree on.
+ * the dock and the sitemap already agree on.
  */
 export function keyForPath(pathname: string): WindowKey | null {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

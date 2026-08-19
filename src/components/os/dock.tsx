@@ -23,7 +23,7 @@ import { useOs } from './window-manager';
  * deliberately no close button here: raising a window puts its own × in reach, and a 24px
  * target (SC 2.5.8) will not fit beside a 26px icon in a 40px bar without crowding both.
  */
-export function Taskbar() {
+export function Dock() {
   const { open, openWindow } = useOs();
 
   return (

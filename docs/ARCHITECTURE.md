@@ -4,7 +4,7 @@
 
 ## The central tension
 
-The design is a desktop OS: draggable windows, a taskbar, client state. Requirement #9 asks
+The design is a desktop OS: draggable windows, a dock, client state. Requirement #9 asks
 for the site to rank in LLM answers and be legible to AI agents. Those pull in opposite
 directions — an OS UI whose windows are pure client state has no URLs, no documents, and
 nothing for a crawler to read.
@@ -34,7 +34,7 @@ src/lib/content/queries.ts        'use cache' + cacheTag per collection
      ▼
 src/app/(os)/layout.tsx           one call, all collections (a few KB total)
      │
-     ├──► <Desktop content={…}>   client shell: menu bar, icons, taskbar,
+     ├──► <Desktop content={…}>   client shell: menu bar, icons, dock,
      │                            window manager (drag, z-order, close)
      │
      └──► {children}              the focused window, server-rendered from the route
@@ -77,7 +77,7 @@ src/
     feed.xml/route.ts
     robots.ts  sitemap.ts
   components/
-    os/                     Desktop, MenuBar, Taskbar, Window, WindowManager,
+    os/                     Desktop, MenuBar, Dock, Window, WindowManager,
                             DesktopIcons, WallpaperPicker, MobileSheet
     windows/                one component per collection — pure, presentational
     ui/                     primitives shared by both
@@ -114,13 +114,20 @@ Every token pair is contrast-tested in CI, not by eye.
 
 ## Typography
 
-- **Bricolage Grotesque** — display and body
-- **JetBrains Mono** — all OS chrome, labels, metadata
-- **Noto Nastaliq Urdu** — Urdu book and project titles
+- **JetBrains Mono** — everything. Chrome, labels, metadata, headings and body prose alike.
+- **Noto Nastaliq Urdu** — Urdu book and project titles, the one exception.
 
-Self-hosted via `next/font/google`. Latin faces are preloaded; **Nastaliq is not** — it is
-large, and preloading it would cost the LCP of every page for content most visitors never
-see. `unicode-range` loads it only when Urdu codepoints appear.
+One family, by the owner's decision (D17). Bricolage Grotesque was the display and body face
+and is gone; `--font-sans` no longer exists and `body` resolves to `--font-mono`.
+
+Size anything new against mono metrics: a monospaced line runs ~18% wider than the
+proportional one the design was drawn with, which is why the body step is 13px rather than the
+design's 15.5px. The upside is that `ch` becomes an exact unit — see the `9ch` term column in
+`uses.tsx`, which lines its separators up in a way no proportional face could.
+
+Self-hosted via `next/font/google`. Latin is preloaded; **Nastaliq is not** — it is large, and
+preloading it would cost the LCP of every page for content most visitors never see.
+`unicode-range` loads it only when Urdu codepoints appear.
 
 Urdu text requires `lang="ur" dir="rtl"` on the element and roughly `line-height: 2.2` —
 Nastaliq's steeply descending baseline clips at normal leading.
@@ -132,9 +139,15 @@ The window manager is the hard part, so the rules are explicit:
 - Windows are `<section aria-labelledby>`, not `role="dialog"` — they are non-modal, several
   are open at once, and their content is the page's primary content. The focused window is
   `<main>`.
-- Dragging is never required to reach anything (WCAG 2.2 SC 2.5.7). Position is decorative.
+- Dragging is never required to reach anything (WCAG 2.2 SC 2.5.7). Position is decorative —
+  every window opens centred on top of the last (D18), so the dock is not a convenience, it is
+  the only way to reach a buried window. Treat it as load-bearing.
 - Focus moves into a window when it opens and returns to the opener when it closes.
-- Menu bar `<header>` + `<nav aria-label="Sections">`; taskbar `<nav aria-label="Open windows">`.
+- Menu bar `<header>` + `<nav aria-label="Sections">`; dock `<nav aria-label="Open windows">`.
+- The dock is icon-only, so each entry's `aria-label` is its whole accessible name, and the
+  hover tooltip is decoration on top of it. Same for the theme and copy buttons: an icon
+  control has no text padding it to a comfortable size, so 24px minimum (SC 2.5.8) has to be
+  asked for in the class list rather than inherited from a label.
 - Close buttons carry `aria-label="Close about.md"` — `×` alone is not a name.
 - Wallpaper picker is a `radiogroup`.
 - The clock is `aria-hidden`; announcing a time that changes every 20 seconds is hostile.

@@ -140,7 +140,7 @@ export function OsProvider({
       }
       const opener = openers.current.get(key);
       openers.current.delete(key);
-      // The opener may itself be disappearing (a taskbar entry closing its own window), so the
+      // The opener may itself be disappearing (a dock entry closing its own window), so the
       // focus attempt waits for the commit and checks the element is still in the document.
       requestAnimationFrame(() => {
         if (opener?.isConnected) opener.focus();
