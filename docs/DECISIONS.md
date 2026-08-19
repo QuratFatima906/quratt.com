@@ -51,7 +51,7 @@ Rather than cutting sections without content, all ten windows are built. Those w
 content yet render disabled in the menu bar and desktop, with a "coming soon" tooltip.
 
 This requires a **window registry** (`src/lib/windows.ts`) as the single source of truth for
-key, label, icon, route, and availability — driving the menu bar, desktop icons, and taskbar
+key, label, icon, route, and availability — driving the menu bar, desktop icons, and dock
 together. The disabled state must be `aria-disabled` with a keyboard-reachable tooltip; the
 `title` attribute is not an accessible tooltip and must not be used.
 
@@ -97,14 +97,55 @@ Consequences worth stating, because each looks like a bug later:
 - `talks.md` is disabled despite the owner having real speaking and community material. See
   `docs/CONTENT.md` — this one should be revisited before launch.
 
-### D14 · The phone number is never published
+### D14 · The phone number is never published — *superseded in part by D16*
 The résumé carries a mobile number. Only the email was authorised for publication, and a
 scraped phone number cannot be withdrawn. It appears in no seed data, no structured data, no
 markdown twin, and no generated file.
 
-The résumé PDF itself is not served from the repository. `resume.pdf` in the UI points at a
-file the owner publishes deliberately.
+**Still true, and still enforced by a test.** What changed is the second half of this
+decision: the PDF *is* now served from the repository, number included. See D16.
 
 ### D15 · Analytics is Vercel Analytics
 Zero-config, no cookie banner required. Revisit only if the free tier's retention proves too
 short to be useful.
+
+### D16 · The résumé PDF is served, phone number and all
+*2026-08-19, reversing half of D14 at the owner's explicit instruction.*
+
+`public/Qurat_ul_Ain_Fatima_Resume_Senior_Software_Engineer.pdf` is served and linked from a
+download button in the `resume.pdf` window. The file carries the mobile number. The owner was
+asked directly and chose to ship it as-is.
+
+The full filename is deliberate: it is what lands in a recruiter's downloads folder, where
+`resume.pdf` would be one of nine.
+
+The HTML half of D14 stands unchanged — the number must never be *rendered*, and
+`window-content.spec.ts` asserts the whole document body against it. A crawler reading HTML is
+a different exposure from one that has to open a PDF.
+
+### D17 · One type family
+*2026-08-19, at the owner's instruction.*
+
+JetBrains Mono for everything; Bricolage Grotesque removed entirely. A machine that presents
+itself as an OS should not switch to a proportional face halfway down a window.
+
+Nastaliq stays for Urdu, because no monospaced Urdu face exists. Consequences for sizing are
+in `ARCHITECTURE.md#typography`.
+
+### D18 · Windows open centred, and the dock is how you switch
+*2026-08-19, at the owner's instruction.*
+
+Every window opens dead centre on top of the last. The registry no longer carries `x`/`y`.
+
+This makes the dock load-bearing rather than convenient: a centred window buries the one
+beneath it completely, so there is no clicking through to a background window. `close all` was
+removed in the same pass, so each window closes on its own `×`, which means raising it first.
+
+Two implementation notes worth keeping:
+- The centring is `transform: translate(-50%, -50%)`, not the `translate` property, because
+  the drag handler owns `translate`. They are separate CSS properties and compose.
+- It lives in a `md:` rule rather than an inline style, because the `max-md:` sheet utilities
+  have to override it and no class beats an inline transform.
+
+The dock renders in **registry** order, not stacking order. Building it from `open` meant
+raising a window moved its icon to the end of the row.

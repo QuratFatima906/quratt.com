@@ -13,7 +13,7 @@ export function TalksWindow({ talks }: { talks: Talk[] }) {
       <ul className="flex flex-col gap-3.5">
         {talks.map((talk) => (
           <li key={talk.id}>
-            <p className="text-[15px] leading-[1.35]">{talk.title}</p>
+            <p className="text-[12.5px] leading-[1.35]">{talk.title}</p>
             <p className="mt-[3px] font-mono text-[10.5px] text-text-muted">{metaLine(talk)}</p>
           </li>
         ))}
@@ -58,8 +58,8 @@ export function InviteWindow({ email }: { email: string }) {
   return (
     <div className="flex gap-[34px] px-[34px] pt-[30px] pb-[34px] max-md:flex-col max-md:gap-6">
       <div className="flex-1">
-        <h2 className="mb-2 text-[26px] font-bold tracking-[-0.02em]">Yes, probably.</h2>
-        <p className="mb-[22px] text-[15px] leading-[1.6] text-pretty text-text-muted">
+        <h2 className="mb-2 text-[20px] font-bold tracking-[-0.02em]">Yes, probably.</h2>
+        <p className="mb-[22px] text-[12.5px] leading-[1.6] text-pretty text-text-muted">
           I&rsquo;ll travel for a good hallway track. Tell me roughly what you need and I&rsquo;ll
           tell you honestly whether I&rsquo;m the right person.
         </p>

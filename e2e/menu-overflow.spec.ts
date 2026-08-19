@@ -16,9 +16,11 @@ test('menu bar overflow is correct at every named width', async ({ page }) => {
     const hidden = await nav.evaluate((el) => getComputedStyle(el).display === 'none');
     if (hidden) {
       await page.getByRole('button', { name: 'Menu' }).click();
+      // Every button in the panel is a window now — the wallpaper picker beneath them is
+      // radio inputs, and `close all` is gone.
       const items = await page.getByRole('navigation', { name: 'Sections' }).getByRole('button').allInnerTexts();
-      report.push(`${width}: hamburger, ${items.length - 1} items in the panel`);
-      expect(items.length - 1).toBe(10);
+      report.push(`${width}: hamburger, ${items.length} items in the panel`);
+      expect(items.length).toBe(10);
       continue;
     }
 

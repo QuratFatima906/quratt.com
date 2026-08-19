@@ -38,6 +38,13 @@ for (const theme of ['dark', 'light'] as const) {
     await openAll(page);
 
     await expect(page.locator('section[aria-labelledby]')).toHaveCount(LIVE.length);
+    // Windows fade in over 160ms, and axe measures contrast against what is on screen — run
+    // it mid-transition and translucent text reads as failing a ratio it passes at rest.
+    // Intermittent by nature: this suite failed once on mobile-safari and passed three times
+    // in a row on the same build before the wait went in.
+    await page.waitForFunction(() =>
+      document.getAnimations().every((animation) => animation.playState !== 'running'),
+    );
 
     const { violations } = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])

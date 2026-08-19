@@ -78,8 +78,8 @@ export default function Preview() {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-mono text-xs tracking-widest text-text-muted uppercase">type</h2>
-        <p className="font-sans text-3xl">Bricolage Grotesque — display and body</p>
-        <p className="font-mono text-sm">JetBrains Mono — chrome, labels, metadata</p>
+        <p className="text-3xl">JetBrains Mono — display and body</p>
+        <p className="text-sm">JetBrains Mono — chrome, labels, metadata</p>
         <Urdu as="p" className="text-3xl">
           خاموشی کی آواز
         </Urdu>

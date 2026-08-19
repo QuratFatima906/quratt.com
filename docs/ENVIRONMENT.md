@@ -70,9 +70,23 @@ serverless concurrency.
 Each preview deployment gets its own Neon database branch, so a preview can never write to
 production data.
 
+**Local development is not isolated in the same way.** As of 2026-08-19 the `DATABASE_URL` in
+`.env.local` is the production one, so `pnpm db:seed` from a laptop writes to the live site —
+confirmed by seeding through `.env.local` and reading the changed rows back through the
+production connection string. See the warning under *Publish a content change* in
+`RUNBOOK.md`; a Neon branch for local work is the fix.
+
 Read over the Postgres wire protocol by `pg`, not by Neon's HTTP driver — see
 `src/lib/content/db.ts` for why. The same string works against a local Postgres, so there is
 one code path and no local proxy.
+
+End the string with **`sslmode=verify-full`**, not the `sslmode=require` Neon gives you.
+`pg` currently treats `require`, `prefer` and `verify-ca` as aliases for `verify-full` and
+emits a deprecation warning on every connection — which Next 16's dev overlay surfaces as a
+console error, so it is not something you can quietly ignore. In `pg` v9 those modes adopt
+libpq semantics and stop verifying the server certificate, so naming `verify-full` outright
+is both quieter now and stricter later. Neon's certificates are publicly trusted, so nothing
+else has to change.
 
 It is needed at **build** time, because every page that reads content is prerendered. It is
 not needed at request time: a running server serves prerendered content and only reaches the

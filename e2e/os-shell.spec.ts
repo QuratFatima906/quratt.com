@@ -22,9 +22,14 @@ test.describe('desktop', () => {
       page.locator(`[data-window="${key}"]`).evaluate((el) => Number(getComputedStyle(el).zIndex));
     expect(await zOf('toy')).toBeGreaterThan(await zOf('about'));
 
-    await page.locator('[data-window="about"]').click({ position: { x: 40, y: 60 } });
+    // Every window opens dead centre on top of the last, so a buried one cannot be clicked
+    // at all — the dock is the only way to raise it, which is precisely why it exists.
+    await taskbar(page).getByRole('button', { name: 'about.md' }).click();
     expect(await zOf('about')).toBeGreaterThan(await zOf('toy'));
 
+    // Centred windows bury each other completely, so `now.txt` has to be raised before its
+    // own × is reachable at all. That round trip is the dock earning its place.
+    await taskbar(page).getByRole('button', { name: 'now.txt' }).click();
     await page.getByRole('region', { name: 'now.txt' }).getByRole('button', { name: 'Close now.txt' }).click();
     await expect(openWindows(page)).toHaveCount(3);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(3);
@@ -52,9 +57,18 @@ test.describe('desktop', () => {
     expect(parked.x + parked.width).toBeGreaterThanOrEqual(90); // still grabbable
     expect(parked.y).toBeLessThanOrEqual(page.viewportSize()!.height - 40);
 
-    await page.getByRole('button', { name: 'close all' }).click();
+    // Nothing closes everything at once any more — each window goes on its own terms, which
+    // means raising it from the dock first, because a centred window buries the one below it.
+    for (const label of ['about.md', 'projects/', 'entropy.exe']) {
+      await taskbar(page).getByRole('button', { name: label }).click();
+      await page
+        .getByRole('region', { name: label })
+        .getByRole('button', { name: `Close ${label}` })
+        .click();
+    }
     await expect(openWindows(page)).toHaveCount(0);
-    await expect(taskbar(page).getByText('nothing open')).toBeVisible();
+    // The dock carries no empty-state text — nothing open simply means nothing in it.
+    await expect(taskbar(page).getByRole('listitem')).toHaveCount(0);
   });
 
   test('the keyboard alone opens a window, lands inside it, and returns to the opener', async ({
@@ -126,13 +140,20 @@ test.describe('desktop', () => {
   test('the overflow panel closes on use and hands focus back to its own button', async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1024, height: 768 });
+    // Wide enough for the desktop bar, narrow enough that ten items cannot fit. The margin
+    // is not generous: every gram of chrome that leaves the right-hand side gives the nav
+    // more room, and 1024 stopped overflowing the moment `close all` and the word "theme"
+    // went. `menu-overflow.spec.ts` prints what actually fits at each width.
+    await page.setViewportSize({ width: 900, height: 768 });
     await page.goto('/');
     // `document.fonts.status` reads "loaded" while idle, so it is not a signal that the mono
     // face has arrived — let the post-`fonts.ready` re-measure land before touching anything.
     await page.waitForTimeout(600);
 
     const more = page.getByRole('button', { name: /^more \(/ });
+    // Asserted before the click so a bar that stops overflowing fails as a bar that stopped
+    // overflowing, rather than as a mystery timeout on an element that is not there.
+    await expect(more, 'the nav must overflow at this width for the test to mean anything').toBeVisible();
     await more.click();
     await expect(page.locator('[data-overflow-panel]')).toBeVisible();
     // Whichever windows overflow — that is the measurement's business, not this test's.
@@ -215,7 +236,7 @@ test.describe('mobile', () => {
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('navigation', { name: 'Sections' }).getByRole('button')).toHaveCount(
-      11, // ten windows plus `close all`
+      10, // one per window, and nothing else — `close all` is gone
     );
   });
 
@@ -294,6 +315,8 @@ test.describe('mobile', () => {
     await touch('touchEnd', y + 288);
 
     await expect(sheet).toHaveCount(0);
-    await expect(page.getByRole('navigation', { name: 'Open windows' }).getByText('nothing open')).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'Open windows' }).getByRole('listitem'),
+    ).toHaveCount(0);
   });
 });

@@ -243,16 +243,13 @@ export function Window({
       data-focused={main ? '' : undefined}
       style={{
         zIndex: 20 + stack,
-        // The registry's coordinates are for the design's 1280×820 desktop, so they are a
-        // preference, not a position — CSS clamps them into whatever viewport actually
-        // exists. Doing it here rather than in an effect means no first-paint jump.
-        // The lower bound clears the icon column: the design composition these coordinates
-        // come from has no desktop icons, so `about` at x=44 would open on top of them.
-        // The window the URL names is the document, so it opens centred instead.
-        left: main
-          ? `clamp(1rem, calc(50vw - ${def.width / 2}px), calc(100vw - ${def.width}px - 1rem))`
-          : `clamp(7.5rem, ${def.x}px, calc(100vw - ${def.width}px - 1rem))`,
-        top: main ? '3.5rem' : `clamp(2.75rem, ${def.y}px, calc(100dvh - 8rem))`,
+        // Every window opens dead centre, stacked on whatever was already there (feedback.md
+        // #5) — so the desktop reads as one focused thing at a time and the dock is what
+        // switches between them. The other half of the centring is the `transform` in
+        // `globals.css`; it cannot live here because the sheet layout below `md` has to
+        // override it, and an inline transform would beat any class trying to.
+        left: '50%',
+        top: '50%',
         width: def.width,
       }}
       onPointerDown={() => raise(def.key)}

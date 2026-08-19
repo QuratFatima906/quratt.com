@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ThemeToggle } from '@/components/ui/theme-toggle';
@@ -7,7 +8,6 @@ import { WINDOWS } from '@/lib/windows';
 
 import { Launcher } from './launcher';
 import { WallpaperPicker } from './wallpaper-picker';
-import { useOs } from './window-manager';
 
 const ITEM = 'cursor-pointer whitespace-nowrap text-text-secondary hover:text-accent';
 // `!` because it has to beat the hover colour the shared item class already carries; the
@@ -43,7 +43,6 @@ function useDismiss(open: boolean, close: () => void) {
 }
 
 export function MenuBar() {
-  const { closeAll } = useOs();
   const navRef = useRef<HTMLElement>(null);
   const probeRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(WINDOWS.length);
@@ -112,7 +111,16 @@ export function MenuBar() {
 
   return (
     <header className="absolute inset-x-0 top-0 z-9000 flex h-9 items-center gap-3 border-b border-border bg-surface-chrome px-3.5 font-mono text-[11px] tracking-[0.03em]">
-      <span className="flex-none font-bold text-accent">qurat.os</span>
+      {/* The logo, not a menu item — so it gets its own margin on top of the row's gap, and
+          a divider's worth of air between it and the first section. It routes to `/`, which
+          is the desktop with nothing focused; open windows stay open, as they would on a
+          real machine. */}
+      <Link
+        href="/"
+        className="mr-3 flex-none font-bold tracking-[0.08em] text-accent transition-colors duration-150 hover:text-accent-hover"
+      >
+        qurat
+      </Link>
 
       <nav
         ref={navRef}
@@ -169,14 +177,6 @@ export function MenuBar() {
       </nav>
 
       <div className="ml-auto flex flex-none items-center gap-2.5">
-        <button
-          type="button"
-          onClick={closeAll}
-          className="hidden cursor-pointer py-1.5 whitespace-nowrap text-text-muted hover:text-text md:block"
-        >
-          close all
-        </button>
-        <Divider className="hidden md:block" />
         <WallpaperPicker className="hidden md:flex" />
         <Divider className="hidden md:block" />
         <Clock />
@@ -209,15 +209,8 @@ export function MenuBar() {
                   tooltipClassName="top-1/2 right-2 -translate-y-1/2"
                 />
               ))}
-              <div className="mt-1 flex items-center justify-between gap-3 border-t border-border px-2.5 pt-2">
+              <div className="mt-1 flex items-center border-t border-border px-2.5 pt-2">
                 <WallpaperPicker />
-                <button
-                  type="button"
-                  onClick={closeAll}
-                  className="cursor-pointer px-1 py-1.5 text-text-muted hover:text-text"
-                >
-                  close all
-                </button>
               </div>
             </nav>
           )}
@@ -239,20 +232,29 @@ function Clock() {
   const [time, setTime] = useState('');
 
   useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setTime(
-        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-      );
-    };
+    // `en-US` rather than the visitor's locale: the format is a design decision (12-hour with
+    // a meridiem, like the machine this desktop is imitating), not a localisation of one.
+    // Lower-cased because nothing else in the chrome shouts.
+    const format = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const tick = () => setTime(format.format(new Date()).toLowerCase());
     tick();
     const timer = setInterval(tick, 20_000);
     return () => clearInterval(timer);
   }, []);
 
-  // Empty until mounted, so the server's clock never mismatches the visitor's.
+  // Empty until mounted, so the server's clock never mismatches the visitor's. Right-aligned
+  // in a fixed slot so the hour losing its tens digit at 1pm does not shove the theme toggle.
+  // `9ch` rather than the eight characters of "11:03 am", because the bar's letter-spacing is
+  // charged per character and eight of them no longer fit in 8ch — it wrapped on mobile.
   return (
-    <span aria-hidden="true" className="w-[5ch] flex-none text-text tabular-nums">
+    <span
+      aria-hidden="true"
+      className="w-[9ch] flex-none text-right whitespace-nowrap text-text tabular-nums"
+    >
       {time}
     </span>
   );

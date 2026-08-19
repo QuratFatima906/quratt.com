@@ -7,7 +7,7 @@ import { expect, test, type Page } from '@playwright/test';
  * fail a reader, and the whole phase exists to make the OS readable without JavaScript.
  */
 const ROUTES: [path: string, h1: string, content: string][] = [
-  ['/', 'Qurat ul ain Fatima — qurat.os', 'trapdoor'],
+  ['/', 'Qurat ul ain Fatima — qurat', 'trapdoor'],
   ['/about', 'about.md', 'trapdoor'],
   ['/projects', 'projects/', 'quietwatch'],
   ['/projects/quietwatch', 'quietwatch', 'only pings you when it actually matters'],
@@ -16,7 +16,7 @@ const ROUTES: [path: string, h1: string, content: string][] = [
   ['/talks', 'talks.md', 'Everything I know about queues'],
   ['/talks/invite', 'invite-qurat.form', 'Yes, probably.'],
   ['/reads', 'reads.md', 'best of the year so far'],
-  ['/now', 'now.txt', 'open to staff roles'],
+  ['/now', 'now.txt', 'senior software engineer roles'],
   ['/uses', 'uses.txt', 'editor'],
   ['/resume', 'resume.pdf', 'Shopsense'],
   ['/contact', 'say-hi.eml', 'quratfatima581@gmail.com'],

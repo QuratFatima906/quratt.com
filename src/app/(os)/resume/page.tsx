@@ -5,8 +5,8 @@ import { pageMetadata } from '@/lib/seo/site';
 import { windowDef } from '@/lib/windows';
 
 /**
- * `/resume`, never `/cv` (D12). No download link is rendered: the PDF is not served from this
- * repository, and it carries a phone number that was never authorised for publication (D14).
+ * `/resume`, never `/cv` (D12). The window carries a download button; the PDF it points at is
+ * served from `public/` (feedback.md #4, superseding D14).
  */
 export const metadata = pageMetadata({
   title: 'Résumé',

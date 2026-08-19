@@ -8,7 +8,7 @@ import { useOs } from './window-manager';
 
 /**
  * The one thing that opens a window — shared by the menu bar, the overflow panel, the desktop
- * icons and the taskbar, so the disabled treatment (D8) cannot drift between them.
+ * icons and the dock, so the disabled treatment (D8) cannot drift between them.
  *
  * Unavailable windows stay in the tab order. `disabled` would remove them, and then the only
  * way to discover *why* an item is greyed out is to already know. `aria-disabled` keeps them

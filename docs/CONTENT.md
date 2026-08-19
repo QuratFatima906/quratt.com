@@ -2,14 +2,21 @@
 
 What is real, what is placeholder, and what must never be published.
 
-## Never publish
+## Never render
 
-**The phone number from the résumé (`+92 305 6298871`) does not go on this site.** Only the
-email was authorised for publication. A scraped phone number cannot be taken back. If it
-ever needs to appear, that is an explicit decision, not a default.
+**The phone number from the résumé is never rendered as HTML.** Not in seed data, not in
+structured data, not in a markdown twin, not in a generated file.
+`window-content.spec.ts` asserts the whole document body against it on every run.
 
-The résumé itself lives at `docs/private/` and is **not** served. `resume.pdf` in the UI links
-to a file the owner publishes deliberately — see "Résumé" below.
+This is narrower than it used to be. The résumé PDF *is* now served — from
+`public/Qurat_ul_Ain_Fatima_Resume_Senior_Software_Engineer.pdf`, with the number in it — at
+the owner's explicit instruction on 2026-08-19 (D16, reversing half of D14). A crawler reading
+HTML is a different exposure from one that has to open a PDF, and that distinction is the
+whole of what is still being defended here.
+
+> The number is not repeated in this file any more. It was, in prose, and this repository is
+> public — so it is in the git history regardless, and redacting it here does not undo that.
+> Noted so nobody assumes the history is clean.
 
 ## Identity
 

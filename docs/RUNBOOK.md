@@ -142,6 +142,51 @@ and leaves `updated_at` alone on rows whose content has not changed.
 
 ---
 
+## Publish a content change
+
+Editing `src/content/seed.ts` changes nothing on its own. The windows read Postgres; the seed
+file is only the seeder's input. Merging the commit is not enough either — a build reads
+whatever is in the database at the moment it runs, so deploying without seeding prerenders the
+old copy with a new bundle.
+
+```bash
+pnpm db:seed        # then redeploy, or invalidate the collection's cache tag
+```
+
+Order matters: **seed first, deploy second.** The reverse builds against stale rows and looks
+like the seed silently failed. `cacheLife('max')` means a prerendered page otherwise sits
+there indefinitely.
+
+> ### ⚠️ Local development shares production's database
+>
+> As of 2026-08-19, `DATABASE_URL` in `.env.local` is the production one — same Neon host,
+> database and credentials.
+>
+> Prove it the strong way, not the weak one. Comparing `vercel env pull` output is **not**
+> sufficient: Neon injects branch credentials by webhook at deploy time and never stores them
+> in project settings, so that command returns the shared value whether or not branching is
+> on — the trap this phase already fell into twice (`progress.md`). Evidence that actually
+> distinguishes the two cases is a row:
+>
+> ```bash
+> pnpm db:seed                                    # writes via .env.local
+> # then read the same row back through the production connection string.
+> # If the edit is there, they are one database.
+> ```
+>
+> Two consequences while this is true:
+>
+> - `pnpm db:seed` on a laptop writes to the live site. There is no local copy to rehearse
+>   against, and no undo.
+> - The upside is that the step above is the whole procedure. There is no separate production
+>   seed to remember, which is exactly why it is easy not to notice.
+>
+> Preview deployments *are* isolated — each gets its own Neon branch (`ENVIRONMENT.md`). It is
+> only local development that is not. Giving local its own branch is the fix; until then,
+> treat every `db:seed` as a production write.
+
+---
+
 ## DNS
 
 `quratt.com` is registered at GoDaddy with nameservers delegated to `ns1.vercel-dns.com` /
