@@ -22,9 +22,14 @@ test.describe('desktop', () => {
       page.locator(`[data-window="${key}"]`).evaluate((el) => Number(getComputedStyle(el).zIndex));
     expect(await zOf('toy')).toBeGreaterThan(await zOf('about'));
 
-    await page.locator('[data-window="about"]').click({ position: { x: 40, y: 60 } });
+    // Every window opens dead centre on top of the last, so a buried one cannot be clicked
+    // at all — the dock is the only way to raise it, which is precisely why it exists.
+    await taskbar(page).getByRole('button', { name: 'about.md' }).click();
     expect(await zOf('about')).toBeGreaterThan(await zOf('toy'));
 
+    // Centred windows bury each other completely, so `now.txt` has to be raised before its
+    // own × is reachable at all. That round trip is the dock earning its place.
+    await taskbar(page).getByRole('button', { name: 'now.txt' }).click();
     await page.getByRole('region', { name: 'now.txt' }).getByRole('button', { name: 'Close now.txt' }).click();
     await expect(openWindows(page)).toHaveCount(3);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(3);
@@ -54,7 +59,8 @@ test.describe('desktop', () => {
 
     await page.getByRole('button', { name: 'close all' }).click();
     await expect(openWindows(page)).toHaveCount(0);
-    await expect(taskbar(page).getByText('nothing open')).toBeVisible();
+    // The dock carries no empty-state text — nothing open simply means nothing in it.
+    await expect(taskbar(page).getByRole('listitem')).toHaveCount(0);
   });
 
   test('the keyboard alone opens a window, lands inside it, and returns to the opener', async ({
@@ -294,6 +300,8 @@ test.describe('mobile', () => {
     await touch('touchEnd', y + 288);
 
     await expect(sheet).toHaveCount(0);
-    await expect(page.getByRole('navigation', { name: 'Open windows' }).getByText('nothing open')).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'Open windows' }).getByRole('listitem'),
+    ).toHaveCount(0);
   });
 });
