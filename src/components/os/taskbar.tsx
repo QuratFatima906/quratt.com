@@ -1,12 +1,17 @@
 'use client';
 
-import { windowDef } from '@/lib/windows';
+import { WINDOWS } from '@/lib/windows';
 
 import { Glyph } from './glyph';
 import { useOs } from './window-manager';
 
 /**
- * The dock — a mirror of the window manager's `open` array, in the same order.
+ * The dock — every open window, in **registry** order rather than stacking order.
+ *
+ * Deliberately not `open`: that array is the z-order, and raising a window moves its key to
+ * the end of it, so a dock built from it reshuffles itself every time you click an icon. An
+ * icon's position has to be a property of the window, not of which one you touched last —
+ * and registry order is the order the menu bar already lists, so the two agree.
  *
  * Icons only, name on hover, the way a Mac's does (feedback.md #6): the label, the "open"
  * heading and the window counter all went, because a dock that has to caption itself is not
@@ -32,14 +37,12 @@ export function Taskbar() {
           ponytail: fixed ceiling. If the registry ever outgrows a small viewport, scroll the
           row and portal the tooltip out of it. */}
       <ul className="flex list-none items-center gap-0.5">
-        {open.map((key) => {
-          const def = windowDef(key);
-          return (
-            <li key={key} className="flex-none">
+        {WINDOWS.filter((def) => open.includes(def.key)).map((def) => (
+            <li key={def.key} className="flex-none">
               <button
                 type="button"
                 aria-label={def.label}
-                onClick={() => openWindow(key)}
+                onClick={() => openWindow(def.key)}
                 // `group` does the tooltip in CSS rather than in state: there is one of these
                 // per open window and none of them needs to re-render just to show a name.
                 className="group relative flex cursor-pointer flex-col items-center gap-[3px] rounded-md px-1 pt-1 pb-0.5 transition-[background-color,scale] duration-150 ease-out hover:bg-surface-hover/60 active:scale-95"
@@ -56,8 +59,7 @@ export function Taskbar() {
                 </span>
               </button>
             </li>
-          );
-        })}
+        ))}
       </ul>
     </nav>
   );
