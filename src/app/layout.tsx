@@ -1,18 +1,12 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
-import { Bricolage_Grotesque, JetBrains_Mono, Noto_Nastaliq_Urdu } from 'next/font/google';
+import { JetBrains_Mono, Noto_Nastaliq_Urdu } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
 import { JsonLd, person } from '@/lib/seo/json-ld';
 import { siteUrl } from '@/lib/seo/site';
-
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -47,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full antialiased ${bricolage.variable} ${jetbrainsMono.variable} ${nastaliq.variable}`}
+      className={`h-full antialiased ${jetbrainsMono.variable} ${nastaliq.variable}`}
     >
       <body className="min-h-full">
         {/* Dark by default rather than following the OS (D11) — the design is built for it.

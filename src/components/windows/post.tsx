@@ -15,22 +15,22 @@ import { readingTime } from './writing';
  */
 const MDX = {
   h2: (props: React.ComponentProps<'h2'>) => (
-    <h2 className="mt-7 mb-2.5 text-[19px] leading-[1.25] font-bold tracking-[-0.01em]" {...props} />
+    <h2 className="mt-7 mb-2.5 text-[13.5px] leading-[1.25] font-bold tracking-[-0.01em]" {...props} />
   ),
   h3: (props: React.ComponentProps<'h3'>) => (
-    <h3 className="mt-5 mb-2 text-[15.5px] font-bold" {...props} />
+    <h3 className="mt-5 mb-2 text-[13px] font-bold" {...props} />
   ),
   p: (props: React.ComponentProps<'p'>) => (
-    <p className="my-3 text-[15.5px] leading-[1.65] text-pretty text-text-secondary" {...props} />
+    <p className="my-3 text-[13px] leading-[1.65] text-pretty text-text-secondary" {...props} />
   ),
   ul: (props: React.ComponentProps<'ul'>) => (
-    <ul className="my-3 flex list-disc flex-col gap-1.5 pl-5 text-[15.5px] leading-[1.6] text-text-secondary" {...props} />
+    <ul className="my-3 flex list-disc flex-col gap-1.5 pl-5 text-[13px] leading-[1.6] text-text-secondary" {...props} />
   ),
   ol: (props: React.ComponentProps<'ol'>) => (
-    <ol className="my-3 flex list-decimal flex-col gap-1.5 pl-5 text-[15.5px] leading-[1.6] text-text-secondary" {...props} />
+    <ol className="my-3 flex list-decimal flex-col gap-1.5 pl-5 text-[13px] leading-[1.6] text-text-secondary" {...props} />
   ),
   blockquote: (props: React.ComponentProps<'blockquote'>) => (
-    <blockquote className="my-4 border-l-2 border-accent pl-4 text-[15px] leading-[1.6] text-text-muted italic" {...props} />
+    <blockquote className="my-4 border-l-2 border-accent pl-4 text-[12.5px] leading-[1.6] text-text-muted italic" {...props} />
   ),
   a: (props: React.ComponentProps<'a'>) => (
     <a className="text-accent-alt underline underline-offset-2" {...props} />
@@ -56,11 +56,11 @@ export function PostWindow({ post }: { post: Post }) {
         <span aria-hidden="true"> · </span>
         {readingTime(post)}
       </p>
-      <p className="mt-2.5 mb-5 text-[16px] leading-[1.5] text-pretty text-text">{post.blurb}</p>
+      <p className="mt-2.5 mb-5 text-[13.5px] leading-[1.5] text-pretty text-text">{post.blurb}</p>
       {post.body ? (
         <MDXRemote source={post.body} components={MDX} />
       ) : (
-        <p className="text-[15px] text-text-muted">This one is still a title and a promise.</p>
+        <p className="text-[12.5px] text-text-muted">This one is still a title and a promise.</p>
       )}
       <Link
         href="/writing"

@@ -70,7 +70,7 @@ export function ProjectWindow({ project }: { project: Project }) {
         <span aria-hidden="true">·</span>
         <span>{project.year}</span>
       </p>
-      <p className="mt-3 text-[17px] leading-[1.45] text-pretty">{project.desc}</p>
+      <p className="mt-3 text-[14.5px] leading-[1.45] text-pretty">{project.desc}</p>
       <Link
         href="/projects"
         className="mt-5 inline-block font-mono text-[11px] text-accent-alt hover:underline"

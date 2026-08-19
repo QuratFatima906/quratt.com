@@ -24,7 +24,8 @@
   --color-info: var(--info);
   --color-focus: var(--focus);
 
-  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  /* One family for the whole desktop. A machine that renders itself as an OS has no reason
+     to switch to a proportional face halfway down a window (feedback.md #1). */
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-urdu: var(--font-nastaliq), serif;
 }
@@ -33,7 +34,7 @@
   body {
     background: var(--surface);
     color: var(--text);
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
   }
 
   :focus-visible {
@@ -72,6 +73,22 @@
   .os-window:not([data-initial]) {
     opacity: 0;
     scale: 0.97;
+  }
+}
+
+/*
+ * The other half of centring a window (feedback.md #5). Its `left`/`top` are 50%; this pulls
+ * it back by half its own size, which is the only way to centre a box whose height nobody
+ * knows until it has rendered.
+ *
+ * `transform`, not the `translate` property, because the drag owns `translate` — and the two
+ * are separate properties that compose rather than overwrite. It also has to be a rule and
+ * not an inline style: below `md` a window is a full-bleed sheet, and the `max-md:` utilities
+ * that pin it there could never beat an inline transform.
+ */
+@media (width >= 48rem) {
+  .os-window {
+    transform: translate(-50%, -50%);
   }
 }
 

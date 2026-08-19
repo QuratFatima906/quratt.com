@@ -70,7 +70,7 @@ export function ArchiveWindow({ posts }: { posts: Post[] }) {
             <span className="flex-1">
               <Link
                 href={postHref(post)}
-                className="block text-[17px] leading-[1.3] hover:text-accent"
+                className="block text-[14.5px] leading-[1.3] hover:text-accent"
               >
                 {post.title}
               </Link>

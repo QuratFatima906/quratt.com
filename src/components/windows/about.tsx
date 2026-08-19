@@ -26,7 +26,7 @@ export function AboutWindow({ about }: { about: About }) {
         />
         <div>
           {/* The page's `h1` belongs to the desktop; a window is a section within it. */}
-          <h2 className="text-[34px] leading-[1.05] font-bold tracking-[-0.02em] text-balance">
+          <h2 className="text-[25px] leading-[1.15] font-bold tracking-[-0.03em] text-balance">
             {about.name}
           </h2>
           <p className="mt-1.5 font-mono text-[11.5px] tracking-[0.04em] text-accent">
@@ -37,8 +37,8 @@ export function AboutWindow({ about }: { about: About }) {
           </p>
         </div>
       </div>
-      <p className="mt-5 mb-3 text-[15.5px] leading-[1.62] text-pretty">{about.bio1}</p>
-      <p className="mb-[18px] text-[15.5px] leading-[1.62] text-pretty text-text-secondary">
+      <p className="mt-5 mb-3 text-[13px] leading-[1.75] text-pretty">{about.bio1}</p>
+      <p className="mb-[18px] text-[13px] leading-[1.75] text-pretty text-text-secondary">
         {about.bio2}
       </p>
       <div className="flex flex-wrap gap-[9px] font-mono text-[11px]">
