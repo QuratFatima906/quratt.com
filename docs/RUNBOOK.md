@@ -60,10 +60,24 @@ Production aliases are re-pointed, not rebuilt, so a rollback is seconds and can
 build error.
 
 ```bash
-vercel rollback                  # to the previous production deployment
-vercel rollback <url-or-id>      # to a specific one
-vercel ls                        # confirm which deployment now holds production
+vercel rollback <url-or-id>      # to a specific one — the form that actually works
+vercel alias ls                  # confirm which deployment now holds production
 ```
+
+Use the explicit `<url-or-id>` form. Bare `vercel rollback` prints "No deployment rollback in
+progress" and exits without moving anything (observed during the P8 drill, 2026-08-18); the
+explicit form re-points the production aliases in **2 s** (6 s including the CLI's deployment
+lookup). `vercel alias ls` shows the live assignment — `source` is the deployment, and the rows
+carrying `quratt.com` / `www.quratt.com` are what production serves.
+
+Confirm on the site, not just in the CLI. A success line means the API accepted the change; it
+does not prove the edge is serving the older build. Fingerprint what is actually served:
+
+```bash
+curl -s https://quratt.com/ | grep -oE 'chunks/[a-z0-9_-]+\.js' | sort -u | shasum
+```
+
+Run it before and after — the hash must change. Drilled 2026-08-18 and 2026-08-19.
 
 Roll back first, diagnose second. The previous deployment is known-good; the broken one is still
 in `vercel ls` with its logs intact, and nothing about rolling back destroys it.
@@ -72,8 +86,13 @@ in `vercel ls` with its logs intact, and nothing about rolling back destroys it.
 deploy ran a destructive migration, the rollback leaves old code against a new schema — see
 *Restore the database*. This is why migrations here are additive by default.
 
-To go forward again after a fix, deploy normally, or `vercel promote <url>` to re-point at a
-deployment that already exists and already built.
+To go forward again after a fix, deploy normally, or `vercel promote <url>`.
+
+**`promote` does not always re-point — it can rebuild.** Promoting a *preview* deployment
+rebuilds it, measured at 26 s here, because preview and production builds genuinely differ:
+`NEXT_PUBLIC_SITE_URL` changes and Analytics is gated on `VERCEL_ENV`. It is an instant alias
+move only when the target was already built for production — which is always true of a rollback
+target, and is why rollback is the fast direction.
 
 ---
 

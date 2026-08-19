@@ -51,3 +51,6 @@ next-env.d.ts
 
 # lighthouse
 /.lighthouseci/
+
+# command code
+/.commandcode/

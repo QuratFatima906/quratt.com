@@ -46,7 +46,7 @@ is the proof. A criterion with no evidence counts as unmet.
 | P5 routing & SEO | in review | phase/5-routing-seo | #6 |
 | P6 AI discoverability | in review | phase/6-ai-discoverability | #7 |
 | P7 perf & a11y | in review | phase/7-perf-a11y | #8 |
-| P8 deploy | not started | — | — |
+| P8 deploy | in review | phase/8-deploy | #9 |
 | P9 admin | deferred | — | — |
 
 ---
@@ -769,7 +769,7 @@ regression still fails the build. Deleting a budget because it failed would have
 wrong move; so would leaving a number nobody could ever hit.
 
 ### P8 — Deploy
-**Agent:** main · **Branch:** phase/8-deploy · **Status:** in progress
+**Agent:** main · **Branch:** phase/8-deploy · **Status:** done, pending merge of #9
 
 **Done**
 - First deployment ever: the project had been linked for six days with zero deployments.
@@ -780,6 +780,7 @@ wrong move; so would leaving a number nobody could ever hit.
 - `docs/RUNBOOK.md` — deploy, roll back, rotate a secret, restore the database, DNS
 - Vercel Analytics + Speed Insights in the root layout
 - `scripts/check-bundle.mjs` no longer measures failed responses (below)
+- Rollback drill performed 2026-08-18 and written up in the runbook (below)
 
 **The DNS risk D9 accepted turned out to be zero**
 D9 accepted that nameserver delegation would break any existing MX, TXT or subdomain record.
@@ -847,20 +848,100 @@ are absent from `.next/`, and says to kill by port. Recorded in ENVIRONMENT.md.
 files were deleted and `*.env` added to `.gitignore`; nothing was committed.
 
 **Success criteria**
-- [ ] `https://quratt.com` and `https://www.quratt.com` both serve, `www` redirects —
-      domains attached, nameservers still at GoDaddy. Delegation and the 308 are manual.
-- [~] A PR produces a working preview URL with its own database branch — **half met.** PR #9
-      produced a preview in 34 s, but preview and production resolve to the *same* Neon
-      endpoint (`ep-flat-union-aub31tpr-pooler`); `DATABASE_URL` and every Postgres variable are
-      byte-identical across the two. Preview branching is not enabled, so a preview deployment
-      can currently write to production data.
-- [ ] Production Lighthouse still meets the P7 budgets — met locally against a verified-current
-      server (best-practices 1.0, budgets green); not yet re-run against production.
-- [ ] A rollback is performed once, successfully, and written up in the runbook — the procedure
-      is written; the drill needs a production deploy, which the permission classifier blocked.
+- [x] `https://quratt.com` and `https://www.quratt.com` both serve, `www` redirects —
+      verified live 2026-08-18: `dig` shows `ns1`/`ns2.vercel-dns.com` as the live
+      nameservers (delegation done since the last entry), apex serves `200`, `www` serves
+      `308` → `https://quratt.com/`
+- [x] A PR produces a working preview URL with its own database branch — PR #9 produced a
+      preview in 34 s. Branching was **off** until 2026-08-18, so every preview until then read
+      and wrote the production database. Now verified from the Neon branch list: **2 / 10
+      branches**, `preview/phase/8-deploy` with parent `main`, created by Vercel. Absence of
+      that branch was the original proof it was off; its presence is the proof it is on.
+- [~] Production Lighthouse still meets the P7 budgets — **not a like-for-like comparison, and
+      the record should not pretend otherwise.** The P7 budgets were set against a local server
+      with Lighthouse's simulated desktop throttling. Run against the live origin over a real
+      long-haul connection (Karachi → `bom1`), a single run on 2026-08-19 scored **performance
+      0.90**, failing the 0.98 assertion.
+
+      The failure is measurement, not the site. Core Web Vitals all pass comfortably: LCP 0.9 s
+      (≤ 1.2 s), CLS 0 (≤ 0), TBT 30 ms (≤ 150 ms). The score was dragged down by
+      `server-response-time` reporting 1,640 ms on that one navigation — while four consecutive
+      `curl` measurements immediately after showed TTFB of 271–369 ms with `x-vercel-cache: HIT`
+      and `x-nextjs-prerender: 1`. It was a cold first request in a one-run sample, not a
+      server that is slow.
+
+      **The CI gate against localhost stays the authority**, because it is the only controlled
+      measurement. A remote Lighthouse run measures the observer's network as much as the site,
+      so it belongs in the record as a sanity check, not as a gate.
+
+      The JS budget *is* directly comparable, and passes against production: app code 11.2 KB
+      (≤ 25 KB), total 187.8 KB (≤ 200 KB).
+- [x] A rollback is performed once, successfully, and written up in the runbook — drill run
+      twice, 2026-08-18 and again 2026-08-19 (below)
+
+**Rollback drill**
+Run on 2026-08-18, and independently again on 2026-08-19 after the first run's evidence proved
+unreadable. `vercel rollback <url>` moved `quratt.com` + `www` from `quratt-6ec438ck9` to
+`quratt-al84f8qrv` in **2 s** (6 s including the CLI's deployment lookup), confirmed by
+`vercel alias ls` and by fingerprinting the chunk filenames served at the live domain — they
+changed, so the alias genuinely moved, which a CLI success line alone does not prove.
+
+**Finding:** bare `vercel rollback` with no url prints "No deployment rollback in progress" and
+moves nothing. It reads like a successful no-op. Only the explicit `<url>` form works, and the
+runbook shipped with the wrong one until this drill caught it.
+
+**Second finding:** `promote` is not always an alias move. Promoting a *preview* deployment
+rebuilds it — measured at 26 s — because preview and production builds genuinely differ here
+(`NEXT_PUBLIC_SITE_URL`, and Analytics gated on `VERCEL_ENV`). It is instant only when the
+target was already built for production, which is always true of a rollback target.
+
+**A measurement that could not distinguish its own hypotheses — twice**
+Both times this phase reached a wrong conclusion, the cause was the same shape of error, not
+carelessness about the facts:
+
+- *Preview branching.* Concluded "not enabled" from `vercel env pull` returning identical
+  variables for preview and production. Neon injects branch credentials by webhook at deploy
+  time and never stores them in project settings, so that comparison returns the shared value
+  either way. The conclusion was right; the evidence could not have supported it. The real
+  proof was the Neon branch list.
+- *The rollback drill.* Concluded "the drill never ran" because the live fingerprint was
+  unchanged. But the drill had run and been restored with `promote`, which returns the
+  fingerprint to its original value. "Never happened" and "happened and was undone" are
+  indistinguishable to that test.
+
+Both times the fix was to find evidence that differs between the hypotheses — a branch that
+either exists or does not, a fingerprint sampled *during* the rolled-back state — rather than
+evidence that merely looked relevant.
+
+**A P7 finding that was wrong**
+P7 recorded, as a real bug deliberately left unfixed, that Next marks the two Latin fonts for
+preloading but "no `<link rel="preload" as="font">` reaches the HTML", calling it a framework
+gap. It is not. Next emits the preloads as an HTTP `Link` header — verified on production and
+on a local `next start`:
+
+```
+link: </_next/static/.../017d9bea37084d9b-s.p...woff2>; rel=preload; as="font"; crossorigin=""
+```
+
+Header-based preload is discovered *before* the HTML is parsed, so it is the stronger of the two
+mechanisms, not a missing one. P7 looked only in the HTML body and concluded from its absence
+there. Whether this fully explains P7's 2.5 s mobile LCP is a separate question that has not
+been re-measured; what is now certain is that the stated cause was not the cause.
 
 **Outstanding, all requiring a browser**
-1. Enable Neon preview branching (store `store_znOXhKXZaRgrhqaD`) — previews write to prod today
-2. `www` → apex 308 (Vercel → Domains; no CLI equivalent)
-3. GoDaddy nameservers → `ns1`/`ns2.vercel-dns.com`
-4. Approve a production deploy so the rollback drill can run
+1. ~~Enable Neon preview branching~~ — done. "Create Database Branch For Deployment → Preview"
+   plus "Require Active Resource Before Deploy" on the project connection. Verify by confirming
+   a `preview/phase/8-deploy` branch appears in Neon after the next preview deployment.
+
+   **Watch the branch cap.** The free plan allows 10 branches, and the Vercel-managed
+   integration cleans branches up on Vercel's *deployment retention* (6 months by default), not
+   on git branch deletion. Ten PRs over six months exhausts it, and the failure mode is a
+   deployment that cannot provision its database. The Neon-managed integration deletes on git
+   branch deletion instead, if this becomes a problem.
+2. ~~`www` → apex 308~~ — done. Verified live 2026-08-18: `curl -sI https://www.quratt.com`
+   returns `308` with `location: https://quratt.com/`
+3. ~~GoDaddy nameservers → `ns1`/`ns2.vercel-dns.com`~~ — done. `dig +short quratt.com NS`
+   returns `ns1.vercel-dns.com.` / `ns2.vercel-dns.com.`; `vercel domains inspect` shows both
+   nameservers current and verified
+4. ~~Approve a production deploy so the rollback drill can run~~ — done. Drill performed and
+   written up 2026-08-18 (above)
