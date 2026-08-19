@@ -44,7 +44,7 @@ export function GET(request: Request) {
         {/* The site's own chrome, so a shared card is recognisably the same object as the page. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: c.accent, fontSize: 26 }}>
           <div style={{ width: 12, height: 12, borderRadius: 6, background: c.accent }} />
-          qurat.os
+          qurat
         </div>
 
         <div

@@ -112,7 +112,7 @@ export function MenuBar() {
 
   return (
     <header className="absolute inset-x-0 top-0 z-9000 flex h-9 items-center gap-3 border-b border-border bg-surface-chrome px-3.5 font-mono text-[11px] tracking-[0.03em]">
-      <span className="flex-none font-bold text-accent">qurat.os</span>
+      <span className="flex-none font-bold text-accent">qurat</span>
 
       <nav
         ref={navRef}
@@ -239,20 +239,29 @@ function Clock() {
   const [time, setTime] = useState('');
 
   useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setTime(
-        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-      );
-    };
+    // `en-US` rather than the visitor's locale: the format is a design decision (12-hour with
+    // a meridiem, like the machine this desktop is imitating), not a localisation of one.
+    // Lower-cased because nothing else in the chrome shouts.
+    const format = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const tick = () => setTime(format.format(new Date()).toLowerCase());
     tick();
     const timer = setInterval(tick, 20_000);
     return () => clearInterval(timer);
   }, []);
 
-  // Empty until mounted, so the server's clock never mismatches the visitor's.
+  // Empty until mounted, so the server's clock never mismatches the visitor's. Right-aligned
+  // in a fixed slot so the hour losing its tens digit at 1pm does not shove the theme toggle.
+  // `9ch` rather than the eight characters of "11:03 am", because the bar's letter-spacing is
+  // charged per character and eight of them no longer fit in 8ch — it wrapped on mobile.
   return (
-    <span aria-hidden="true" className="w-[5ch] flex-none text-text tabular-nums">
+    <span
+      aria-hidden="true"
+      className="w-[9ch] flex-none text-right whitespace-nowrap text-text tabular-nums"
+    >
       {time}
     </span>
   );

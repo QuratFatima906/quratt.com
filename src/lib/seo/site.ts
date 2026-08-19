@@ -17,7 +17,7 @@ export function absolute(path: string): string {
   return new URL(path, siteUrl).toString();
 }
 
-export const SITE_NAME = 'qurat.os';
+export const SITE_NAME = 'qurat';
 
 /**
  * The identity graph, from docs/CONTENT.md. All four `sameAs` links belong in it: entity

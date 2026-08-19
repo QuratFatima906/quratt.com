@@ -95,7 +95,7 @@ function Surface({ bodies, children }: { bodies: WindowBodies; children?: ReactN
         windows
       ) : (
         <main aria-label="Desktop">
-          <h1 className="sr-only">Qurat ul ain Fatima — qurat.os</h1>
+          <h1 className="sr-only">Qurat ul ain Fatima — qurat</h1>
           {windows}
         </main>
       )}
