@@ -17,7 +17,8 @@ import { keyForPath, type WindowKey } from '@/lib/windows';
 export type Wallpaper = 'dots' | 'grid' | 'gradient';
 
 type Os = {
-  /** Open windows in stacking order — last is on top. Also exactly what the taskbar shows. */
+  /** Open windows in stacking order — last is on top. The dock shows the same set, but
+   *  sorted by the registry so its icons do not move when one is raised. */
   open: readonly WindowKey[];
   /** The window the URL names (D4). Always in `open`, and the one that renders as `<main>`. */
   focused: WindowKey | null;
@@ -25,7 +26,6 @@ type Os = {
   focus: { key: WindowKey; nonce: number } | null;
   openWindow: (key: WindowKey) => void;
   closeWindow: (key: WindowKey) => void;
-  closeAll: () => void;
   raise: (key: WindowKey) => void;
   wallpaper: Wallpaper;
   setWallpaper: (wallpaper: Wallpaper) => void;
@@ -149,16 +149,6 @@ export function OsProvider({
     [focused, router],
   );
 
-  const closeAll = useCallback(() => {
-    openers.current.clear();
-    setStored([]);
-    setFocus(null);
-    if (focused) {
-      dismissed.current = focused;
-      router.push('/');
-    }
-  }, [focused, router]);
-
   /** Clicking a window raises it, but does not steal focus — the click already moved it. */
   const raise = toFront;
 
@@ -169,13 +159,12 @@ export function OsProvider({
       focus,
       openWindow,
       closeWindow,
-      closeAll,
       raise,
       wallpaper,
       setWallpaper,
       initial,
     }),
-    [open, focused, focus, openWindow, closeWindow, closeAll, raise, wallpaper, initial],
+    [open, focused, focus, openWindow, closeWindow, raise, wallpaper, initial],
   );
 
   return <OsContext.Provider value={value}>{children}</OsContext.Provider>;

@@ -57,7 +57,15 @@ test.describe('desktop', () => {
     expect(parked.x + parked.width).toBeGreaterThanOrEqual(90); // still grabbable
     expect(parked.y).toBeLessThanOrEqual(page.viewportSize()!.height - 40);
 
-    await page.getByRole('button', { name: 'close all' }).click();
+    // Nothing closes everything at once any more — each window goes on its own terms, which
+    // means raising it from the dock first, because a centred window buries the one below it.
+    for (const label of ['about.md', 'projects/', 'entropy.exe']) {
+      await taskbar(page).getByRole('button', { name: label }).click();
+      await page
+        .getByRole('region', { name: label })
+        .getByRole('button', { name: `Close ${label}` })
+        .click();
+    }
     await expect(openWindows(page)).toHaveCount(0);
     // The dock carries no empty-state text — nothing open simply means nothing in it.
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(0);
@@ -221,7 +229,7 @@ test.describe('mobile', () => {
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('navigation', { name: 'Sections' }).getByRole('button')).toHaveCount(
-      11, // ten windows plus `close all`
+      10, // one per window, and nothing else — `close all` is gone
     );
   });
 
