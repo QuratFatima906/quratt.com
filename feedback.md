@@ -21,6 +21,7 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
 | 15 | A distinct icon per window, for the dock | ✅ |
 | 16 | The copy button becomes a copy icon | ✅ |
 | 17 | `send →` back to purple, without losing the matched height | ✅ |
+| 18 | Theme toggle drops its label, keeps the glyph | ✅ |
 
 ## Decisions taken with the owner
 
@@ -94,6 +95,15 @@ Owner feedback on the shipped OS shell. Branch: `feedback/round-1`.
     line-height, the `on-accent` ink — and each call site brings its own fill: `accent-alt`
     for send, `accent` for download. The thing they must never diverge on again is height,
     and they no longer can. Measured 34.39px for both, in both themes.
+
+18. **Theme toggle.** The word goes; the ◐ stays, in a 28px square that matches the
+    hamburger beside it. The `aria-label` was already the real name — the visible word said
+    "theme", not what pressing it would do to the theme.
+
+    Knock-on: the freed ~45px meant ten menu items started fitting at 1024px, so the
+    overflow-panel test had nothing to click. It now runs at 900px and asserts the `more`
+    button exists before clicking it, so the next time the bar gets lighter this fails as
+    "the bar stopped overflowing" instead of as a mystery timeout.
 
 ### Also fixed along the way
 
