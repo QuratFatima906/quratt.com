@@ -1,3 +1,4 @@
+import { CTA } from '@/components/ui/cta';
 import type { CvRow } from '@/lib/content/schema';
 
 /**
@@ -37,11 +38,7 @@ export function ResumeWindow({ rows }: { rows: CvRow[] }) {
         ))}
       </ol>
 
-      <a
-        href={RESUME_PDF}
-        download
-        className="mt-[18px] inline-block rounded-[5px] bg-accent px-[13px] py-2 text-[11px] text-on-accent transition-opacity duration-150 hover:opacity-90"
-      >
+      <a href={RESUME_PDF} download className={`mt-[18px] ${CTA}`}>
         download the real one ↓
       </a>
     </div>

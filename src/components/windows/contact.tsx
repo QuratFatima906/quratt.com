@@ -1,4 +1,5 @@
 import { CopyButton } from '@/components/ui/copy-button';
+import { CTA } from '@/components/ui/cta';
 import type { Contact } from '@/lib/content/schema';
 
 /**
@@ -35,10 +36,7 @@ export function ContactWindow({ contact }: { contact: Contact }) {
         </span>
       </p>
 
-      <a
-        href={mailto}
-        className="mt-3.5 inline-block rounded-[5px] bg-accent-alt px-[13px] py-2 text-on-accent transition-opacity duration-150 hover:opacity-90"
-      >
+      <a href={mailto} className={`mt-3.5 ${CTA}`}>
         send →
       </a>
     </div>
