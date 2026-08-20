@@ -137,39 +137,22 @@ test.describe('desktop', () => {
     await expect(writes).toBeFocused();
   });
 
-  test('the overflow panel closes on use and hands focus back to its own button', async ({
-    page,
-  }) => {
-    // Wide enough for the desktop bar, narrow enough that ten items cannot fit. The margin
-    // is not generous: every gram of chrome that leaves the right-hand side gives the nav
-    // more room, and 1024 stopped overflowing the moment `close all` and the word "theme"
-    // went. `menu-overflow.spec.ts` prints what actually fits at each width.
-    await page.setViewportSize({ width: 900, height: 768 });
+  test('every menu item fits at the narrowest desktop width', async ({ page }) => {
+    // The narrowest width where the desktop nav shows (md = 768). With plain menu labels the
+    // bar has room to spare here — the overflow panel is a safety net for a future, heavier
+    // label set, not a surface that appears today.
+    await page.setViewportSize({ width: 768, height: 768 });
     await page.goto('/');
     // `document.fonts.status` reads "loaded" while idle, so it is not a signal that the mono
     // face has arrived — let the post-`fonts.ready` re-measure land before touching anything.
     await page.waitForTimeout(600);
 
-    const more = page.getByRole('button', { name: /^more \(/ });
-    // Asserted before the click so a bar that stops overflowing fails as a bar that stopped
-    // overflowing, rather than as a mystery timeout on an element that is not there.
-    await expect(more, 'the nav must overflow at this width for the test to mean anything').toBeVisible();
-    await more.click();
-    await expect(page.locator('[data-overflow-panel]')).toBeVisible();
-    // Whichever windows overflow — that is the measurement's business, not this test's.
-    const popup = page.locator('[data-overflow-panel]');
-    const item = popup.getByRole('button').first();
-    const label = (await item.innerText()).trim();
-    await item.click();
-
-    await expect(popup).toHaveCount(0);
-    const opened = page.getByRole('region', { name: label });
-    await expect(opened).toBeFocused();
-
-    await opened.getByRole('button', { name: `Close ${label}` }).click();
-    // Focus cannot return to the panel item that opened the window — it no longer exists — so
-    // it returns to the button that owns the panel.
-    await expect(more).toBeFocused();
+    const nav = page.getByRole('navigation', { name: 'Sections' });
+    // Nine menu items, all visible — no "more (n) ▾" needed. `menu-overflow.spec.ts` owns
+    // the pixel accounting; this test only pins the first and last item being on the bar.
+    await expect(nav.getByRole('button', { name: /^more \(/ })).toHaveCount(0);
+    await expect(nav.getByRole('button', { name: 'about' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'entropy' })).toBeVisible();
   });
 
   for (const theme of ['dark', 'light'] as const) {
