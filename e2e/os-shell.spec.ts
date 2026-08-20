@@ -137,11 +137,12 @@ test.describe('desktop', () => {
     await expect(writes).toBeFocused();
   });
 
-  test('every menu item fits at the narrowest desktop width', async ({ page }) => {
-    // The narrowest width where the desktop nav shows (md = 768). With plain menu labels the
-    // bar has room to spare here — the overflow panel is a safety net for a future, heavier
-    // label set, not a surface that appears today.
-    await page.setViewportSize({ width: 768, height: 768 });
+  test('every menu item fits on a laptop-width bar', async ({ page }) => {
+    // Not 768: with plain labels the bar clears that width by ~10px on macOS and misses it on
+    // Linux, where the mono face renders wider — so `md` is exactly where the overflow panel
+    // starts earning its keep, and asserting either way there tests the font, not the bar.
+    // 1024 has ~250px to spare on both. `menu-overflow.spec.ts` prints the real numbers.
+    await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/');
     // `document.fonts.status` reads "loaded" while idle, so it is not a signal that the mono
     // face has arrived — let the post-`fonts.ready` re-measure land before touching anything.
