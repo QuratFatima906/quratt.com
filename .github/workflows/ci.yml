@@ -79,8 +79,10 @@ jobs:
     name: End-to-end and accessibility
     runs-on: ubuntu-latest
     needs: build
-    # Takes ~4 min. `playwright install-deps` shells out to apt and has hung indefinitely;
-    # without this, GitHub's 6-hour default let it burn runner time unnoticed.
+    # Takes ~4 min. The ceiling is the backstop, not the fix: `install-deps` is bounded and
+    # retried below, so a stalled apt mirror can cost at most ~9 min instead of the whole job.
+    # This stays because GitHub's default is six hours, and a job that hangs some other way
+    # should still stop.
     timeout-minutes: 20
 
     # Most routes are prerendered and need nothing at request time, but a path outside
@@ -121,10 +123,34 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
-      - run: pnpm exec playwright install --with-deps chromium webkit
+      # Browsers only — no apt. Skipped entirely when the cache hits.
+      - run: pnpm exec playwright install chromium webkit
         if: steps.pw-cache.outputs.cache-hit != 'true'
-      - run: pnpm exec playwright install-deps chromium webkit
-        if: steps.pw-cache.outputs.cache-hit == 'true'
+
+      # The system libraries webkit needs are not on the runner image and cannot be cached:
+      # they land in /usr, not in `~/.cache/ms-playwright`. So this runs every time, and it
+      # is the only unbounded step in the job — `install-deps` shells out to apt, which has
+      # no timeout of its own.
+      #
+      # On 2026-08-19 it stalled 18 minutes: every `azure.archive.ubuntu.com` mirror returned
+      # `Ign`, it fell back to `archive.ubuntu.com`, and sat there until the job's own
+      # 20-minute ceiling cancelled it. A re-run of the same commit passed in 4m15s. That is
+      # the second time this has hung — the first burned 28 minutes before the ceiling existed.
+      #
+      # Bounded and retried, a stalled mirror now costs three minutes and a fresh attempt
+      # rather than the whole job. The apt lists are cleared between tries so the retry
+      # re-resolves rather than sitting on the same dead mirror.
+      - name: Install Playwright system dependencies
+        run: |
+          for attempt in 1 2 3; do
+            if timeout 180 pnpm exec playwright install-deps chromium webkit; then
+              exit 0
+            fi
+            echo "::warning::playwright install-deps attempt $attempt failed or timed out; retrying"
+            sudo rm -rf /var/lib/apt/lists/*
+          done
+          echo "::error::playwright install-deps failed three times; apt is unreachable"
+          exit 1
 
       - uses: actions/download-artifact@v4
         with:
