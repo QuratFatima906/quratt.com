@@ -15,7 +15,7 @@ import { windowDef } from '@/lib/windows';
 export const metadata = pageMetadata({
   title: 'Projects',
   description:
-    'Things Qurat ul ain Fatima has built — systems, tools and the occasional silly one. Filter by tag.',
+    'Things Qurat ul Ain Fatima has built — systems, tools and the occasional silly one. Filter by tag.',
   path: '/projects',
 });
 

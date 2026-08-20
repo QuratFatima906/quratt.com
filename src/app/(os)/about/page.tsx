@@ -10,7 +10,7 @@ import { windowDef } from '@/lib/windows';
 export const metadata = pageMetadata({
   title: 'About',
   description:
-    'Qurat ul ain Fatima — senior software engineer in Lahore, eight years in. Architecture, APIs and scale across AWS and GCP.',
+    'Qurat ul Ain Fatima — senior software engineer in Lahore, eight years in. Architecture, APIs and scale across AWS and GCP.',
   path: '/about',
   type: 'profile',
 });

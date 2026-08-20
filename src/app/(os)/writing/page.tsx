@@ -11,7 +11,7 @@ import { isIndexable, windowDef } from '@/lib/windows';
  */
 export const metadata = pageMetadata({
   title: 'Writing',
-  description: 'Posts by Qurat ul ain Fatima on databases, caches, and the bugs in between.',
+  description: 'Posts by Qurat ul Ain Fatima on databases, caches, and the bugs in between.',
   path: '/writing',
   index: isIndexable('writes'),
 });

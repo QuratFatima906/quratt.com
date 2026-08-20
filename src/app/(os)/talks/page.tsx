@@ -8,7 +8,7 @@ import { isIndexable, windowDef } from '@/lib/windows';
 /** Disabled in the UI (D13), so the route works but stays out of the index and the sitemap. */
 export const metadata = pageMetadata({
   title: 'Talks',
-  description: 'Talks and workshops by Qurat ul ain Fatima, and how to invite her to one.',
+  description: 'Talks and workshops by Qurat ul Ain Fatima, and how to invite her to one.',
   path: '/talks',
   index: isIndexable('talks'),
 });

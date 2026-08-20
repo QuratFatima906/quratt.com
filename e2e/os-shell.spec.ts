@@ -13,7 +13,7 @@ test.describe('desktop', () => {
     await page.goto('/');
     await expect(openWindows(page)).toHaveAttribute('data-window', 'about');
 
-    for (const label of ['projects/', 'now.txt', 'entropy.exe']) await menu(page, label).click();
+    for (const label of ['projects', 'now', 'entropy']) await menu(page, label).click();
     await expect(openWindows(page)).toHaveCount(4);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(4);
 
@@ -24,13 +24,13 @@ test.describe('desktop', () => {
 
     // Every window opens dead centre on top of the last, so a buried one cannot be clicked
     // at all — the dock is the only way to raise it, which is precisely why it exists.
-    await taskbar(page).getByRole('button', { name: 'about.md' }).click();
+    await taskbar(page).getByRole('button', { name: 'about' }).click();
     expect(await zOf('about')).toBeGreaterThan(await zOf('toy'));
 
-    // Centred windows bury each other completely, so `now.txt` has to be raised before its
+    // Centred windows bury each other completely, so `now` has to be raised before its
     // own × is reachable at all. That round trip is the dock earning its place.
-    await taskbar(page).getByRole('button', { name: 'now.txt' }).click();
-    await page.getByRole('region', { name: 'now.txt' }).getByRole('button', { name: 'Close now.txt' }).click();
+    await taskbar(page).getByRole('button', { name: 'now' }).click();
+    await page.getByRole('region', { name: 'now' }).getByRole('button', { name: 'Close now' }).click();
     await expect(openWindows(page)).toHaveCount(3);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(3);
 
@@ -59,7 +59,7 @@ test.describe('desktop', () => {
 
     // Nothing closes everything at once any more — each window goes on its own terms, which
     // means raising it from the dock first, because a centred window buries the one below it.
-    for (const label of ['about.md', 'projects/', 'entropy.exe']) {
+    for (const label of ['about', 'projects', 'entropy']) {
       await taskbar(page).getByRole('button', { name: label }).click();
       await page
         .getByRole('region', { name: label })
@@ -76,7 +76,7 @@ test.describe('desktop', () => {
     browserName,
   }) => {
     await page.goto('/');
-    const opener = menu(page, 'uses.txt');
+    const opener = menu(page, 'uses');
     await opener.focus();
     await page.keyboard.press('Enter');
 
@@ -84,8 +84,8 @@ test.describe('desktop', () => {
     await expect(window).toBeFocused();
 
     const close = page
-      .getByRole('region', { name: 'uses.txt' })
-      .getByRole('button', { name: 'Close uses.txt' });
+      .getByRole('region', { name: 'uses' })
+      .getByRole('button', { name: 'Close uses' });
     // WebKit puts buttons in the tab order only when macOS Full Keyboard Access is on, and
     // Playwright cannot toggle that. The rest of the journey is identical either way.
     if (browserName === 'webkit') await close.focus();
@@ -95,7 +95,7 @@ test.describe('desktop', () => {
       // button — so the keyboard can do everything the pointer can.
       await page.keyboard.press('Tab');
       await expect(
-        page.getByRole('region', { name: 'uses.txt' }).getByRole('link', { name: 'uses.txt' }),
+        page.getByRole('region', { name: 'uses' }).getByRole('link', { name: 'uses' }),
       ).toBeFocused();
       await page.keyboard.press('Tab');
     }
@@ -108,7 +108,7 @@ test.describe('desktop', () => {
 
   test('unavailable windows stay reachable, say why, and open nothing', async ({ page }) => {
     await page.goto('/');
-    const writes = menu(page, 'writes.md');
+    const writes = menu(page, 'writes');
 
     await expect(writes).toHaveAttribute('aria-disabled', 'true');
     // Not the `disabled` attribute: that would take it out of the tab order, and then the
@@ -137,39 +137,23 @@ test.describe('desktop', () => {
     await expect(writes).toBeFocused();
   });
 
-  test('the overflow panel closes on use and hands focus back to its own button', async ({
-    page,
-  }) => {
-    // Wide enough for the desktop bar, narrow enough that ten items cannot fit. The margin
-    // is not generous: every gram of chrome that leaves the right-hand side gives the nav
-    // more room, and 1024 stopped overflowing the moment `close all` and the word "theme"
-    // went. `menu-overflow.spec.ts` prints what actually fits at each width.
-    await page.setViewportSize({ width: 900, height: 768 });
+  test('every menu item fits on a laptop-width bar', async ({ page }) => {
+    // Not 768: with plain labels the bar clears that width by ~10px on macOS and misses it on
+    // Linux, where the mono face renders wider — so `md` is exactly where the overflow panel
+    // starts earning its keep, and asserting either way there tests the font, not the bar.
+    // 1024 has ~250px to spare on both. `menu-overflow.spec.ts` prints the real numbers.
+    await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/');
     // `document.fonts.status` reads "loaded" while idle, so it is not a signal that the mono
     // face has arrived — let the post-`fonts.ready` re-measure land before touching anything.
     await page.waitForTimeout(600);
 
-    const more = page.getByRole('button', { name: /^more \(/ });
-    // Asserted before the click so a bar that stops overflowing fails as a bar that stopped
-    // overflowing, rather than as a mystery timeout on an element that is not there.
-    await expect(more, 'the nav must overflow at this width for the test to mean anything').toBeVisible();
-    await more.click();
-    await expect(page.locator('[data-overflow-panel]')).toBeVisible();
-    // Whichever windows overflow — that is the measurement's business, not this test's.
-    const popup = page.locator('[data-overflow-panel]');
-    const item = popup.getByRole('button').first();
-    const label = (await item.innerText()).trim();
-    await item.click();
-
-    await expect(popup).toHaveCount(0);
-    const opened = page.getByRole('region', { name: label });
-    await expect(opened).toBeFocused();
-
-    await opened.getByRole('button', { name: `Close ${label}` }).click();
-    // Focus cannot return to the panel item that opened the window — it no longer exists — so
-    // it returns to the button that owns the panel.
-    await expect(more).toBeFocused();
+    const nav = page.getByRole('navigation', { name: 'Sections' });
+    // Nine menu items, all visible — no "more (n) ▾" needed. `menu-overflow.spec.ts` owns
+    // the pixel accounting; this test only pins the first and last item being on the bar.
+    await expect(nav.getByRole('button', { name: /^more \(/ })).toHaveCount(0);
+    await expect(nav.getByRole('button', { name: 'about' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'entropy' })).toBeVisible();
   });
 
   for (const theme of ['dark', 'light'] as const) {
@@ -178,10 +162,10 @@ test.describe('desktop', () => {
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
 
-      for (const label of ['projects/', 'resume.pdf']) await menu(page, label).click();
+      for (const label of ['projects', 'resume']) await menu(page, label).click();
       await expect(openWindows(page)).toHaveCount(3);
       // A tooltip is part of the page too, so open one before the sweep.
-      await menu(page, 'talks.md').focus();
+      await menu(page, 'talks').focus();
       await expect(page.getByRole('tooltip')).toBeVisible();
       // Windows fade in over 160ms, and axe measures contrast against what is on screen —
       // running mid-transition reads translucent text as failing a ratio it passes at rest.
@@ -236,7 +220,7 @@ test.describe('mobile', () => {
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('navigation', { name: 'Sections' }).getByRole('button')).toHaveCount(
-      10, // one per window, and nothing else — `close all` is gone
+      9, // one per menu window — contact moved to the email icon
     );
   });
 

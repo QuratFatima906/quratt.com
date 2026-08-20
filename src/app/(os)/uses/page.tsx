@@ -6,7 +6,7 @@ import { windowDef } from '@/lib/windows';
 
 export const metadata = pageMetadata({
   title: 'Uses',
-  description: 'The editor, shell, machine and stack Qurat ul ain Fatima actually works in.',
+  description: 'The editor, shell, machine and stack Qurat ul Ain Fatima actually works in.',
   path: '/uses',
 });
 

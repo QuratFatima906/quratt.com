@@ -9,7 +9,7 @@ import { absolute, PERSON } from './site';
  */
 export const FEED_TITLE = `${PERSON.name} — writing`;
 export const FEED_DESCRIPTION =
-  'Posts on databases, caches, and the bugs in between, by Qurat ul ain Fatima.';
+  'Posts on databases, caches, and the bugs in between, by Qurat ul Ain Fatima.';
 
 /** The five characters XML cares about. A post title is content, not markup. */
 export function xmlEscape(value: string): string {

@@ -14,7 +14,7 @@ import { seedSchema } from '@/lib/content/schema';
 
 export const seed = seedSchema.parse({
   about: {
-    name: 'Qurat ul ain Fatima',
+    name: 'Qurat ul Ain Fatima',
     role: 'senior software engineer',
     meta: 'Lahore · PKT · shipping since 2017',
     bio1: 'I like the problems that look boring from the outside and turn out to have a trapdoor in them. Retries. Cache invalidation. The eleventh service, the one that only misbehaves in the account nobody gave you access to. I read the whole runbook, including the step that ruins your afternoon.',

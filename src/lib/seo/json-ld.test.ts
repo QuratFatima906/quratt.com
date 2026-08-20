@@ -9,7 +9,7 @@ const stamps = { createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-06
 
 const about: About = {
   id: 1,
-  name: 'Qurat ul ain Fatima',
+  name: 'Qurat ul Ain Fatima',
   role: 'senior software engineer',
   meta: 'Lahore · PKT',
   bio1: 'Bio one.',

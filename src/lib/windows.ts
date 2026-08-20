@@ -35,6 +35,8 @@ export type WindowDef = {
   readonly key: WindowKey;
   /** What the OS calls the window everywhere it appears. Also its filename in the design. */
   readonly label: string;
+  /** The plain name the menu bar shows — no `.md`, `/`, `.txt` file-type suffix (D-something). */
+  readonly menuLabel: string;
   readonly icon: WindowIcon;
   /** The URL that focuses this window (D4). `null` for a window that has no URL at all. */
   readonly route: string | null;
@@ -48,25 +50,42 @@ export type WindowDef = {
 };
 
 export const WINDOWS: readonly WindowDef[] = [
-  { key: 'about', label: 'about.md', icon: 'person', route: '/about', available: true, width: 540 }, // prettier-ignore
-  { key: 'projects', label: 'projects/', icon: 'folder', route: '/projects', available: true, width: 420 }, // prettier-ignore
+  { key: 'about', label: 'about.md', menuLabel: 'about', icon: 'person', route: '/about', available: true, width: 540 }, // prettier-ignore
+  { key: 'projects', label: 'projects/', menuLabel: 'projects', icon: 'folder', route: '/projects', available: true, width: 420 }, // prettier-ignore
   // The route map calls this `/writing`; the design calls the window `writes.md`. Both stay.
-  { key: 'writes', label: 'writes.md', icon: 'pen', route: '/writing', available: false, width: 420 }, // prettier-ignore
-  { key: 'talks', label: 'talks.md', icon: 'mic', route: '/talks', available: false, width: 430 }, // prettier-ignore
-  { key: 'reads', label: 'reads.md', icon: 'book', route: '/reads', available: false, width: 360 }, // prettier-ignore
-  { key: 'now', label: 'now.txt', icon: 'clock', route: '/now', available: true, width: 400 }, // prettier-ignore
-  { key: 'uses', label: 'uses.txt', icon: 'sliders', route: '/uses', available: true, width: 460 }, // prettier-ignore
+  { key: 'writes', label: 'writes.md', menuLabel: 'writes', icon: 'pen', route: '/writing', available: false, width: 420 }, // prettier-ignore
+  { key: 'talks', label: 'talks.md', menuLabel: 'talks', icon: 'mic', route: '/talks', available: false, width: 430 }, // prettier-ignore
+  { key: 'reads', label: 'reads.md', menuLabel: 'reads', icon: 'book', route: '/reads', available: false, width: 360 }, // prettier-ignore
+  { key: 'now', label: 'now.txt', menuLabel: 'now', icon: 'clock', route: '/now', available: true, width: 400 }, // prettier-ignore
+  { key: 'uses', label: 'uses.txt', menuLabel: 'uses', icon: 'sliders', route: '/uses', available: true, width: 460 }, // prettier-ignore
   // `cv` became `resume` in D12 — key, label and route all changed, and no `/cv` is kept.
-  { key: 'resume', label: 'resume.pdf', icon: 'download', route: '/resume', available: true, width: 480 }, // prettier-ignore
-  { key: 'contact', label: 'say-hi.eml', icon: 'mail', route: '/contact', available: true, width: 360 }, // prettier-ignore
+  { key: 'resume', label: 'resume.pdf', menuLabel: 'resume', icon: 'download', route: '/resume', available: true, width: 480 }, // prettier-ignore
+  { key: 'contact', label: 'say-hi.eml', menuLabel: 'say-hi', icon: 'mail', route: '/contact', available: true, width: 360 }, // prettier-ignore
   // The route map in ARCHITECTURE.md does not name the toy, and P5 decided it stays that way:
   // it holds no content, so a URL for it would be an indexable page with nothing to read on it.
   // It opens as a background window only.
-  { key: 'toy', label: 'entropy.exe', icon: 'grid', route: null, available: true, width: 220 }, // prettier-ignore
+  { key: 'toy', label: 'entropy.exe', menuLabel: 'entropy', icon: 'grid', route: null, available: true, width: 220 }, // prettier-ignore
 ];
 
 /** What sits on the desktop itself, in the design's order. */
 export const DESKTOP_ICONS: readonly WindowKey[] = ['about', 'resume', 'toy'];
+
+/**
+ * What the menu bar lists, in the design's order. The contact window is deliberately absent:
+ * it is reachable as the email icon beside the wallpaper picker, so a `say-hi` text row in
+ * the middle of the sections would be a second, redundant way to reach the same window.
+ */
+export const MENU_KEYS: readonly WindowKey[] = [
+  'about',
+  'projects',
+  'writes',
+  'talks',
+  'reads',
+  'now',
+  'uses',
+  'resume',
+  'toy',
+];
 
 const BY_KEY = new Map(WINDOWS.map((w) => [w.key, w]));
 

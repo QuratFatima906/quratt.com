@@ -7,7 +7,7 @@ import { expect, test, type Page } from '@playwright/test';
  * fail a reader, and the whole phase exists to make the OS readable without JavaScript.
  */
 const ROUTES: [path: string, h1: string, content: string][] = [
-  ['/', 'Qurat ul ain Fatima — qurat', 'trapdoor'],
+  ['/', 'Qurat ul Ain Fatima — qurat', 'trapdoor'],
   ['/about', 'about.md', 'trapdoor'],
   ['/projects', 'projects/', 'quietwatch'],
   ['/projects/quietwatch', 'quietwatch', 'only pings you when it actually matters'],
@@ -59,7 +59,7 @@ test.describe('with JavaScript disabled', () => {
 
   test('links between windows are real URLs, not handlers', async ({ page }) => {
     await page.goto('/about');
-    const link = page.getByRole('link', { name: /resume\.pdf/ });
+    const link = page.getByRole('link', { name: /resume/ });
     await expect(link).toHaveAttribute('href', '/resume');
     // Forced because Playwright's stability check runs `requestAnimationFrame` in the page's
     // main world, which cannot execute with scripting off — not because the link is obscured.
@@ -134,7 +134,7 @@ test.describe('navigation', () => {
     // `display: none` subtree is out of the accessibility tree and out of every crawler's
     // reach. The served HTML for each URL still carries exactly one `h1` — the route-map
     // tests above assert that on a cold load.
-    await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'now.txt', exact: true }).click(); // prettier-ignore
+    await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'now', exact: true }).click(); // prettier-ignore
     await page.getByRole('link', { name: 'now.txt', exact: true }).click();
 
     await expect(page).toHaveURL('/now');
@@ -155,7 +155,7 @@ test.describe('navigation', () => {
 
   test('closing the focused window returns to the desktop', async ({ page }) => {
     await page.goto('/uses');
-    await page.getByRole('button', { name: 'Close uses.txt' }).first().click();
+    await page.getByRole('button', { name: 'Close uses' }).first().click();
     await expect(page).toHaveURL('/');
     await expect(page.locator('main[data-window]')).toHaveCount(0);
   });

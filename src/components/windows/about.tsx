@@ -47,7 +47,7 @@ export function AboutWindow({ about }: { about: About }) {
           href="/resume"
           className="rounded-[5px] border border-accent px-3 py-[7px] text-accent transition-colors duration-150 hover:bg-surface-accent"
         >
-          resume.pdf ↓
+          resume ↓
         </OpenLink>
         <OpenLink
           window="contact"

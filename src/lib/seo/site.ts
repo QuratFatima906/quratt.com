@@ -27,7 +27,7 @@ export const SITE_NAME = 'qurat';
  * The résumé's phone number is not here and never will be (D14).
  */
 export const PERSON = {
-  name: 'Qurat ul ain Fatima',
+  name: 'Qurat ul Ain Fatima',
   jobTitle: 'Senior Software Engineer',
   email: 'quratfatima581@gmail.com',
   locality: 'Lahore',
