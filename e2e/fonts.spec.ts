@@ -67,3 +67,53 @@ test.describe('Nastaliq is fetched only where Urdu is', () => {
     expect(fonts.filter((url) => url.includes(nastaliq)), `${nastaliq} should be fetched on /reads`).not.toEqual([]);
   });
 });
+
+/**
+ * P1 asks that the Urdu sample render in Nastaliq, right-to-left, and unclipped. The leading is
+ * the fragile part: `.urdu` carries `line-height: 2.2` because Nastaliq's kasheeda descends into
+ * the next line at normal leading, and the row it sits in is a flex item that would happily crop
+ * it. A regression here is silent — the text is still there, just sheared.
+ */
+test.describe('the Urdu sample', () => {
+  test('is Nastaliq, right-to-left, and not clipped by its row', async ({ page }) => {
+    await page.goto('/reads');
+    await page.evaluate(() => document.fonts.ready);
+
+    const urdu = page.locator('[lang="ur"]').first();
+    await expect(urdu).toHaveAttribute('dir', 'rtl');
+    await expect(urdu).toHaveAttribute('lang', 'ur');
+
+    // The face has to have actually loaded, not merely been asked for — `check` is false while
+    // the family is still only a declaration.
+    expect(
+      await page.evaluate(() => document.fonts.check('14.5px "Noto Nastaliq Urdu"')),
+      'the Nastaliq face must be loaded before the rest of this test means anything',
+    ).toBe(true);
+
+    const box = await urdu.evaluate((el) => {
+      const style = getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      // The nearest ancestor that could crop it.
+      let clipper: HTMLElement | null = el.parentElement;
+      while (clipper && getComputedStyle(clipper).overflow === 'visible') clipper = clipper.parentElement;
+      return {
+        family: style.fontFamily,
+        lineHeight: parseFloat(style.lineHeight) / parseFloat(style.fontSize),
+        scrollHeight: el.scrollHeight,
+        clientHeight: el.clientHeight,
+        height: rect.height,
+        clipperBottom: clipper ? clipper.getBoundingClientRect().bottom : null,
+        bottom: rect.bottom,
+      };
+    });
+
+    expect(box.family, 'the computed family must resolve to Nastaliq').toMatch(/nastaliq/i);
+    // 2.2 from globals.css — measured, per the comment there. Anything near 1 means the rule lost.
+    expect(box.lineHeight).toBeGreaterThan(1.8);
+    // Sub-pixel rounding makes an exact comparison flaky; a real crop is whole pixels.
+    expect(box.scrollHeight, 'the glyphs must not overflow their own box').toBeLessThanOrEqual(box.clientHeight + 1);
+    if (box.clipperBottom !== null) {
+      expect(box.bottom, 'the row must not crop the descenders').toBeLessThanOrEqual(box.clipperBottom + 1);
+    }
+  });
+});
