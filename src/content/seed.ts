@@ -22,8 +22,8 @@ export const seed = seedSchema.parse({
   },
   contact: {
     email: 'quratfatima581@gmail.com',
-    subject: 'a job / a bug / a cat photo',
-    note: 'I reply to everything eventually. "Eventually" is doing a lot of work in that sentence.',
+    subject: 'a job / unreasonable ideas / a cat photo',
+    note: 'Open to interesting problems, good teams, and suspiciously complicated bugs.',
   },
   nowUpdated: '19 Aug 2026',
   now: [
