@@ -17,8 +17,11 @@ export const seed = seedSchema.parse({
     name: 'Qurat ul Ain Fatima',
     role: 'senior software engineer',
     meta: 'Lahore · PKT · shipping since 2017',
-    bio1: 'I like the problems that look boring from the outside and turn out to have a trapdoor in them. Retries. Cache invalidation. The eleventh service, the one that only misbehaves in the account nobody gave you access to. I read the whole runbook, including the step that ruins your afternoon.',
-    bio2: 'Currently at Shopsense AI, building shoppable image widgets and the detection API behind them. Before that: Afiniti, folding six communication channels into one contact centre, and MarkiTech, on telehealth video that had to survive hospital wifi.',
+    // Two fields, four paragraphs: the blank lines are content, and `about.tsx` splits on
+    // them. Keeping it to bio1/bio2 keeps the design's two-tone emphasis and avoids a
+    // migration on a live database for what is a copy change.
+    bio1: 'I like building things that have to work in the real world.\n\nThese days, that means LLM-powered systems, evaluation, observability, and the occasional incident that starts with "it worked yesterday."',
+    bio2: 'Before AI entered the picture, I was building contact-center systems, telehealth platforms, and the infrastructure around them. I tend to move comfortably between the UI, the API, and whatever is quietly breaking underneath both.\n\nCurrently at Shopsense AI, building shoppable-media products and the systems behind them — and whatever production decides to throw at us. Before that: Afiniti, integrating six communication channels into one contact-center platform, and MarkiTech, building telehealth software that had to survive hospital wifi.',
   },
   contact: {
     email: 'quratfatima581@gmail.com',
@@ -30,6 +33,7 @@ export const seed = seedSchema.parse({
     { line: 'reading The Kite Runner — everyone warned me about chapter seven, not there yet' },
     { line: 'rewriting my portfolio, which is the thing you are currently standing in' },
     { line: 'learning AI automation, mostly by automating things nobody asked me to' },
+    { line: 'raising a tiny human — apparently this is the project with the least predictable requirements' },
     { line: "open to senior software engineer roles — if there's no runbook, there is by Friday" },
   ],
   projects: [
