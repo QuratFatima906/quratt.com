@@ -16,6 +16,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
+    "check:seed": "tsx scripts/check-seed.ts",
     "gen:tokens": "tsx scripts/gen-tokens.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "check:bundle": "node scripts/check-bundle.mjs"
