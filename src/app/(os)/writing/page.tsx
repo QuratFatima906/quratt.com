@@ -6,7 +6,7 @@ import { pageMetadata } from '@/lib/seo/site';
 import { isIndexable, windowDef } from '@/lib/windows';
 
 /**
- * `writes.md` is one of the three windows that ship disabled (D13), so the route works but is
+ * `writes.md` is one of the windows that ship disabled (D13), so the route works but is
  * not indexed — see `isIndexable`. The sitemap makes the same call from the same flag.
  */
 export const metadata = pageMetadata({

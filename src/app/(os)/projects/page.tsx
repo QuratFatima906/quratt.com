@@ -5,7 +5,7 @@ import { ProjectsGrid } from '@/components/windows/projects';
 import { getProjects } from '@/lib/content/queries';
 import { itemList, JsonLd, softwareSourceCode } from '@/lib/seo/json-ld';
 import { pageMetadata } from '@/lib/seo/site';
-import { windowDef } from '@/lib/windows';
+import { isIndexable, windowDef } from '@/lib/windows';
 
 /**
  * A filtered view canonicalises to the unfiltered grid. `?tag=systems` is a subset of the same
@@ -17,6 +17,7 @@ export const metadata = pageMetadata({
   description:
     'Things Qurat ul Ain Fatima has built — systems, tools and the occasional silly one. Filter by tag.',
   path: '/projects',
+  index: isIndexable('projects'),
 });
 
 export default async function ProjectsPage({ searchParams }: PageProps<'/projects'>) {

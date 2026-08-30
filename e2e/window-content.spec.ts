@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-/** The six windows a visitor can open from the menu; contact is opened from the email icon. */
-const LIVE = ['about', 'projects', 'now', 'uses', 'resume', 'entropy'];
+/** The windows a visitor can open from the menu; contact is opened from the email icon. */
+const LIVE = ['about', 'now', 'uses', 'resume', 'entropy'];
 
 /**
  * Below the breakpoint the menu bar collapses to a hamburger (D3), so the launcher for a given
@@ -77,7 +77,7 @@ test('windows whose content is not ready are reachable but inert', async ({ page
   await page.goto('/');
   const before = await page.locator('section[aria-labelledby]').count();
 
-  for (const label of ['writes', 'talks', 'reads']) {
+  for (const label of ['projects', 'writes', 'talks', 'reads']) {
     await openPanel(page);
 
     const button = page

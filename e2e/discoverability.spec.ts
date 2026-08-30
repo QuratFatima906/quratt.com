@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { isIndexable, WINDOWS } from '../src/lib/windows';
+
 /** Only meaningful once, so it does not need running on four browser projects. */
 test.describe.configure({ mode: 'default' });
 
@@ -12,7 +14,15 @@ test('llms.txt stays under 5 KB and every link it advertises resolves', async ({
   expect(Buffer.byteLength(body, 'utf8')).toBeLessThan(5 * 1024);
 
   const links = [...body.matchAll(/\]\((https?:\/\/[^)]+)\)/g)].map((m) => m[1]!);
-  expect(links.length).toBeGreaterThan(5);
+  // Derived from the registry rather than a hardcoded floor, which went stale the moment a
+  // window was disabled: every window that is indexable and has a URL must be advertised here,
+  // and that is also what stops the resolve loop below from passing vacuously.
+  const expected = WINDOWS.filter((w) => w.route !== null && isIndexable(w.key)).map((w) => w.route);
+  expect(expected.length, 'no window is indexable — this test would prove nothing').toBeGreaterThan(0);
+  const paths = links.map((link) => new URL(link).pathname.replace(/\.md$/, ''));
+  for (const route of expected) {
+    expect(paths, `${route} should be advertised in llms.txt`).toContain(route);
+  }
 
   for (const link of links) {
     const path = new URL(link).pathname;
@@ -67,7 +77,7 @@ test('the disabled windows are absent from the sitemap and from llms.txt', async
   const llms = await (await request.get('/llms.txt')).text();
 
   // They carry `noindex` (P5); advertising them here would contradict that.
-  for (const path of ['/writing', '/talks', '/reads']) {
+  for (const path of ['/projects', '/writing', '/talks', '/reads']) {
     expect(sitemap).not.toContain(`<loc>${path}</loc>`);
     expect(llms).not.toContain(`${path}.md`);
   }

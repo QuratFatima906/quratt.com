@@ -32,18 +32,21 @@ describe('keyForPath', () => {
 });
 
 describe('isIndexable', () => {
-  // D13: these three ship disabled, so their routes work but stay out of the index and the
-  // sitemap. Flipping `available` is the single edit that reverses both.
-  it('excludes the three windows that ship disabled', () => {
+  // D13: these ship disabled, so their routes work but stay out of the index and the sitemap.
+  // Flipping `available` is the single edit that reverses both.
+  it('excludes every window that ships disabled', () => {
     expect(isIndexable('writes')).toBe(false);
     expect(isIndexable('talks')).toBe(false);
     expect(isIndexable('reads')).toBe(false);
+    // Disabled until there are real projects to show; the seeded twelve are placeholders.
+    expect(isIndexable('projects')).toBe(false);
   });
 
   it('includes every window that has real content', () => {
     expect(isIndexable('about')).toBe(true);
-    expect(isIndexable('projects')).toBe(true);
     expect(isIndexable('resume')).toBe(true);
     expect(isIndexable('contact')).toBe(true);
+    expect(isIndexable('now')).toBe(true);
+    expect(isIndexable('uses')).toBe(true);
   });
 });

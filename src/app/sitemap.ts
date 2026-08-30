@@ -21,7 +21,7 @@ import { isIndexable, type WindowKey } from '@/lib/windows';
  * signal stops meaning anything.
  *
  * Every route is listed with the window it belongs to and then filtered by the registry's
- * availability flag, so the three windows that ship disabled (D13) drop out here for exactly
+ * availability flag, so every window that ships disabled (D13) drops out here for exactly
  * the reason their pages carry `noindex`. One flag drives both; they cannot disagree.
  */
 const latest = (rows: readonly { updatedAt: Date }[], fallback: Date): Date =>
