@@ -7,7 +7,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 
-import { getTableColumns, getTableName, sql } from 'drizzle-orm';
+import { getTableColumns, getTableName, notInArray, sql } from 'drizzle-orm';
 import type { PgColumn, PgTable } from 'drizzle-orm/pg-core';
 
 import { seed } from '../src/content/seed';
@@ -31,12 +31,29 @@ function overwriteWithIncoming(table: PgTable) {
   );
 }
 
+/**
+ * Upsert by stable id, then drop anything the seed no longer describes.
+ *
+ * Without the delete, shortening a list orphans its tail: ids are assigned from array position,
+ * so removing one row leaves the old last row behind at an id nothing writes to again. It keeps
+ * rendering, because the queries read the table and not the seed file. That is how a duplicate
+ * `minipaxos` survived in the dev database — and it is what would happen the day the placeholder
+ * projects are replaced by a shorter list of real ones.
+ *
+ * The seed file is the source of truth for content (docs/RUNBOOK.md). When P9's editor lands and
+ * rows can be created outside it, this is the line that has to learn about them.
+ */
 async function upsert(table: PgTable & { id: PgColumn }, rows: Record<string, unknown>[]) {
   if (rows.length === 0) return;
   await db()
     .insert(table)
     .values(rows)
     .onConflictDoUpdate({ target: table.id, set: overwriteWithIncoming(table) });
+
+  const keep = rows.map((row) => row.id as number);
+  await db()
+    .delete(table)
+    .where(notInArray(table.id, keep));
 }
 
 /**
