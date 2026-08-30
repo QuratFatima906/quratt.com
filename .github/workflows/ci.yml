@@ -195,6 +195,12 @@ jobs:
       # `devtools` throttling rather than the default `simulate`: the simulator models a
       # dependency graph and put LCP 650 ms above what applying the throttling actually
       # produces, which is too wide a gap to gate on.
+      #
+      # Its thresholds are deliberately looser than the desktop run's. This is a shared
+      # runner: TBT measured 67-96 ms locally and 183 ms here, and the same commit failed
+      # and then passed on a re-run. LCP and CLS are the stable pair and stay strict — LCP
+      # is what this gate exists to protect. The composite score is a weighted function of
+      # the noisy metric, so it is asserted on the desktop run only.
       - name: Performance budgets (mobile)
         run: pnpm dlx @lhci/cli@0.15.x autorun --config=lighthouserc.mobile.json
 

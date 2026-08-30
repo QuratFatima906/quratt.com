@@ -12,11 +12,9 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["error", { "minScore": 0.98 }],
-
         "largest-contentful-paint": ["error", { "maxNumericValue": 1200 }],
-        "total-blocking-time": ["error", { "maxNumericValue": 150 }],
-        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.01 }]
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.01 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 260 }]
       }
     },
     "upload": {
