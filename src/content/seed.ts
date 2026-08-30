@@ -21,7 +21,7 @@ export const seed = seedSchema.parse({
     // them. Keeping it to bio1/bio2 keeps the design's two-tone emphasis and avoids a
     // migration on a live database for what is a copy change.
     bio1: 'I like building things that have to work in the real world.\n\nThese days, that means LLM-powered systems, evaluation, observability, and the occasional incident that starts with "it worked yesterday."',
-    bio2: 'Before AI entered the picture, I was building contact-center systems, telehealth platforms, and the infrastructure around them. I tend to move comfortably between the UI, the API, and whatever is quietly breaking underneath both.\n\nCurrently at Shopsense AI, building shoppable-media products and the systems behind them — and whatever production decides to throw at us. Before that: Afiniti, integrating six communication channels into one contact-center platform, and MarkiTech, building telehealth software that had to survive hospital wifi.',
+    bio2: 'Before AI entered the picture, I was building contact-center systems, telehealth platforms, and the infrastructure around them. I tend to move comfortably between the UI, the API, and whatever production decides to throw at us.\n\nCurrently at Shopsense AI, building shoppable-media products and the systems behind them. Before that: Afiniti, integrating six communication channels into one contact-center platform, and MarkiTech, building telehealth software that had to survive hospital wifi.',
   },
   contact: {
     email: 'quratfatima581@gmail.com',
