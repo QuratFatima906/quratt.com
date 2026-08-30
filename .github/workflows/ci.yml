@@ -190,6 +190,14 @@ jobs:
           path: .next
       - run: pnpm dlx @lhci/cli@0.15.x autorun
 
+      # P7's budgets are written for "a mobile-throttled trace", and the run above is the
+      # desktop preset — so on its own it never measured the thing the phase asked for.
+      # `devtools` throttling rather than the default `simulate`: the simulator models a
+      # dependency graph and put LCP 650 ms above what applying the throttling actually
+      # produces, which is too wide a gap to gate on.
+      - name: Performance budgets (mobile)
+        run: pnpm dlx @lhci/cli@0.15.x autorun --config=lighthouserc.mobile.json
+
       # The JS budget that matters is how much of the bundle is ours, which Lighthouse cannot
       # tell us — it only sees the total, most of which is framework.
       - name: JavaScript budget

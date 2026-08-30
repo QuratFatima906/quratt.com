@@ -1,0 +1,26 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "pnpm start",
+      "startServerReadyPattern": "Ready in",
+      "url": ["http://localhost:3000/"],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "perf",
+        "throttlingMethod": "devtools"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.98 }],
+
+        "largest-contentful-paint": ["error", { "maxNumericValue": 1200 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 150 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.01 }]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

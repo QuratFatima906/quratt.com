@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
   // invalidated by tag on write, so a visitor never reaches the database.
   cacheComponents: true,
 
+  experimental: {
+    // The stylesheet is render-blocking and small (~9 KB of Tailwind atoms), so the round trip
+    // to fetch it costs more than carrying it in the document does. Inlining it removes that
+    // request from the critical path — worth ~160 ms of mobile LCP by Lighthouse's reckoning.
+    // The trade is that returning visitors re-download it with every page rather than reading a
+    // cached file; at this size, on a site whose pages are mostly first visits, that is cheap.
+    inlineCss: true,
+  },
+
   async rewrites() {
     return [
       // Markdown twins. A literal `[slug].md` segment is not routable, and a root-level
