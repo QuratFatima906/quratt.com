@@ -61,6 +61,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:migrate && pnpm db:seed
+      # Seeding twice must not duplicate a row. The seeder prints the length of its input
+      # arrays, so it reports the same numbers either way — only a count against the tables
+      # can tell, which is what `check:seed` does.
+      - name: Seed is idempotent
+        run: pnpm db:seed && pnpm check:seed
       - run: pnpm build
       - uses: actions/upload-artifact@v4
         with:
