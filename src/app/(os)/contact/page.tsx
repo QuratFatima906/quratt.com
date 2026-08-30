@@ -8,7 +8,7 @@ import { windowDef } from '@/lib/windows';
 
 export const metadata = pageMetadata({
   title: 'Contact',
-  description: 'Email Qurat ul Ain Fatima about a job, a bug, or a cat photo.',
+  description: 'Email Qurat ul Ain Fatima about a job, an unreasonable idea, or a cat photo.',
   path: '/contact',
 });
 
