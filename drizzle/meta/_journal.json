@@ -15,6 +15,13 @@
       "when": 1786556477110,
       "tag": "0001_updated_at_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788120328776,
+      "tag": "0002_tiresome_union_jack",
+      "breakpoints": true
     }
   ]
 }

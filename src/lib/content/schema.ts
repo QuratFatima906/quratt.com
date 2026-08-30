@@ -86,6 +86,37 @@ export const shelfSchema = z.object({
 
 export const usesSchema = z.object({ label: line, value: line });
 
+/**
+ * One row per *role*, not per organisation — which is what lets the window render the design's
+ * two lists from one table. The cards group these by `org`; the `community.log` timeline is the
+ * same rows in the same order. Storing the timeline separately would have let a renamed role
+ * appear in one list and not the other.
+ *
+ * `period` is a display string (`2020 → 2023`, `2023 → present`), not a date pair: a community
+ * role has no crisp end date and the design never sorts or filters on it. Its leading token is
+ * the year the log prints, and a group's span is its first row's start to its last row's end.
+ */
+export const communitySchema = z.object({
+  /** The short tag on the card — `PWiC`, `GDG`. Also picks the row's accent (see the window). */
+  badge: line,
+  org: line,
+  role: line,
+  period: line,
+  /** The small aside beside the role — `workshops · talks · labs`, `top 12 / ~2,000`. */
+  note: z.string(),
+  /** What the card reveals when expanded. Blank paragraphs separate; empty means no detail. */
+  body: z.string(),
+});
+
+/** The prose either side of the log. Singleton, like `now_meta` beside `now`. */
+export const communityMetaSchema = z.object({
+  intro: line,
+  /** The one line the intro lands on, in the accent colour. */
+  kicker: line,
+  lesson1: line,
+  lesson2: line,
+});
+
 export const cvSchema = z.object({ period: line, role: line, note: z.string() });
 
 export const seedSchema = z.object({
@@ -99,6 +130,8 @@ export const seedSchema = z.object({
   shelf: z.array(shelfSchema),
   uses: z.array(usesSchema),
   cv: z.array(cvSchema),
+  communityMeta: communityMetaSchema,
+  community: z.array(communitySchema),
 });
 
 export type Seed = z.infer<typeof seedSchema>;
@@ -199,6 +232,25 @@ export const uses = pgTable('uses', {
   value: text('value').notNull(),
 });
 
+export const communityMeta = pgTable('community_meta', {
+  id: integer('id').primaryKey(),
+  intro: text('intro').notNull(),
+  kicker: text('kicker').notNull(),
+  lesson1: text('lesson1').notNull(),
+  lesson2: text('lesson2').notNull(),
+  ...stamps,
+});
+
+export const community = pgTable('community', {
+  ...listBase,
+  badge: text('badge').notNull(),
+  org: text('org').notNull(),
+  role: text('role').notNull(),
+  period: text('period').notNull(),
+  note: text('note').notNull(),
+  body: text('body').notNull(),
+});
+
 export const cv = pgTable('cv', {
   ...listBase,
   period: text('period').notNull(),
@@ -220,3 +272,5 @@ export type Talk = typeof talks.$inferSelect;
 export type ShelfItem = typeof shelf.$inferSelect;
 export type Uses = typeof uses.$inferSelect;
 export type CvRow = typeof cv.$inferSelect;
+export type CommunityRole = typeof community.$inferSelect;
+export type CommunityMeta = typeof communityMeta.$inferSelect;

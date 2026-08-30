@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { MENU_KEYS } from '../src/lib/windows';
+
 const WIDTHS = [320, 768, 1024, 1440, 1920];
 
 test('menu bar overflow is correct at every named width', async ({ page }) => {
@@ -17,10 +19,11 @@ test('menu bar overflow is correct at every named width', async ({ page }) => {
     if (hidden) {
       await page.getByRole('button', { name: 'Menu' }).click();
       // Every button in the panel is a window now — the wallpaper picker beneath them is
-      // radio inputs, and `close all` is gone. Nine windows: contact moved to the email icon.
+      // radio inputs, and `close all` is gone. Counted off the registry rather than written
+      // down: this number has been wrong twice, once per window added.
       const items = await page.getByRole('navigation', { name: 'Sections' }).getByRole('button').allInnerTexts();
       report.push(`${width}: hamburger, ${items.length} items in the panel`);
-      expect(items.length).toBe(9);
+      expect(items.length).toBe(MENU_KEYS.length);
       continue;
     }
 
@@ -36,7 +39,9 @@ test('menu bar overflow is correct at every named width', async ({ page }) => {
 
     expect(overflows, `items must not spill out of the nav at ${width}`).toBeLessThanOrEqual(1);
     const hiddenCount = moreText ? Number(moreText.match(/\((\d+)\)/)![1]) : 0;
-    expect(shown.length + hiddenCount, `every window is accounted for at ${width}`).toBe(9);
+    expect(shown.length + hiddenCount, `every window is accounted for at ${width}`).toBe(
+      MENU_KEYS.length,
+    );
   }
   console.log('\n' + report.join('\n') + '\n');
 });

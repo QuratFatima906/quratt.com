@@ -85,6 +85,7 @@ async function main() {
   const about: typeof t.about.$inferInsert = { id: 1, ...seed.about };
   const contact: typeof t.contact.$inferInsert = { id: 1, ...seed.contact };
   const nowMeta: typeof t.nowMeta.$inferInsert = { id: 1, nowUpdated: seed.nowUpdated };
+  const communityMeta: typeof t.communityMeta.$inferInsert = { id: 1, ...seed.communityMeta };
 
   const now: (typeof t.now.$inferInsert)[] = seed.now.map((row, i) => ({
     id: i + 1,
@@ -117,6 +118,11 @@ async function main() {
     sortOrder: i,
     ...row,
   }));
+  const community: (typeof t.community.$inferInsert)[] = seed.community.map((row, i) => ({
+    id: i + 1,
+    sortOrder: i,
+    ...row,
+  }));
   const cv: (typeof t.cv.$inferInsert)[] = seed.cv.map((row, i) => ({
     id: i + 1,
     sortOrder: i,
@@ -126,15 +132,17 @@ async function main() {
   await upsert(t.about, [about]);
   await upsert(t.contact, [contact]);
   await upsert(t.nowMeta, [nowMeta]);
+  await upsert(t.communityMeta, [communityMeta]);
   await upsert(t.now, now);
   await upsert(t.projects, projects);
   await upsert(t.posts, posts);
   await upsert(t.talks, talks);
   await upsert(t.shelf, shelf);
   await upsert(t.uses, uses);
+  await upsert(t.community, community);
   await upsert(t.cv, cv);
 
-  for (const table of [t.now, t.projects, t.posts, t.talks, t.shelf, t.uses, t.cv]) {
+  for (const table of [t.now, t.projects, t.posts, t.talks, t.shelf, t.uses, t.community, t.cv]) {
     await syncSequence(table);
   }
 
@@ -142,7 +150,8 @@ async function main() {
   console.log(
     `seeded: about 1 · contact 1 · now ${now.length} · projects ${projects.length} · ` +
       `posts ${posts.length} (${withBodies} with bodies) · talks ${talks.length} · ` +
-      `shelf ${shelf.length} · uses ${uses.length} · cv ${cv.length}`,
+      `shelf ${shelf.length} · uses ${uses.length} · community ${community.length} · ` +
+      `cv ${cv.length}`,
   );
 }
 

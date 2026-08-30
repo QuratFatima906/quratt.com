@@ -3,6 +3,7 @@ import { readingTime } from '@/components/windows/writing';
 import {
   getAbout,
   getContact,
+  getCommunity,
   getCv,
   getNow,
   getPosts,
@@ -52,17 +53,19 @@ const newest = (rows: readonly { updatedAt: Date }[], fallback: Date): Date =>
   rows.reduce<Date>((max, row) => (row.updatedAt > max ? row.updatedAt : max), fallback);
 
 export async function documents(): Promise<Doc[]> {
-  const [about, contact, now, uses, cv, projects, posts, talks, shelf] = await Promise.all([
-    getAbout(),
-    getContact(),
-    getNow(),
-    getUses(),
-    getCv(),
-    getProjects(),
-    getPosts(),
-    getTalks(),
-    getShelf(),
-  ]);
+  const [about, contact, now, uses, cv, projects, posts, talks, shelf, community] =
+    await Promise.all([
+      getAbout(),
+      getContact(),
+      getNow(),
+      getUses(),
+      getCv(),
+      getProjects(),
+      getPosts(),
+      getTalks(),
+      getShelf(),
+      getCommunity(),
+    ]);
 
   const epoch = new Date(0);
   const docs: Doc[] = [];
@@ -196,6 +199,40 @@ export async function documents(): Promise<Doc[]> {
         '# Reading',
         '',
         ...shelf.map((b) => `- *${b.title}* — ${b.state}${b.note ? `, ${b.note}` : ''}`),
+      ]),
+    });
+  }
+
+  if (isIndexable('community') && community.meta && community.roles.length) {
+    const { meta, roles } = community;
+    docs.push({
+      path: '/community',
+      title: 'Community',
+      summary: `${roles.length} community roles — chapters, workshops and judging.`,
+      section: 'Community',
+      updatedAt: newest([meta, ...roles], epoch),
+      // One entry per role, in the same order the window's log prints them, so an agent reads
+      // the same six rows a visitor sees rather than a summary of them.
+      markdown: join([
+        '# Community',
+        '',
+        meta.intro,
+        '',
+        meta.kicker,
+        '',
+        ...roles.flatMap((role) => [
+          `## ${role.role} — ${role.org}`,
+          '',
+          join([line('When', role.period), line('Note', role.note || null)]),
+          '',
+          role.body || null,
+          role.body ? '' : null,
+        ]),
+        '## What all of this taught me',
+        '',
+        meta.lesson1,
+        '',
+        meta.lesson2,
       ]),
     });
   }

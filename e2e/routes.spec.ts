@@ -20,6 +20,7 @@ const ROUTES: [path: string, h1: string, content: string][] = [
   ['/uses', 'uses.txt', 'editor'],
   ['/resume', 'resume.pdf', 'Shopsense'],
   ['/contact', 'say-hi.eml', 'quratfatima581@gmail.com'],
+  ['/community', 'community.md', '22+ chapters'],
 ];
 
 /** The windows that ship disabled hold placeholder content, so they are not indexed. */

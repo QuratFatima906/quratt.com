@@ -4,6 +4,7 @@ import { projectSlug } from '@/components/windows/projects';
 import {
   getAbout,
   getContact,
+  getCommunity,
   getCv,
   getNow,
   getPosts,
@@ -28,17 +29,19 @@ const latest = (rows: readonly { updatedAt: Date }[], fallback: Date): Date =>
   rows.reduce<Date>((newest, row) => (row.updatedAt > newest ? row.updatedAt : newest), fallback);
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [about, contact, now, uses, cv, projects, posts, talks, shelf] = await Promise.all([
-    getAbout(),
-    getContact(),
-    getNow(),
-    getUses(),
-    getCv(),
-    getProjects(),
-    getPosts(),
-    getTalks(),
-    getShelf(),
-  ]);
+  const [about, contact, now, uses, cv, projects, posts, talks, shelf, community] =
+    await Promise.all([
+      getAbout(),
+      getContact(),
+      getNow(),
+      getUses(),
+      getCv(),
+      getProjects(),
+      getPosts(),
+      getTalks(),
+      getShelf(),
+      getCommunity(),
+    ]);
 
   const epoch = new Date(0);
   const entries: (MetadataRoute.Sitemap[number] & { window?: WindowKey })[] = [
@@ -63,6 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absolute('/reads'), lastModified: latest(shelf, epoch), priority: 0.5, window: 'reads' },
     { url: absolute('/resume'), lastModified: latest(cv, epoch), priority: 0.8, window: 'resume' },
     { url: absolute('/contact'), lastModified: contact?.updatedAt ?? epoch, priority: 0.6, window: 'contact' }, // prettier-ignore
+    { url: absolute('/community'), lastModified: latest(community.roles, community.meta?.updatedAt ?? epoch), priority: 0.7, window: 'community' }, // prettier-ignore
     { url: absolute('/now'), lastModified: latest(now.lines, epoch), priority: 0.5, window: 'now' },
     { url: absolute('/uses'), lastModified: latest(uses, epoch), priority: 0.5, window: 'uses' },
   ];

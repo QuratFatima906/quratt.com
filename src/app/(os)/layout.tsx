@@ -1,5 +1,6 @@
 import { Desktop, type WindowBodies } from '@/components/os/desktop';
 import { AboutWindow } from '@/components/windows/about';
+import { CommunityWindow } from '@/components/windows/community';
 import { ContactWindow } from '@/components/windows/contact';
 import { EntropyWindow } from '@/components/windows/entropy';
 import { NowWindow } from '@/components/windows/now';
@@ -11,6 +12,7 @@ import { UsesWindow } from '@/components/windows/uses';
 import { WritingWindow } from '@/components/windows/writing';
 import {
   getAbout,
+  getCommunity,
   getContact,
   getCounts,
   getCv,
@@ -32,10 +34,11 @@ import {
  * JavaScript disabled still gets the page's content and a crawler gets one document per URL.
  */
 export default async function OsLayout({ children }: LayoutProps<'/'>) {
-  const [about, contact, now, uses, cv, featured, recentPosts, recentShelf, talks, counts] =
+  const [about, contact, community, now, uses, cv, featured, recentPosts, recentShelf, talks, counts] =
     await Promise.all([
       getAbout(),
       getContact(),
+      getCommunity(),
       getNow(),
       getUses(),
       getCv(),
@@ -52,6 +55,9 @@ export default async function OsLayout({ children }: LayoutProps<'/'>) {
     writes: <WritingWindow recent={recentPosts} total={counts.posts} />,
     talks: <TalksWindow talks={talks} />,
     reads: <ReadsWindow recent={recentShelf} total={counts.shelf} />,
+    community: community.meta ? (
+      <CommunityWindow meta={community.meta} roles={community.roles} />
+    ) : null,
     now: <NowWindow lines={now.lines} updated={now.nowUpdated ?? 'recently'} />,
     uses: <UsesWindow rows={uses} />,
     resume: <ResumeWindow rows={cv} />,
