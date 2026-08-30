@@ -7,8 +7,8 @@ import { expect, test, type Page } from '@playwright/test';
  * fail a reader, and the whole phase exists to make the OS readable without JavaScript.
  */
 const ROUTES: [path: string, h1: string, content: string][] = [
-  ['/', 'Qurat ul Ain Fatima — qurat', 'trapdoor'],
-  ['/about', 'about.md', 'trapdoor'],
+  ['/', 'Qurat ul Ain Fatima — qurat', 'it worked yesterday'],
+  ['/about', 'about.md', 'it worked yesterday'],
   ['/projects', 'projects/', 'quietwatch'],
   ['/projects/quietwatch', 'quietwatch', 'only pings you when it actually matters'],
   ['/writing', 'writes.md', 'The bug was in the calendar, obviously'],

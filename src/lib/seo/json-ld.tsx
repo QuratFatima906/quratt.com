@@ -57,7 +57,8 @@ export function profilePage(about: About): Node {
       '@id': PERSON_ID,
       name: about.name,
       jobTitle: PERSON.jobTitle,
-      description: about.bio1,
+      // The bio carries paragraph breaks; a structured description is one line of prose.
+      description: about.bio1.replace(/\s+/g, ' ').trim(),
       sameAs: [...PERSON.sameAs],
     }),
   };
