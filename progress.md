@@ -945,3 +945,101 @@ been re-measured; what is now certain is that the stated cause was not the cause
    nameservers current and verified
 4. ~~Approve a production deploy so the rollback drill can run~~ — done. Drill performed and
    written up 2026-08-18 (above)
+
+---
+
+## Criteria audit — every success criterion in plan.md, checked against the build
+
+**Agent:** main · **Branch:** several, one per finding · **PRs:** #16–#20 · **Status:** done
+
+The checkboxes in `plan.md` were never ticked, including for phases that shipped, so the file
+could not be read as a list of outstanding work. This pass went through all 43 criteria and
+separated three things: already satisfied and recorded, satisfied but never proven, and
+genuinely unmet.
+
+**Five were unproven and now have tests.**
+
+- P4 *unit tests: tag filter …* — the other three named functions had unit tests since the
+  phase landed; the tag filter had only the e2e that deep-links `?tag=systems`, which
+  exercises the route. `projects.test.ts`, 13 tests (#16). Mutation-checked both ways: making
+  an unknown tag empty the grid, and removing the defensive copy, each fail it.
+- P1 *Nastaliq absent from network requests on a page with no Urdu* — `preload: false` was the
+  setting, not the outcome. `e2e/fonts.spec.ts` asserts it two-sided, because the negative
+  passes just as well when the font never loads at all (#17). Flipping `preload` fails it.
+- P2 *running the seed twice produces no duplicates (assert row counts)* — the seeder prints
+  the length of its **input arrays**, so its own output reports identical numbers whether or
+  not a re-run doubled every table. `scripts/check-seed.ts` counts the tables; CI seeds, seeds
+  again, then runs it (#18). Inserting one duplicate row exits 1.
+- P1 *Urdu sample renders in Nastaliq, RTL, unclipped* — the leading is the fragile part, and
+  the failure is silent: the text stays, sheared. Asserts the **loaded** face, since
+  `document.fonts.check` reads false while a family is merely declared (#19).
+- P7 *LCP < 1.2 s on a mobile-throttled trace* — see below.
+
+**P7's mobile budget was never measured at all.** The Lighthouse job runs `preset: desktop`,
+so the phase that owned a mobile budget never checked the form factor it named. Measured
+properly it was **1.59 s**, which is the miss left open after the font-preload diagnosis
+turned out to be wrong.
+
+The cause was not render delay. `LCP == FCP` in every run — the text painted as soon as
+anything did — and what delayed first paint was the round trip for a 9 KB render-blocking
+stylesheet. `experimental.inlineCss` carries it in the document instead:
+
+| | before | after |
+|---|---|---|
+| LCP (mobile, 3 runs) | 1594 / 1585 / 1596 ms | **944 / 865 / 933 ms** |
+| performance | 0.99 | **1.00** |
+
+Lighthouse estimated 160 ms for that change; the real saving is ~650 ms, because removing a
+request from the critical path on a throttled connection costs a whole round trip and not just
+its transfer. A mobile run is now its own CI gate (`lighthouserc.mobile.json`), using
+`devtools` throttling — the default simulation put LCP 650 ms above what applying the same
+throttling actually produces, too wide a gap to gate on (#20).
+
+**Four were satisfied but had never been demonstrated. Now they have been.**
+
+- P6 *adding a project to the DB changes all generated files with no code edit* — added a probe
+  row, re-seeded, rebuilt: it appears in `sitemap.xml`, `llms.txt`, `llms-full.txt`,
+  `/projects`, `/projects.md`, and `/projects/zzprobe` returns 200 through
+  `generateStaticParams`. Absent from the feeds, correctly — those are a *writing* feed.
+  Probe reverted.
+- P1 *theme toggle causes no flash on hard reload* — sampled `data-theme` at the first
+  animation frame. Correct in frame 1 in all three cases: OS dark, OS light, and a stored
+  light choice on a site that defaults dark. The parser-blocking script at the top of `<body>`
+  beats first paint.
+- P3 *dragging holds 60 fps* — 0 frames over 16.7 ms out of ~200, median 8.3 ms, worst
+  16.6 ms — and unchanged at 4× and 6× CPU throttling. The drag writes `translate` only.
+- P1 *zero raw colours outside the stylesheet* — 0 in `src/components` and `src/app`. Note the
+  criterion names `globals.css`; the values actually live in `src/app/tokens.css`, generated
+  from `src/lib/tokens.ts`, and that generator's output is in sync.
+
+**Two do not pass as written, and both are known.**
+
+- P7 *route `/` ships < 100 KB gzipped JS* — superseded, as `scripts/check-bundle.mjs` already
+  records: React 19 + Next 16 is ~176 KB gzipped before a line of this site's code. The live
+  gate is 25 KB of app code and 200 KB total; currently 11.8 KB and 188 KB.
+- P7 *CLS 0* — desktop is 0.0000, mobile is **0.0007**, from the clock's `9ch` slot resolving
+  to a different width across the font swap. next/font's size-adjusted fallback absorbs most
+  of it; pinning the slot to pixels would undo the mobile wrapping fix that `menu-bar.tsx`
+  warns about. Gated at 0.01, still 100× inside "good".
+
+**P4's design comparison needs the owner.** All ten windows captured at 1280×840 in both
+themes and put beside board 2a — the design file captions it "1a refined", so it is the
+reference; the other four boards are turn-one explorations and 1b is a different concept.
+Seven differences from the board, every one traceable: plain menu labels and the envelope icon
+(#13), one type family and the dock (f41c9b5), `close all` dropped, `cv.pdf` renamed to
+`resume.pdf`, and the theme toggle the design never drew. None is drift. The light theme has
+no counterpart on any board.
+
+### The Neon branch cap arrived, exactly as predicted
+
+The P8 note warned that the free plan allows 10 branches, that the Vercel-managed integration
+cleans up on deployment retention rather than on git branch deletion, and that the failure mode
+is a deployment that cannot provision its database. Six PRs in one day reached nine preview
+branches plus `main`, and #20's preview failed with `Error: Resource provisioning failed` —
+reproduced on redeploy.
+
+Production is unaffected: it uses the existing `main` branch, and every production deploy
+today succeeded. Previews are what break, and merging is not blocked, because the four required
+checks are the CI jobs and Vercel is not among them. Clearing it needs the Neon console —
+either delete the preview branches belonging to merged PRs, or move to the Neon-managed
+integration, which deletes on git branch deletion.
