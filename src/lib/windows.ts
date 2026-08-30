@@ -51,7 +51,7 @@ export type WindowDef = {
 
 export const WINDOWS: readonly WindowDef[] = [
   { key: 'about', label: 'about.md', menuLabel: 'about', icon: 'person', route: '/about', available: true, width: 540 }, // prettier-ignore
-  { key: 'projects', label: 'projects/', menuLabel: 'projects', icon: 'folder', route: '/projects', available: true, width: 420 }, // prettier-ignore
+  { key: 'projects', label: 'projects/', menuLabel: 'projects', icon: 'folder', route: '/projects', available: false, width: 420 }, // prettier-ignore
   // The route map calls this `/writing`; the design calls the window `writes.md`. Both stay.
   { key: 'writes', label: 'writes.md', menuLabel: 'writes', icon: 'pen', route: '/writing', available: false, width: 420 }, // prettier-ignore
   { key: 'talks', label: 'talks.md', menuLabel: 'talks', icon: 'mic', route: '/talks', available: false, width: 430 }, // prettier-ignore

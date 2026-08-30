@@ -5,7 +5,7 @@ import { ProjectWindow, projectSlug } from '@/components/windows/projects';
 import { getProjects } from '@/lib/content/queries';
 import { JsonLd, softwareSourceCode } from '@/lib/seo/json-ld';
 import { pageMetadata } from '@/lib/seo/site';
-import { windowDef } from '@/lib/windows';
+import { isIndexable, windowDef } from '@/lib/windows';
 
 /** Every project is known at build time, so every detail page prerenders. */
 export async function generateStaticParams() {
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: PageProps<'/projects/[slug]'>
     path: `/projects/${slug}`,
     type: 'article',
     modified: project.updatedAt,
+    index: isIndexable('projects'),
   });
 }
 

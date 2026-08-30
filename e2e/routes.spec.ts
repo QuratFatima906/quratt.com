@@ -22,8 +22,8 @@ const ROUTES: [path: string, h1: string, content: string][] = [
   ['/contact', 'say-hi.eml', 'quratfatima581@gmail.com'],
 ];
 
-/** The three windows that ship disabled hold placeholder content, so they are not indexed. */
-const NOINDEX = ['/writing', '/writing/postgres-told-me-the-truth', '/talks', '/talks/invite', '/reads']; // prettier-ignore
+/** The windows that ship disabled hold placeholder content, so they are not indexed. */
+const NOINDEX = ['/projects', '/projects/quietwatch', '/writing', '/writing/postgres-told-me-the-truth', '/talks', '/talks/invite', '/reads']; // prettier-ignore
 
 test.describe('the route map', () => {
   for (const [path, h1, content] of ROUTES) {

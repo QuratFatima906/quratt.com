@@ -13,7 +13,7 @@ test.describe('desktop', () => {
     await page.goto('/');
     await expect(openWindows(page)).toHaveAttribute('data-window', 'about');
 
-    for (const label of ['projects', 'now', 'entropy']) await menu(page, label).click();
+    for (const label of ['uses', 'now', 'entropy']) await menu(page, label).click();
     await expect(openWindows(page)).toHaveCount(4);
     await expect(taskbar(page).getByRole('listitem')).toHaveCount(4);
 
@@ -59,7 +59,7 @@ test.describe('desktop', () => {
 
     // Nothing closes everything at once any more — each window goes on its own terms, which
     // means raising it from the dock first, because a centred window buries the one below it.
-    for (const label of ['about', 'projects', 'entropy']) {
+    for (const label of ['about', 'uses', 'entropy']) {
       await taskbar(page).getByRole('button', { name: label }).click();
       await page
         .getByRole('region', { name: label })
@@ -162,7 +162,7 @@ test.describe('desktop', () => {
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
 
-      for (const label of ['projects', 'resume']) await menu(page, label).click();
+      for (const label of ['uses', 'resume']) await menu(page, label).click();
       await expect(openWindows(page)).toHaveCount(3);
       // A tooltip is part of the page too, so open one before the sweep.
       await menu(page, 'talks').focus();
