@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 /** The windows a visitor can open from the menu; contact is opened from the email icon. */
-const LIVE = ['about', 'now', 'uses', 'resume', 'entropy'];
+const LIVE = ['about', 'community', 'now', 'uses', 'resume', 'entropy'];
 
 /**
  * Below the breakpoint the menu bar collapses to a hamburger (D3), so the launcher for a given

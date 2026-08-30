@@ -269,6 +269,76 @@ export const seed = seedSchema.parse({
     { label: 'keyboard', value: 'Aula F75, wireless, mechanical, loud on purpose' },
     { label: 'notes', value: 'a plain text file, obviously' },
   ],
+  communityMeta: {
+    intro: `I got into tech communities the usual way:
+I wanted to learn something, so I helped organize a workshop.
+Then I organized more workshops. Then a chapter. Then more chapters.
+At some point, I was helping people across 22+ chapters around the world do the same thing.`,
+    kicker: 'So, yes, community building got slightly out of hand.',
+    lesson1:
+      'Software engineering taught me how to build systems. Community building taught me how to build around people. Both involve figuring out what is actually needed, getting different pieces to work together, dealing with unexpected edge cases, and discovering that "simple" was an optimistic estimate.',
+    lesson2:
+      "I've spent years moving between building things, teaching things, organizing people, and helping other people build things themselves. Turns out, I quite like that combination.",
+  },
+  // Chronological. The cards read this newest-organisation-first; the log reads it as written.
+  community: [
+    {
+      badge: 'Technovation',
+      org: 'Technovation',
+      role: 'Mentor · Head Judge',
+      period: '2018 → 2019',
+      note: 'top 12 / ~2,000',
+      body: `Technovation is a global technology and entrepreneurship program where girls build technology to solve problems they care about. I got to see that process from two sides: helping teams along the way, and evaluating what they built.
+
+As a mentor, I helped young teams think through their ideas and turn them into something more concrete. As a Head Judge, I helped evaluate submissions and select the top 12 teams from around 2,000 — a good reminder that judging software is much easier when you're not the one who has to debug it afterwards.`,
+    },
+    {
+      badge: 'GDG',
+      org: 'GDG Lahore',
+      role: 'Creative Lead',
+      period: '2019',
+      note: '',
+      body: "Before everything became an exercise in calendars, spreadsheets, and chapter operations, there was Google Developer Group Lahore. As Creative Lead, I worked on the community side of technology — helping shape events, experiences, and the way technical ideas were presented to people. Because sometimes the hardest part isn't building the thing. It's getting people interested enough to show up, and then making sure they don't regret it.",
+    },
+    {
+      badge: 'WTM',
+      org: 'Women Techmakers',
+      role: 'Design Lead',
+      period: '2019',
+      note: '',
+      // The design lists this in the log and gives it no card of its own. Here it gets both,
+      // and an empty body is what makes its card render flat rather than expandable.
+      body: '',
+    },
+    {
+      badge: 'PWiC',
+      org: 'Pakistani Women in Computing (PWiC)',
+      role: 'Learning Lead',
+      period: '2020',
+      note: 'workshops · talks · labs',
+      body: 'I joined PWiC because technical communities are considerably more useful when people actually have a place to learn, ask questions, find mentors, and occasionally admit they have no idea what they are doing. I started on the learning side, organizing and running technical workshops, talks, and labs for students, aspiring engineers, and early-career professionals.',
+    },
+    {
+      badge: 'PWiC',
+      org: 'Pakistani Women in Computing (PWiC)',
+      role: 'Chapter Lead · Lahore',
+      period: '2020 → 2023',
+      note: '',
+      body: `I took on the Lahore chapter and ran the usual small list of things that somehow becomes a very large list of things: people, partnerships, events, speakers, volunteers, logistics, learning, and then more people.
+
+The goal was simple: build a community people actually wanted to come back to. We grew through partnerships and collaborations across different areas of technology, creating spaces for people to learn, meet others in the industry, and get a little less intimidated by the whole "starting a career in tech" thing.`,
+    },
+    {
+      badge: 'PWiC',
+      org: 'Pakistani Women in Computing (PWiC)',
+      role: 'Global Chapter Success Lead',
+      period: '2023 → present',
+      note: '22+ chapters',
+      body: `I moved from building one community to helping 22+ chapters around the world build and sustain theirs. My work sits somewhere between strategy, operations, problem-solving, and occasionally being the person someone messages with: "We have a situation."
+
+Different countries. Different communities. Same fundamental problem: how do you get good people in a room and make them want to come back? Turns out, the answer is rarely just "host more events."`,
+    },
+  ],
   cv: [
     {
       period: 'Aug 2024–now',

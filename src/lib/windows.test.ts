@@ -48,5 +48,6 @@ describe('isIndexable', () => {
     expect(isIndexable('contact')).toBe(true);
     expect(isIndexable('now')).toBe(true);
     expect(isIndexable('uses')).toBe(true);
+    expect(isIndexable('community')).toBe(true);
   });
 });

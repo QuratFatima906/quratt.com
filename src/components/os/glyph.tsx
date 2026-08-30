@@ -44,6 +44,15 @@ const MARKS: Record<WindowIcon, ReactNode> = {
       <path d="M20.5 5.2h-5.2A3.3 3.3 0 0 0 12 8.5v11a2.6 2.6 0 0 1 2.6-2.6h5.9z" />
     </>
   ),
+  // community.md — two people, one behind the other. A chapter is other people.
+  people: (
+    <>
+      <circle cx="9.5" cy="8.6" r="3.2" />
+      <path d="M3.4 19.4c0-3.4 2.7-5.2 6.1-5.2s6.1 1.8 6.1 5.2" />
+      <path d="M16 5.8a3.2 3.2 0 0 1 0 5.6" />
+      <path d="M17.4 14.6c2.1.5 3.2 2.2 3.2 4.8" />
+    </>
+  ),
   // now.txt — a clock, because "now" is a timestamp.
   clock: (
     <>

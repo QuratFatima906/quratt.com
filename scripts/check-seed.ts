@@ -27,6 +27,8 @@ const expected: [table: PgTable, rows: number][] = [
   [t.talks, seed.talks.length],
   [t.shelf, seed.shelf.length],
   [t.uses, seed.uses.length],
+  [t.communityMeta, 1],
+  [t.community, seed.community.length],
   [t.cv, seed.cv.length],
 ];
 

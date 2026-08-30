@@ -1,6 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
+import { MENU_KEYS } from '../src/lib/windows';
+
 const menu = (page: Page, label: string) =>
   page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: label, exact: true });
 const taskbar = (page: Page) => page.getByRole('navigation', { name: 'Open windows' });
@@ -149,7 +151,7 @@ test.describe('desktop', () => {
     await page.waitForTimeout(600);
 
     const nav = page.getByRole('navigation', { name: 'Sections' });
-    // Nine menu items, all visible — no "more (n) ▾" needed. `menu-overflow.spec.ts` owns
+    // Every menu item visible — no "more (n) ▾" needed. `menu-overflow.spec.ts` owns
     // the pixel accounting; this test only pins the first and last item being on the bar.
     await expect(nav.getByRole('button', { name: /^more \(/ })).toHaveCount(0);
     await expect(nav.getByRole('button', { name: 'about' })).toBeVisible();
@@ -220,7 +222,7 @@ test.describe('mobile', () => {
     await expect(page.getByRole('navigation', { name: 'Sections' })).toBeHidden();
     await page.getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('navigation', { name: 'Sections' }).getByRole('button')).toHaveCount(
-      9, // one per menu window — contact moved to the email icon
+      MENU_KEYS.length, // one per menu window — contact moved to the email icon
     );
   });
 

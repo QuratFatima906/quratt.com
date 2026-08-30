@@ -99,6 +99,14 @@ export async function getCv() {
   return db().select().from(t.cv).orderBy(asc(t.cv.sortOrder));
 }
 
+export async function getCommunity() {
+  'use cache';
+  cache('community');
+  const [meta] = await db().select().from(t.communityMeta).limit(1);
+  const roles = await db().select().from(t.community).orderBy(asc(t.community.sortOrder));
+  return { meta: meta ?? null, roles };
+}
+
 export async function getProjects() {
   return visible(await allProjects());
 }

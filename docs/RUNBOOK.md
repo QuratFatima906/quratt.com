@@ -21,6 +21,18 @@ Normal path: **merge to `main`.** Vercel's Git integration builds it. A pull req
 own preview URL and its own Neon database branch, so a preview can never write to production
 data.
 
+**The build migrates its own database.** `pnpm build` is `drizzle-kit migrate && next build`,
+so a deployment applies any pending migration to whatever `DATABASE_URL` points at before it
+builds — the preview's Neon branch for a preview, production for a production deploy. Drizzle
+records what it has applied, so this is a no-op when there is nothing pending.
+
+It is there because nothing else on Vercel ran migrations. `db:migrate` lived only in CI, and
+CI builds against its own throwaway Postgres, so the first schema change after launch went
+green on every required check and failed the deployment on `relation "community_meta" does not
+exist` — a preview branch forks production, and production had never had the migration applied.
+A schema change is still **not** a content change: rows come from `pnpm db:seed`, which the
+build does not run and must not.
+
 **The build is not the deploy.** Merging reliably produces a production *build* from the right
 commit; it does not reliably move `quratt.com` onto it. On 2026-08-19 two merges built cleanly
 and the apex went on serving a day-old deployment, because the rollback drill earlier that
