@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { groupRoles, start } from './community';
+import { carded, groupRoles, start } from './community';
 
 import type { CommunityRole } from '@/lib/content/schema';
 
@@ -54,5 +54,27 @@ describe('groupRoles', () => {
   it('keeps two spells at the same organisation apart when something sits between them', () => {
     const groups = groupRoles([role('A', '2018'), role('B', '2019'), role('A', '2020')]);
     expect(groups.map((g) => g.org)).toEqual(['A', 'B', 'A']);
+  });
+});
+
+describe('carded', () => {
+  /*
+   * Women Techmakers is in the design's log with no card of its own, and an empty body is what
+   * keeps it out. The log renders the roles it is handed, so nothing here can drop it from the
+   * timeline — only from the cards above it.
+   */
+  const detailed = (org: string, period: string): CommunityRole => ({
+    ...role(org, period),
+    body: 'what the card would reveal',
+  });
+
+  it('drops an organisation with no detail written for it', () => {
+    const groups = groupRoles([role('Women Techmakers', '2019'), detailed('PWiC', '2020')]);
+    expect(carded(groups).map((g) => g.org)).toEqual(['PWiC']);
+  });
+
+  it('keeps a card when any one of its roles carries detail', () => {
+    const groups = groupRoles([role('PWiC', '2020'), detailed('PWiC', '2023 → present')]);
+    expect(carded(groups)).toHaveLength(1);
   });
 });

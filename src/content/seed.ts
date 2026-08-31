@@ -306,8 +306,8 @@ As a mentor, I helped young teams think through their ideas and turn them into s
       role: 'Design Lead',
       period: '2019',
       note: '',
-      // The design lists this in the log and gives it no card of its own. Here it gets both,
-      // and an empty body is what makes its card render flat rather than expandable.
+      // The design lists this in the log and gives it no card of its own. The empty body is what
+      // keeps it out of the cards (see `carded`); the log prints every role either way.
       body: '',
     },
     {
