@@ -3,9 +3,11 @@ import type { CommunityMeta, CommunityRole } from '@/lib/content/schema';
 /**
  * `community.md` — the design's career log.
  *
- * It draws the same six roles twice: as expandable cards grouped by organisation, and again as
- * the `community.log` timeline at the foot. Both are rendered from one ordered list of roles
- * (see `communitySchema`), so a renamed role can never appear in one list and not the other.
+ * It draws the roles twice: as expandable cards grouped by organisation, and again as the
+ * `community.log` timeline at the foot. The log carries every role; the cards carry only those
+ * with detail written for them (see `carded`). Both are rendered from one ordered list of roles
+ * (see `communitySchema`), so a renamed role can never appear in one list and not the other, and
+ * both read newest first.
  *
  * The cards are `<details>`, not state. A disclosure that the platform already implements is
  * keyboard-operable, announced as expandable, findable by in-page search, and works on the
@@ -152,13 +154,20 @@ function Card({ group, index }: { group: Group; index: number }) {
   );
 }
 
-/** The `community.log` foot — the same roles, oldest first, as a dated spine. */
+/**
+ * The log reads newest first, the same direction the cards above it run in, so the page has one
+ * direction rather than two. The seeded order is chronological and stays that way — the log
+ * reverses a copy at the point of drawing rather than the database storing a second ordering.
+ */
+export const logOrder = (roles: CommunityRole[]): CommunityRole[] => [...roles].reverse();
+
+/** The `community.log` foot — the same roles, newest first, as a dated spine. */
 function Log({ roles }: { roles: CommunityRole[] }) {
   return (
     <div className="rounded-[9px] border border-border bg-surface-chrome px-[22px] py-5 font-mono text-[11.5px]">
       <p className="mb-4 text-text-muted">community.log</p>
       <ol className="flex flex-col gap-[17px] border-l border-border pl-5">
-        {roles.map((role) => (
+        {logOrder(roles).map((role) => (
           <li key={role.id} className="relative flex flex-wrap gap-x-3">
             <span
               aria-hidden="true"
@@ -194,7 +203,6 @@ export function CommunityWindow({ meta, roles }: { meta: CommunityMeta; roles: C
           the log
         </h3>
         <span aria-hidden="true" className="h-px flex-1 bg-border" />
-        <span className="font-mono text-[10px] text-text-muted">open a card for the detail</span>
       </div>
 
       <ol className="mb-[22px] flex flex-col gap-3">

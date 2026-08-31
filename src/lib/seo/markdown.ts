@@ -1,3 +1,4 @@
+import { logOrder } from '@/components/windows/community';
 import { projectSlug } from '@/components/windows/projects';
 import { readingTime } from '@/components/windows/writing';
 import {
@@ -211,8 +212,9 @@ export async function documents(): Promise<Doc[]> {
       summary: `${roles.length} community roles — chapters, workshops and judging.`,
       section: 'Community',
       updatedAt: newest([meta, ...roles], epoch),
-      // One entry per role, in the same order the window's log prints them, so an agent reads
-      // the same six rows a visitor sees rather than a summary of them.
+      // One entry per role, in the same order the window's log prints them — newest first, via
+      // the same `logOrder` — so an agent reads the rows a visitor sees rather than a summary of
+      // them, and in the order they see them.
       markdown: join([
         '# Community',
         '',
@@ -220,7 +222,7 @@ export async function documents(): Promise<Doc[]> {
         '',
         meta.kicker,
         '',
-        ...roles.flatMap((role) => [
+        ...logOrder(roles).flatMap((role) => [
           `## ${role.role} — ${role.org}`,
           '',
           join([line('When', role.period), line('Note', role.note || null)]),
