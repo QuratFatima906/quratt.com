@@ -45,6 +45,14 @@ export function groupRoles(roles: CommunityRole[]): Group[] {
 }
 
 /**
+ * A card is a disclosure you open for the detail, so an organisation with no detail written for
+ * it has nothing to open. Those appear in the `community.log` timeline only, which is where the
+ * design puts Women Techmakers — the log carries every role either way.
+ */
+export const carded = (groups: Group[]): Group[] =>
+  groups.filter((group) => group.roles.some((role) => role.body));
+
+/**
  * Cards are told apart by colour, and the colour comes from position rather than a column: the
  * palette is fixed, the order is the owner's, and a new organisation should not need a token
  * chosen for it. Every entry is a tested fill — `on-accent` over it clears AA (tokens.test.ts).
@@ -94,15 +102,6 @@ function Card({ group, index }: { group: Group; index: number }) {
       </span>
     </div>
   );
-
-  // A group with nothing to reveal is a flat card, not a disclosure that opens onto nothing.
-  if (detailed.length === 0) {
-    return (
-      <li className="rounded-[9px] border border-border bg-surface-overlay px-[18px] py-4">
-        {header}
-      </li>
-    );
-  }
 
   return (
     <li className="overflow-hidden rounded-[9px] border border-border bg-surface-overlay">
@@ -176,7 +175,7 @@ function Log({ roles }: { roles: CommunityRole[] }) {
 }
 
 export function CommunityWindow({ meta, roles }: { meta: CommunityMeta; roles: CommunityRole[] }) {
-  const groups = groupRoles(roles);
+  const groups = carded(groupRoles(roles));
 
   return (
     <div className="px-[26px] pt-6 pb-[26px]">
