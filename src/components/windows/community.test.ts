@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
-import { carded, groupRoles, start } from './community';
+import { carded, groupRoles, logOrder, start } from './community';
 
 import type { CommunityRole } from '@/lib/content/schema';
 
 /** Only the fields the grouping reads; the rest are noise for this question. */
 const role = (org: string, period: string, badge = org): CommunityRole =>
   ({ org, period, badge, role: 'lead', note: '', body: '' }) as CommunityRole;
+
+/** The same, but with detail written for it — which is what earns an organisation a card. */
+const detailed = (org: string, period: string): CommunityRole => ({
+  ...role(org, period),
+  body: 'what the card would reveal',
+});
 
 describe('start', () => {
   it('takes the year a period opens on', () => {
@@ -63,11 +69,6 @@ describe('carded', () => {
    * keeps it out. The log renders the roles it is handed, so nothing here can drop it from the
    * timeline — only from the cards above it.
    */
-  const detailed = (org: string, period: string): CommunityRole => ({
-    ...role(org, period),
-    body: 'what the card would reveal',
-  });
-
   it('drops an organisation with no detail written for it', () => {
     const groups = groupRoles([role('Women Techmakers', '2019'), detailed('PWiC', '2020')]);
     expect(carded(groups).map((g) => g.org)).toEqual(['PWiC']);
@@ -76,5 +77,28 @@ describe('carded', () => {
   it('keeps a card when any one of its roles carries detail', () => {
     const groups = groupRoles([role('PWiC', '2020'), detailed('PWiC', '2023 → present')]);
     expect(carded(groups)).toHaveLength(1);
+  });
+});
+
+describe('logOrder', () => {
+  it('reads newest first, the direction the cards run in', () => {
+    const roles = [role('Technovation', '2018'), role('GDG', '2019'), role('PWiC', '2023')];
+    expect(logOrder(roles).map((r) => r.org)).toEqual(['PWiC', 'GDG', 'Technovation']);
+  });
+
+  /*
+   * `reverse` mutates, and the cards and the log are handed the same array. Reversing in place
+   * would silently flip the cards too, which is the one bug this ordering could introduce.
+   */
+  it('leaves the seeded order alone for the cards to group', () => {
+    const roles = [role('Technovation', '2018'), role('PWiC', '2023')];
+    logOrder(roles);
+    expect(roles.map((r) => r.org)).toEqual(['Technovation', 'PWiC']);
+  });
+
+  it('carries every role, including the ones the cards leave out', () => {
+    const roles = [role('Women Techmakers', '2019'), detailed('PWiC', '2020')];
+    expect(logOrder(roles)).toHaveLength(2);
+    expect(carded(groupRoles(roles))).toHaveLength(1);
   });
 });

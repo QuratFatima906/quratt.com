@@ -30,11 +30,11 @@ export const seed = seedSchema.parse({
   },
   nowUpdated: '19 Aug 2026',
   now: [
-    { line: 'reading The Kite Runner — everyone warned me about chapter seven, not there yet' },
-    { line: 'rewriting my portfolio, which is the thing you are currently standing in' },
-    { line: 'learning AI automation, mostly by automating things nobody asked me to' },
-    { line: 'raising a tiny human — apparently this is the project with the least predictable requirements' },
-    { line: "open to senior software engineer roles — if there's no runbook, there is by Friday" },
+    { line: 'reading The Kite Runner. One of those books that somehow kept getting postponed.' },
+    { line: 'rewriting my portfolio. Which is the thing you are currently standing in.' },
+    { line: 'learning AI automation and figuring out what is actually worth automating.' },
+    { line: 'raising a tiny human. Easily the most interesting thing I have worked on.' },
+    { line: "open to senior software engineer roles. Looking for interesting problems and good people." },
   ],
   projects: [
     {
@@ -262,12 +262,11 @@ export const seed = seedSchema.parse({
     { title: '[title], [author]', state: 'gave up', note: "it wasn't you, it was chapter four" },
   ],
   uses: [
-    { label: 'editor', value: 'VS Code — came back from Cursor, we are still friends' },
-    { label: 'shell', value: 'zsh, and an alias for every command I refuse to learn' },
-    { label: 'machine', value: 'MacBook Pro, M2 Pro, 14-inch, 2023. The fans and I have never met' },
-    { label: 'monitor', value: 'Samsung 49" Odyssey OLED G9 — and I still centre one window' },
-    { label: 'keyboard', value: 'Aula F75, wireless, mechanical, loud on purpose' },
-    { label: 'notes', value: 'a plain text file, obviously' },
+    { label: 'editor', value: 'VS Code. Tried Cursor, came back' },
+    { label: 'shell', value: 'zsh with a growing collection of aliases' },
+    { label: 'machine', value: 'MacBook Pro, M2 Pro, 14-inch, 2023' },
+    { label: 'monitor', value: 'Samsung 49" Odyssey OLED G9. Multitasking is a myth' },
+    { label: 'keyboard', value: 'Aula F75, wireless, mechanical, I like my keyboards loud' },
   ],
   communityMeta: {
     intro: `I got into tech communities the usual way:
@@ -280,7 +279,8 @@ At some point, I was helping people across 22+ chapters around the world do the 
     lesson2:
       "I've spent years moving between building things, teaching things, organizing people, and helping other people build things themselves. Turns out, I quite like that combination.",
   },
-  // Chronological. The cards read this newest-organisation-first; the log reads it as written.
+  // Chronological. Both views reverse it to read newest first — the cards by organisation, the
+  // log role by role. The stored order stays the one true sequence; neither view is seeded.
   community: [
     {
       badge: 'Technovation',
