@@ -30,11 +30,11 @@ export const seed = seedSchema.parse({
   },
   nowUpdated: '19 Aug 2026',
   now: [
-    { line: 'reading The Kite Runner — everyone warned me about chapter seven, not there yet' },
-    { line: 'rewriting my portfolio, which is the thing you are currently standing in' },
-    { line: 'learning AI automation, mostly by automating things nobody asked me to' },
-    { line: 'raising a tiny human — apparently this is the project with the least predictable requirements' },
-    { line: "open to senior software engineer roles — if there's no runbook, there is by Friday" },
+    { line: 'reading The Kite Runner. One of those books that somehow kept getting postponed.' },
+    { line: 'rewriting my portfolio. Which is the thing you are currently standing in.' },
+    { line: 'learning AI automation and figuring out what is actually worth automating.' },
+    { line: 'raising a tiny human. Easily the most interesting thing I have worked on.' },
+    { line: "open to senior software engineer roles. Looking for interesting problems and good people." },
   ],
   projects: [
     {
