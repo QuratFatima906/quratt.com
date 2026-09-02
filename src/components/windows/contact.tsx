@@ -1,3 +1,7 @@
+'use client';
+
+import { track } from '@vercel/analytics';
+
 import { CopyButton } from '@/components/ui/copy-button';
 import { CTA } from '@/components/ui/cta';
 import type { Contact } from '@/lib/content/schema';
@@ -11,6 +15,12 @@ import type { Contact } from '@/lib/content/schema';
  * navigating away from it. A native mail client ignores the target and just opens the app.
  *
  * The résumé's phone number is deliberately absent (D14).
+ *
+ * A client component only so the send can be counted. `mailto:` hands off to another
+ * application and leaves no trace on this side — without this the one action the page exists to
+ * provoke is the one action there is no number for. The event is fired on the click rather than
+ * the send: what a mail client does after the handoff is not ours to know. `src/proxy.ts`
+ * counts the agent side of the same question.
  */
 export function ContactWindow({ contact }: { contact: Contact }) {
   const mailto = `mailto:${contact.email}?subject=${encodeURIComponent(contact.subject)}`;
@@ -41,6 +51,7 @@ export function ContactWindow({ contact }: { contact: Contact }) {
 
       <a
         href={mailto}
+        onClick={() => track('contact-send')}
         target="_blank"
         rel="noreferrer"
         className={`mt-3.5 bg-accent-alt ${CTA}`}

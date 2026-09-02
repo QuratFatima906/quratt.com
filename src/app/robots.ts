@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 
+import { AI_CRAWLERS, LIVE_AGENTS } from '@/lib/agents';
 import { absolute } from '@/lib/seo/site';
 
 /**
@@ -9,23 +10,11 @@ import { absolute } from '@/lib/seo/site';
  * a few site owners block them by default — so being explicit is what actually grants access.
  * The point of the whole discoverability phase is to be readable by these agents, so saying so
  * out loud costs nothing and removes a class of silent failure.
+ *
+ * The names come from `@/lib/agents`, which is also what `src/proxy.ts` classifies incoming
+ * requests against. One list: an agent cannot be invited in here and go uncounted there.
  */
-const AI_AGENTS = [
-  'GPTBot', // OpenAI, training + search
-  'OAI-SearchBot', // OpenAI, search index
-  'ChatGPT-User', // OpenAI, live fetch on a user's behalf
-  'ClaudeBot', // Anthropic, index
-  'Claude-User', // Anthropic, live fetch
-  'Claude-SearchBot',
-  'PerplexityBot',
-  'Perplexity-User',
-  'Google-Extended', // Gemini grounding; separate from Googlebot
-  'Applebot-Extended',
-  'CCBot', // Common Crawl, which many models are trained from
-  'Bytespider',
-  'meta-externalagent',
-  'cohere-ai',
-];
+const AI_AGENTS = [...LIVE_AGENTS, ...AI_CRAWLERS];
 
 /**
  * `/md/` is the rewrite target behind the `.md` twins. Crawling it directly would surface a
