@@ -5,8 +5,15 @@ import { OpenLink } from '@/components/windows/open-link';
 import portrait from '@/assets/portrait.webp';
 import type { About } from '@/lib/content/schema';
 
-/** The one external identity the design puts in this window. Also a `sameAs` entry in P6. */
-const GITHUB = 'https://github.com/QuratFatima906';
+/**
+ * The external identities this window carries. Both are `sameAs` entries in `PERSON` (P6) —
+ * repeated here rather than indexed out of that array, because a positional read would break
+ * silently the first time the structured-data list is reordered.
+ */
+const PROFILES = [
+  { label: 'github', href: 'https://github.com/QuratFatima906' },
+  { label: 'linkedin', href: 'https://www.linkedin.com/in/qurat-ul-ain-fatima/' },
+] as const;
 
 /**
  * The portrait is imported rather than pathed, so Next derives the intrinsic size and the blur
@@ -71,14 +78,18 @@ export function AboutWindow({ about }: { about: About }) {
         >
           hire me →
         </OpenLink>
-        <a
-          href={GITHUB}
-          rel="me noreferrer"
-          target="_blank"
-          className="rounded-[5px] border border-border-interactive px-3 py-[7px] text-text-secondary transition-colors duration-150 hover:bg-surface-hover"
-        >
-          github ↗
-        </a>
+        {/* `↗` is the window's own signal that a link leaves the site, since these open a tab. */}
+        {PROFILES.map((profile) => (
+          <a
+            key={profile.label}
+            href={profile.href}
+            rel="me noreferrer"
+            target="_blank"
+            className="rounded-[5px] border border-border-interactive px-3 py-[7px] text-text-secondary transition-colors duration-150 hover:bg-surface-hover"
+          >
+            {profile.label} ↗
+          </a>
+        ))}
       </div>
     </div>
   );

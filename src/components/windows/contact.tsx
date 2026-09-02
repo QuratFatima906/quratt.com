@@ -7,6 +7,9 @@ import type { Contact } from '@/lib/content/schema';
  * with the subject prefilled, backed by the address as selectable text and a copy button —
  * `mailto:` does nothing at all for a webmail user with no protocol handler.
  *
+ * It opens in a new tab so a registered webmail handler composes beside the site rather than
+ * navigating away from it. A native mail client ignores the target and just opens the app.
+ *
  * The résumé's phone number is deliberately absent (D14).
  */
 export function ContactWindow({ contact }: { contact: Contact }) {
@@ -36,7 +39,12 @@ export function ContactWindow({ contact }: { contact: Contact }) {
         </span>
       </p>
 
-      <a href={mailto} className={`mt-3.5 bg-accent-alt ${CTA}`}>
+      <a
+        href={mailto}
+        target="_blank"
+        rel="noreferrer"
+        className={`mt-3.5 bg-accent-alt ${CTA}`}
+      >
         send →
       </a>
     </div>
