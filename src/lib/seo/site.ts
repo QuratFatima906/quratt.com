@@ -61,12 +61,9 @@ export function pageMetadata({
   type = 'website',
   published,
   modified,
-  card,
 }: {
   title: string;
   description: string;
-  /** Subtitle for the generated card, when the description is longer than the card's 160-char cap. */
-  card?: string;
   /** Route path, canonical-as-written. Filtered and paginated views pass their base path. */
   path: string;
   /** `false` for a window that is disabled in the UI and has no real content yet (D13). */
@@ -76,7 +73,7 @@ export function pageMetadata({
   modified?: Date;
 }): Metadata {
   const url = absolute(path);
-  const images = [{ url: ogUrl(title, card ?? description), width: 1200, height: 630, alt: title }];
+  const images = [{ url: ogUrl(title, description), width: 1200, height: 630, alt: title }];
 
   return {
     title,
