@@ -11,8 +11,7 @@ export const metadata: Metadata = {
   ...pageMetadata({
     title: 'Qurat ul Ain Fatima — things I’m building, learning & figuring out',
     description:
-      'A small system for keeping track of what I’m building, learning, reading, and doing when I’m not shipping software. Because apparently one résumé, one LinkedIn profile, and several scattered notes weren’t enough.',
-    card: 'A small system for keeping track of what I’m building, learning, reading, and doing when I’m not shipping software.',
+      'A small system for tracking what I’m building, learning, and reading. Because one résumé, one LinkedIn, and scattered notes weren’t enough.',
     path: '/',
   }),
   // The home page is the thing the template appends to, so it opts out of it.
