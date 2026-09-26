@@ -9,13 +9,14 @@ import { pageMetadata } from '@/lib/seo/site';
  */
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: 'Qurat ul Ain Fatima — senior software engineer',
+    title: 'Qurat ul Ain Fatima — things I’m building, learning & figuring out',
     description:
-      'The portfolio of Qurat ul Ain Fatima, a senior software engineer in Lahore, rendered as a desktop. Projects, writing, résumé and contact.',
+      'A small system for keeping track of what I’m building, learning, reading, and doing when I’m not shipping software. Because apparently one résumé, one LinkedIn profile, and several scattered notes weren’t enough.',
+    card: 'A small system for keeping track of what I’m building, learning, reading, and doing when I’m not shipping software.',
     path: '/',
   }),
   // The home page is the thing the template appends to, so it opts out of it.
-  title: { absolute: 'Qurat ul Ain Fatima — senior software engineer' },
+  title: { absolute: 'Qurat ul Ain Fatima — things I’m building, learning & figuring out' },
 };
 
 export default function Home() {
