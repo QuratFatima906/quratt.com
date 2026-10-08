@@ -1,0 +1,16 @@
+## The brief
+
+An online store for a Pakistani jewellery brand: one seller, ready stock only, shipping within Pakistan, paid with JazzCash, Easypaisa or cash on delivery. The running costs had to stay around $50 a month.
+
+## How I scoped it
+
+Before the code, an 800-line spec built from a Q&A with the owner. Sizes are the only variants, checkout works as a guest, shipping is a flat rate, and discounts and reviews are in the first version. Just as important is the long list of what is **not** in it.
+
+- **One Next.js app, not a monorepo**, with a custom admin and four roles enforced in more than one layer.
+- **15 Postgres tables**, including an inventory audit trail, because stock disputes are the support tickets a small brand cannot afford.
+- **14 build phases, each with a "done when" check.** Phase 6 launches with cash on delivery only, so a slow payment-gateway onboarding cannot hold the launch hostage.
+- **A cost model before a stack:** $21–46 a month, all in.
+
+## A note
+
+This is client work under NDA, so the code is private and the store is not shown here.

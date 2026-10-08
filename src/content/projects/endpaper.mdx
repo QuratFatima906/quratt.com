@@ -1,0 +1,20 @@
+## The problem
+
+The lines that stay with you from a book get photographed on a phone, and then lost in the camera roll among receipts. Capture usually happens somewhere with no signal: a train, a bed, a café basement.
+
+## What I built
+
+An installable, offline-first PWA. You photograph a passage, the text is read **on the device**, and it is filed under its book with a mark, a page and a margin note. Words, moods, reflections and short essays live alongside it. Each book can be published, one at a time, at a public page of its own.
+
+- **IndexedDB is the source of truth.** The server is a backup. Writes go to an outbox; a pull cursor stamped by the server brings changes back, and conflicts resolve last-write-wins per row. Two clocks mean a skewed phone clock cannot lose an edit.
+- **Every screen opens cold, offline.** Private routes are static paths with query parameters, so a hand-written service worker of about 100 lines can precache all of them.
+- **Photos never leave the phone.** OCR runs in the browser with Tesseract and EXIF is stripped before anything is stored.
+- **Authorisation lives in the database**, as row-level security in Supabase, not in route handlers.
+
+## A bug worth telling
+
+Postgres ORs permissive RLS policies together. A sync pull therefore returned other readers' *shared* rows alongside your own. The fix filters explicitly on owner, and a column grant now limits logged-out visitors to public columns only. The lesson: a policy that reads correctly alone can be wrong next to its neighbour.
+
+## Where it stands
+
+Live, and used. Next: a content security policy, a CI gate, rate limits on reports, and a reading-year page.

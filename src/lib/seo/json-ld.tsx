@@ -74,6 +74,7 @@ export function softwareSourceCode(project: Project): Node {
     name: project.name,
     description: project.desc,
     programmingLanguage: project.lang,
+    codeRepository: project.repo,
     keywords: project.tag,
     dateCreated: project.year,
     dateModified: iso(project.updatedAt),
@@ -114,12 +115,13 @@ export function event(talk: Talk): Node {
   });
 }
 
-export function book(item: ShelfItem): Node {
+export function book(item: ShelfItem & { url?: string | null }): Node {
   return clean({
     '@context': 'https://schema.org',
     '@type': 'Book',
     name: item.title,
     description: item.note,
+    url: item.url,
     readBy: { '@type': 'Person', '@id': PERSON_ID, name: PERSON.name },
   });
 }

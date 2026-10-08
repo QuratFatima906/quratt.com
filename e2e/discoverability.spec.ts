@@ -77,7 +77,7 @@ test('the disabled windows are absent from the sitemap and from llms.txt', async
   const llms = await (await request.get('/llms.txt')).text();
 
   // They carry `noindex` (P5); advertising them here would contradict that.
-  for (const path of ['/projects', '/writing', '/talks', '/reads']) {
+  for (const path of ['/writing', '/talks']) {
     expect(sitemap).not.toContain(`<loc>${path}</loc>`);
     expect(llms).not.toContain(`${path}.md`);
   }

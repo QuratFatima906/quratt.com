@@ -1,0 +1,16 @@
+## The problem
+
+A small brand's Instagram is where people complain, ask and recommend, and none of it waits for office hours. The comments that matter sink under the ones that do not, and a lot of them arrive in Roman Urdu, which most sentiment tools read as noise.
+
+## What I built
+
+Petal takes in every comment, @mention and tracked hashtag post, tags each one for sentiment and intent, and shows it as a live feed, seven days of stats and a set of alerts.
+
+- **Webhooks and polling, both.** Meta delivers webhooks on a best-effort basis, so a poller backfills anything missed. Both write through one upsert keyed on Instagram's own ids, which makes a duplicate or a retry harmless.
+- **AI never sits in the ingest path.** A BullMQ queue sits between ingestion and the model, so a slow or failing LLM call cannot drop a comment.
+- **Claude Haiku with structured output**, with repeat text served from a sha256 cache. A daily budget hard-stops spend, and anything over budget or failing falls back to a keyword list that understands Roman Urdu.
+- **Daily rollups, not scans.** Stats read from precomputed per-day totals. The trade is a few seconds of lag for a dashboard that stays fast as the history grows.
+
+## Where it stands
+
+Every work package is done, and the demo above runs on seeded data, because the account it was built for is new and quiet. What remains needs other people's permissions: Meta's app review, a second worker service and a real key, so the AI's accuracy can be published rather than claimed.

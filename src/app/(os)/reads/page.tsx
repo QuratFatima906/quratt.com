@@ -5,7 +5,7 @@ import { book, itemList, JsonLd } from '@/lib/seo/json-ld';
 import { pageMetadata } from '@/lib/seo/site';
 import { isIndexable, windowDef } from '@/lib/windows';
 
-/** Disabled in the UI (D13), so the route works but stays out of the index and the sitemap. */
+/** The shelf: Endpaper's public books, then the seeded ones. */
 export const metadata = pageMetadata({
   title: 'Reads',
   description: 'The shelf: what Qurat ul Ain Fatima is reading, has read, and gave up on.',

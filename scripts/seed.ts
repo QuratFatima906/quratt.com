@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { getTableColumns, getTableName, notInArray, sql } from 'drizzle-orm';
 import type { PgColumn, PgTable } from 'drizzle-orm/pg-core';
 
+import { projectSlug } from '../src/components/windows/projects';
 import { seed } from '../src/content/seed';
 import { db } from '../src/lib/content/db';
 import * as t from '../src/lib/content/schema';
@@ -62,8 +63,8 @@ async function upsert(table: PgTable & { id: PgColumn }, rows: Record<string, un
  * zod field that describes the column. The slug is already regex-checked by `seedSchema`, so it
  * cannot walk out of the directory.
  */
-function readBody(slug: string): string | null {
-  const file = new URL(`../src/content/posts/${slug}.mdx`, import.meta.url);
+function readBody(dir: 'posts' | 'projects', slug: string): string | null {
+  const file = new URL(`../src/content/${dir}/${slug}.mdx`, import.meta.url);
   if (!existsSync(file)) return null;
   return postSchema.shape.body.parse(readFileSync(file, 'utf8'));
 }
@@ -92,16 +93,19 @@ async function main() {
     sortOrder: i,
     ...row,
   }));
+  // A project has no slug column; its name is the slug (see `projectSlug`), and the name is
+  // only ever lowercase words once slugged, so it cannot walk out of the directory either.
   const projects: (typeof t.projects.$inferInsert)[] = seed.projects.map((row, i) => ({
     id: i + 1,
     sortOrder: i,
     ...row,
+    body: readBody('projects', projectSlug(row.name)),
   }));
   const posts: (typeof t.posts.$inferInsert)[] = seed.posts.map((row, i) => ({
     id: i + 1,
     sortOrder: i,
     ...row,
-    body: readBody(row.slug),
+    body: readBody('posts', row.slug),
   }));
   const talks: (typeof t.talks.$inferInsert)[] = seed.talks.map((row, i) => ({
     id: i + 1,

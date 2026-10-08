@@ -2,6 +2,7 @@ import { asc } from 'drizzle-orm';
 import { cacheLife, cacheTag } from 'next/cache';
 
 import { db } from './db';
+import { type Book, getEndpaperBooks } from './endpaper';
 import * as t from './schema';
 
 /**
@@ -81,10 +82,23 @@ export async function getNow() {
   return { nowUpdated: meta?.nowUpdated ?? null, lines };
 }
 
-export async function getShelf() {
+async function allShelf() {
   'use cache';
   cache('shelf');
   return db().select().from(t.shelf).orderBy(asc(t.shelf.sortOrder));
+}
+
+/**
+ * Endpaper's public books first, then the rows seeded by hand that Endpaper does not already
+ * have — the seed is what shows when Endpaper is down, so it repeats some of the same books.
+ * Not cached itself: each half keeps its own lifetime, and wrapping them would hold the hourly
+ * Endpaper half for as long as the database half.
+ */
+export async function getShelf(): Promise<Book[]> {
+  const [endpaper, seeded] = await Promise.all([getEndpaperBooks(), allShelf()]);
+  const titles = new Set(endpaper.map((book) => book.title.toLowerCase()));
+  const extra = seeded.filter((row) => !titles.has(row.title.toLowerCase()));
+  return [...endpaper, ...extra.map((row) => ({ ...row, url: null }))];
 }
 
 export async function getUses() {

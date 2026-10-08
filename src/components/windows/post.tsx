@@ -13,7 +13,7 @@ import { readingTime } from './writing';
  * The element map is the whole stylesheet. A prose plugin would be a dependency for what nine
  * class strings already do, and every value here is a token.
  */
-const MDX = {
+export const MDX = {
   h2: (props: React.ComponentProps<'h2'>) => (
     <h2 className="mt-7 mb-2.5 text-[13.5px] leading-[1.25] font-bold tracking-[-0.01em]" {...props} />
   ),
