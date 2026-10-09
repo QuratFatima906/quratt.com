@@ -77,7 +77,7 @@ test('windows whose content is not ready are reachable but inert', async ({ page
   await page.goto('/');
   const before = await page.locator('section[aria-labelledby]').count();
 
-  for (const label of ['projects', 'writes', 'talks', 'reads']) {
+  for (const label of ['writes', 'talks']) {
     await openPanel(page);
 
     const button = page

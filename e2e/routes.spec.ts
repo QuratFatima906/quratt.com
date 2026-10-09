@@ -9,13 +9,14 @@ import { expect, test, type Page } from '@playwright/test';
 const ROUTES: [path: string, h1: string, content: string][] = [
   ['/', 'Qurat ul Ain Fatima — qurat', 'it worked yesterday'],
   ['/about', 'about.md', 'it worked yesterday'],
-  ['/projects', 'projects/', 'quietwatch'],
-  ['/projects/quietwatch', 'quietwatch', 'only pings you when it actually matters'],
+  ['/projects', 'projects/', 'petal'],
+  // A phrase from the MDX case study, not the row: it proves the body made it from file to page.
+  ['/projects/petal', 'petal', 'Webhooks and polling, both.'],
   ['/writing', 'writes.md', 'The bug was in the calendar, obviously'],
   ['/writing/postgres-told-me-the-truth', "Postgres told me the truth, I just didn't listen", 'Rows Removed by Filter'], // prettier-ignore
   ['/talks', 'talks.md', 'Everything I know about queues'],
   ['/talks/invite', 'invite-qurat.form', 'Yes, probably.'],
-  ['/reads', 'reads.md', 'best of the year so far'],
+  ['/reads', 'reads.md', 'The Kite Runner'],
   ['/now', 'now.txt', 'senior software engineer roles'],
   ['/uses', 'uses.txt', 'editor'],
   ['/resume', 'resume.pdf', 'Shopsense'],
@@ -24,7 +25,7 @@ const ROUTES: [path: string, h1: string, content: string][] = [
 ];
 
 /** The windows that ship disabled hold placeholder content, so they are not indexed. */
-const NOINDEX = ['/projects', '/projects/quietwatch', '/writing', '/writing/postgres-told-me-the-truth', '/talks', '/talks/invite', '/reads']; // prettier-ignore
+const NOINDEX = ['/writing', '/writing/postgres-told-me-the-truth', '/talks', '/talks/invite']; // prettier-ignore
 
 test.describe('the route map', () => {
   for (const [path, h1, content] of ROUTES) {
@@ -97,21 +98,37 @@ test.describe('metadata', () => {
 test.describe('the tag filter', () => {
   test('restores a filtered view from the URL, on the server', async ({ page, request }) => {
     // Server-side first: the filtered grid is in the HTML the server sent, not the product of
-    // a client effect. `?tag=systems` selects four of the eleven visible projects.
+    // a client effect. `?tag=systems` selects one of the seven visible projects.
     const html = await (await request.get('/projects?tag=systems')).text();
     expect(html).toContain('aria-current="true"');
-    expect(html).toMatch(/4<!-- --> shown/);
+    expect(html).toMatch(/1<!-- --> shown/);
 
     await page.goto('/projects?tag=systems');
     const cards = page.locator('main ul > li');
-    await expect(cards).toHaveCount(4);
+    await expect(cards).toHaveCount(1);
     await expect(page.getByRole('link', { name: 'systems' })).toHaveAttribute(
       'aria-current',
       'true',
     );
     // A hand-typed tag that matches nothing must not empty the grid.
     await page.goto('/projects?tag=nonsense');
-    await expect(page.locator('main ul > li')).toHaveCount(11);
+    await expect(page.locator('main ul > li')).toHaveCount(7);
+  });
+});
+
+test.describe('a case study', () => {
+  test('offers its demo without autoplaying it, and links out', async ({ page, request }) => {
+    await page.goto('/projects/endpaper');
+    const video = page.locator('main video');
+    await expect(video).toHaveAttribute('src', '/projects/endpaper.mp4');
+    await expect(video).not.toHaveAttribute('autoplay');
+    expect((await request.get('/projects/endpaper.mp4')).ok()).toBe(true);
+    expect((await request.get('/projects/endpaper.jpg')).ok()).toBe(true);
+    await expect(page.getByRole('link', { name: /^live/ })).toHaveAttribute(
+      'href',
+      'https://endpaper-alpha.vercel.app',
+    );
+    await expect(page.getByText('end goal →')).toBeVisible();
   });
 });
 

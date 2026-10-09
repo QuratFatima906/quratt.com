@@ -1,0 +1,20 @@
+## The problem
+
+"Remote" on a job board often means "remote, if you live in the US". Reading a hundred listings to find the five that will hire from Lahore is a daily tax.
+
+## What I built
+
+A Python script that GitHub Actions runs at 10 am Pakistan time. It pulls four free sources (RemoteOK, We Work Remotely, Remotive and Arbeitnow), throws out what will never work, scores what is left and emails the survivors.
+
+- **Hard rejects first.** Titles are matched on whole words, so "java" does not knock out "javascript". Location wording like *US only*, *onsite* and *hybrid* is an instant no.
+- **Then a score:** seniority +5, stack match up to +10, *worldwide* wording +6, a listed salary +2.
+- **No server.** The run commits its own `seen_jobs.json`, so the same role never arrives twice and the whole system costs $0.
+- **One bad source is a warning, not an outage.** A failing feed is logged and skipped.
+
+## A fix worth telling
+
+The first digests still surfaced Berlin and Munich roles that said "remote" in the description. The rule changed: the *location field itself* must say worldwide or remote, and those roles stopped arriving.
+
+## Where it stands
+
+Complete for its job: 10 daily digests and 34 roles surfaced in its first ten days. Sources that need a login, like Wellfound, were left out on purpose.

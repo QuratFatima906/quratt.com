@@ -37,13 +37,12 @@ describe('isIndexable', () => {
   it('excludes every window that ships disabled', () => {
     expect(isIndexable('writes')).toBe(false);
     expect(isIndexable('talks')).toBe(false);
-    expect(isIndexable('reads')).toBe(false);
-    // Disabled until there are real projects to show; the seeded twelve are placeholders.
-    expect(isIndexable('projects')).toBe(false);
   });
 
   it('includes every window that has real content', () => {
     expect(isIndexable('about')).toBe(true);
+    expect(isIndexable('reads')).toBe(true);
+    expect(isIndexable('projects')).toBe(true);
     expect(isIndexable('resume')).toBe(true);
     expect(isIndexable('contact')).toBe(true);
     expect(isIndexable('now')).toBe(true);

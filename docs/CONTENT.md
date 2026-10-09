@@ -46,13 +46,13 @@ keyboard-reachable "coming soon" tooltip (D8).
 | `about.md` | **live** | from the résumé |
 | `resume.pdf` | **live** | renamed from `cv.pdf` — key, label and route all change |
 | `say-hi.eml` | **live** | email only, never the phone number |
-| `projects/` | **live** | placeholder content, see below |
+| `projects/` | **live** | real projects, each with an MDX case study — see below |
 | `now.txt` | **live** | placeholder |
 | `uses.txt` | **live** | placeholder |
 | `entropy.exe` | **live** | the toy stays |
 | `writes.md` | **disabled** | no posts yet |
 | `talks.md` | **disabled** | see the note below — this one is arguably wrong |
-| `reads.md` | **disabled** | no shelf yet |
+| `reads.md` | **live** | public books from Endpaper, with two seeded books as the fallback |
 
 ### The `talks.md` call is worth revisiting
 
@@ -98,22 +98,37 @@ replace them.
 
 ## Placeholder for now
 
-`projects/`, `now.txt`, and the `uses.txt` hardware lines keep the design's placeholder
+`now.txt` and the `uses.txt` hardware lines keep the design's placeholder
 content. The owner replaces them by editing `src/content/seed.ts` and re-running
 `pnpm db:seed`.
 
-**`projects/` deserves a flag.** The résumé is entirely employment history — there are no
-personal or open-source projects in it. The design's grid shows independent work with
-`open ↗` links, so filling it with employer achievements would be misleading. It stays
-placeholder until the owner supplies real ones. It is the centrepiece of an engineer's
-portfolio, so this is the highest-value content gap on the site.
+## Projects
+
+Real, from the owner's own repositories (2026-10-08). The row is the card; the case study is
+`src/content/projects/<slug>.mdx`, loaded into `projects.body` by the seeder exactly as posts
+are (D6). Demo videos live in `public/projects/<slug>.mp4` with a `.jpg` poster of the same
+name. They are H.264, 1280×800, silent, faststart, and a few hundred KB each.
+
+- Only `endpaper` has a live URL today. The Railway deploys for `petal` and `climb` were gone
+  when the demos were recorded, so those demos were recorded from local runs.
+- `chakori` and `climb` are private repositories, so they carry no source link.
+- `date.js` is a draft: too thin to show.
+- `climb` is a UI experiment, so it shows only its description and demo, with no goal or case study.
 
 ## Urdu
 
-Book titles only (Q6). `reads.md` is the only window that will carry Urdu, and it is
-currently disabled — so the Nastaliq work from P1 has no live surface yet. It is foundation,
-deliberately, and it must keep working: the font is loaded lazily and a regression there is
-invisible until the shelf ships.
+Book titles only (Q6), and none are on the shelf right now, so the lazily loaded Nastaliq face
+has no live surface. `BookTitle` still detects Urdu by codepoint, so an Urdu title added on
+Endpaper or in the seed renders correctly with no code change. The e2e tests that need an Urdu
+page were removed with the titles; restore them from git history when one returns.
+
+## Reads
+
+The shelf is the owner's public Endpaper books, read from
+`https://endpaper-alpha.vercel.app/@qurat/shelf.json` and cached for an hour, followed by the
+seeded rows Endpaper does not already have (matched by title). Each Endpaper book links to its
+own page there. If Endpaper is down, the shelf shows the seeded rows alone. To show a book here, make it public on Endpaper; nothing is edited in
+this repository.
 
 ## Portrait
 

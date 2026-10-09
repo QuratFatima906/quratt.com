@@ -53,11 +53,11 @@ export type WindowDef = {
 
 export const WINDOWS: readonly WindowDef[] = [
   { key: 'about', label: 'about.md', menuLabel: 'about', icon: 'person', route: '/about', available: true, width: 540 }, // prettier-ignore
-  { key: 'projects', label: 'projects/', menuLabel: 'projects', icon: 'folder', route: '/projects', available: false, width: 420 }, // prettier-ignore
+  { key: 'projects', label: 'projects/', menuLabel: 'projects', icon: 'folder', route: '/projects', available: true, width: 420 }, // prettier-ignore
   // The route map calls this `/writing`; the design calls the window `writes.md`. Both stay.
   { key: 'writes', label: 'writes.md', menuLabel: 'writes', icon: 'pen', route: '/writing', available: false, width: 420 }, // prettier-ignore
   { key: 'talks', label: 'talks.md', menuLabel: 'talks', icon: 'mic', route: '/talks', available: false, width: 430 }, // prettier-ignore
-  { key: 'reads', label: 'reads.md', menuLabel: 'reads', icon: 'book', route: '/reads', available: false, width: 360 }, // prettier-ignore
+  { key: 'reads', label: 'reads.md', menuLabel: 'reads', icon: 'book', route: '/reads', available: true, width: 360 }, // prettier-ignore
   // Real content, so it ships enabled — the résumé's speaking and community material finally
   // has a surface (docs/CONTENT.md). Wider than the rest: the cards carry paragraphs, not rows.
   { key: 'community', label: 'community.md', menuLabel: 'community', icon: 'people', route: '/community', available: true, width: 620 }, // prettier-ignore

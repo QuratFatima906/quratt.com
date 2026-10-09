@@ -1,16 +1,19 @@
 import Link from 'next/link';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 
 import type { Project } from '@/lib/content/schema';
 
+import { MDX } from './post';
+
 /**
- * The dot and the chips are the only place a tag is styled. `data-model.md` names three tags
+ * The dot and the chips are the only place a tag is styled. `schema.ts` lists the known tags
  * and says an unknown one must still render — new tags appear in the filter automatically, so
  * an unmapped tag falls back to a neutral dot rather than disappearing.
  */
 const TAG_DOT: Record<string, string> = {
-  systems: 'bg-accent',
-  tools: 'bg-accent-alt',
-  silly: 'bg-warn',
+  products: 'bg-accent',
+  systems: 'bg-accent-alt',
+  tools: 'bg-warn',
 };
 
 /** Chips derive from the data, in the order the tags first appear — never from a hardcoded list. */
@@ -53,12 +56,20 @@ export function ProjectsWindow({ featured, total }: { featured: Project[]; total
 }
 
 /**
- * One project — the `/projects/[slug]` view. The window's title bar already carries the name
- * as the page's `h1`, so the body leads with what the grid card could not fit.
+ * One project — the `/projects/[slug]` view, and its case study. The window's title bar already
+ * carries the name as the page's `h1`, so the body leads with what the grid card could not fit.
+ *
+ * The demo never autoplays: `prefers-reduced-motion` cannot reach an `autoplay` attribute from
+ * CSS, and a click-to-play poster is also what keeps the video out of the LCP path.
  */
 export function ProjectWindow({ project }: { project: Project }) {
+  const links = [
+    project.url && { href: project.url, label: 'live' },
+    project.repo && { href: project.repo, label: 'source' },
+  ].filter((link) => !!link);
+
   return (
-    <div className="px-[26px] pt-6 pb-[26px]">
+    <article className="px-[26px] pt-6 pb-[26px] sm:px-[34px]">
       <p className="flex items-center gap-2 font-mono text-[11px] text-text-muted">
         <span
           aria-hidden="true"
@@ -69,15 +80,47 @@ export function ProjectWindow({ project }: { project: Project }) {
         <span>{project.lang}</span>
         <span aria-hidden="true">·</span>
         <span>{project.year}</span>
+        {links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent-alt first-of-type:ml-auto hover:underline"
+          >
+            {link.label}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        ))}
       </p>
       <p className="mt-3 text-[14.5px] leading-[1.45] text-pretty">{project.desc}</p>
+      {project.video && (
+        <video
+          className="mt-5 aspect-[16/10] w-full rounded-md border border-border bg-surface-overlay"
+          src={`/projects/${project.video}`}
+          poster={`/projects/${project.video.replace(/\.mp4$/, '.jpg')}`}
+          controls
+          muted
+          loop
+          playsInline
+          preload="none"
+          aria-label={`${project.name} demo, no sound`}
+        />
+      )}
+      {project.goal && (
+        <p className="mt-5 border-l-2 border-accent pl-4 font-mono text-[11.5px] leading-[1.6] text-text-secondary">
+          <span className="text-text-muted">end goal → </span>
+          {project.goal}
+        </p>
+      )}
+      {project.body && <MDXRemote source={project.body} components={MDX} />}
       <Link
         href="/projects"
-        className="mt-5 inline-block font-mono text-[11px] text-accent-alt hover:underline"
+        className="mt-6 inline-block font-mono text-[11px] text-accent-alt hover:underline"
       >
         <span aria-hidden="true">← </span>all projects
       </Link>
-    </div>
+    </article>
   );
 }
 

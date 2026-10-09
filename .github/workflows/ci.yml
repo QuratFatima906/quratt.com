@@ -67,17 +67,18 @@ jobs:
       - name: Seed is idempotent
         run: pnpm db:seed && pnpm check:seed
       - run: pnpm build
+      # Tarred, because the artifact upload follows symlinks and `.next/node_modules` is made of
+      # them: Turbopack links each external package (next-mdx-remote) to its real path in the
+      # pnpm store. Copied instead, the package cannot find its own dependencies, and every
+      # page that renders MDX on request fails with ERR_MODULE_NOT_FOUND. The links are relative,
+      # into `node_modules/.pnpm`, so they resolve again once the downstream job has run
+      # `pnpm install`.
+      - run: tar -cf next-build.tar --exclude=.next/cache .next
       - uses: actions/upload-artifact@v4
         with:
           name: next-build
-          # `.next` is a dotted directory, so every path under it counts as hidden and is
-          # skipped unless this is set. Without `error`, an empty upload only warns and the
-          # job goes green while producing nothing — which is how this failed the first time.
-          include-hidden-files: true
           if-no-files-found: error
-          path: |
-            .next
-            !.next/cache
+          path: next-build.tar
           retention-days: 1
 
   e2e:
@@ -160,7 +161,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: .next
+      - run: tar -xf next-build.tar
       # The prerendered pages carry their own content; this is only for the on-demand paths.
       - run: pnpm db:migrate && pnpm db:seed
       - run: pnpm exec playwright test
@@ -187,7 +188,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: .next
+      - run: tar -xf next-build.tar
       - run: pnpm dlx @lhci/cli@0.15.x autorun
 
       # P7's budgets are written for "a mobile-throttled trace", and the run above is the

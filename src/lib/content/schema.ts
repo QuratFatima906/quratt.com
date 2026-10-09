@@ -20,7 +20,7 @@ import { z } from 'zod';
  * a value, which is exactly the friction the design was drawn to avoid. Zod still catches a
  * typo at the only write boundary that exists today, and widening it is a one-line edit.
  */
-export const projectTags = ['systems', 'tools', 'silly'] as const;
+export const projectTags = ['products', 'systems', 'tools', 'client'] as const;
 export const shelfStates = ['now', 'done', 'soon', 'gave up'] as const;
 
 // Placeholder content ships with `[city]`, `[you]@[domain]` and friends, so these are checked
@@ -49,8 +49,19 @@ export const projectSchema = z.object({
   lang: line,
   tag: z.enum(projectTags),
   desc: line,
+  /** Where the project is headed — the case study's last word, and the detail page's kicker. */
+  goal: z.string(),
+  url: z.url().nullable(),
+  repo: z.url().nullable(),
+  /** A file under `public/projects/`, e.g. `petal.mp4`; its poster is the same name as `.jpg`. */
+  video: z
+    .string()
+    .regex(/^[a-z0-9-]+\.mp4$/)
+    .nullable(),
   draft: z.boolean(),
   pinned: z.boolean(),
+  /** MDX case study, authored in src/content/projects/<slug>.mdx — the same split as posts (D6). */
+  body: z.string().trim().min(1).max(200_000).nullable(),
 });
 
 export const postSchema = z.object({
@@ -195,6 +206,11 @@ export const projects = pgTable('projects', {
   lang: text('lang').notNull(),
   tag: text('tag').notNull(),
   desc: text('desc').notNull(),
+  goal: text('goal').notNull().default(''),
+  url: text('url'),
+  repo: text('repo'),
+  video: text('video'),
+  body: text('body'),
   ...flags,
 });
 

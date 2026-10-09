@@ -1,0 +1,16 @@
+## The problem
+
+Planning apps assume every week is the same week. For people with a cycle it is not: energy, appetite and patience move in four phases, and a plan that ignores them just generates guilt.
+
+## What I built
+
+A browser extension. Three questions in the toolbar popup (when your last period started, how long your cycle usually runs, how long your period lasts), and from then on a new-tab page that knows which phase you are in and shapes one gentle suggestion each for work, food, movement and rest. The voice is **warm, never clinical**: guidance that reads like a friend who gets it, not a medical app.
+
+- **Private by design.** Cycle data stays in the extension's storage on your device. There is no account and no server, so there is nothing to breach.
+- **One glance a morning.** The new tab shows the phase, the day and the single thing worth focusing on.
+- **A monorepo shaped for a second surface:** the extension and the landing page share a `core` package of phase logic and a `ui` package, with Playwright end-to-end tests over both.
+- **A brand before a backlog.** The wordmark, palette and tagline ("love every phase") were settled first, so every screen after had something to be consistent with.
+
+## Where it stands
+
+More than 1,200 people are on the waitlist, and the extension has been submitted to the Chrome Web Store for publication.

@@ -41,7 +41,7 @@ export default async function ProjectPage({ params }: PageProps<'/projects/[slug
   return (
     // The window belongs to `projects/`, but the URL names one project — so the title bar,
     // which is the page's `h1`, names it too.
-    <Window def={{ ...windowDef('projects'), label: project.name, width: 560 }} main>
+    <Window def={{ ...windowDef('projects'), label: project.name, width: project.body || project.video ? 760 : 560 }} main>
       <JsonLd data={softwareSourceCode(project)} />
       <ProjectWindow project={project} />
     </Window>
