@@ -98,7 +98,7 @@ test.describe('metadata', () => {
 test.describe('the tag filter', () => {
   test('restores a filtered view from the URL, on the server', async ({ page, request }) => {
     // Server-side first: the filtered grid is in the HTML the server sent, not the product of
-    // a client effect. `?tag=systems` selects one of the seven visible projects.
+    // a client effect. `?tag=systems` selects one of the eight visible projects.
     const html = await (await request.get('/projects?tag=systems')).text();
     expect(html).toContain('aria-current="true"');
     expect(html).toMatch(/1<!-- --> shown/);
@@ -112,7 +112,7 @@ test.describe('the tag filter', () => {
     );
     // A hand-typed tag that matches nothing must not empty the grid.
     await page.goto('/projects?tag=nonsense');
-    await expect(page.locator('main ul > li')).toHaveCount(7);
+    await expect(page.locator('main ul > li')).toHaveCount(8);
   });
 });
 
