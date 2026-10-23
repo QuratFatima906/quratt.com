@@ -126,7 +126,7 @@ test.describe('a case study', () => {
     expect((await request.get('/projects/endpaper.jpg')).ok()).toBe(true);
     await expect(page.getByRole('link', { name: /^live/ })).toHaveAttribute(
       'href',
-      'https://endpaper-alpha.vercel.app',
+      'https://endpaper.quratt.com',
     );
     await expect(page.getByText('end goal →')).toBeVisible();
   });

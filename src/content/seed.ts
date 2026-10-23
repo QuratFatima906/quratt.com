@@ -58,7 +58,7 @@ export const seed = seedSchema.parse({
       year: '2026',
       lang: 'ts',
       tag: 'products',
-      url: 'https://endpaper-alpha.vercel.app',
+      url: 'https://endpaper.quratt.com',
       repo: 'https://github.com/QuratFatima906/endpaper',
       video: 'endpaper.mp4',
       draft: false,
