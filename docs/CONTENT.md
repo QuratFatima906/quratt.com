@@ -109,7 +109,7 @@ Real, from the owner's own repositories (2026-10-08). The row is the card; the c
 are (D6). Demo videos live in `public/projects/<slug>.mp4` with a `.jpg` poster of the same
 name. They are H.264, 1280×800, silent, faststart, and a few hundred KB each.
 
-- Only `endpaper` has a live URL today. The Railway deploys for `petal` and `climb` were gone
+- Only `endpaper` and `formwise` have live URLs today. The Railway deploys for `petal` and `climb` were gone
   when the demos were recorded, so those demos were recorded from local runs.
 - `chakori` and `climb` are private repositories, so they carry no source link.
 - `date.js` is a draft: too thin to show.
