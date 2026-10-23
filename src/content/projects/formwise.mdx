@@ -1,0 +1,19 @@
+## The problem
+
+A renovation question usually starts as "what if we swapped these windows?" and ends in a spreadsheet nobody can see the building in. Formwise puts the two side by side: the 3D model and the heat-loss number, changing together.
+
+## What I built
+
+A browser-based editor for a building's envelope, with no backend, no account and no network calls.
+
+- **Inspect and edit.** Click a wall, window, roof face or slab, in the viewport or the model tree, and change its height, width or U-value. The heat-loss summary (H_T = Σ U·A) updates as you go.
+- **Invalid edits never reach the model.** A window that would hang off the end of its wall is rejected with a reason, and a red ghost shows where it would have gone. Inputs hold raw strings, so `1,6` and a half-typed `1.` don't fight you.
+- **The maths has no idea Three.js exists.** The domain model imports nothing from React or Three.js, works in Z-up metres like CityJSON and IFC, and is converted to Three's Y-up in exactly one function.
+- **Walls are cut, not subtracted.** Openings are cut by extruding each wall's elevation outline rather than with CSG, which is deterministic, cheap and testable.
+- **CityJSON import.** LOD2 buildings map onto the same walls, roofs and slabs. Ring winding isn't mandated by the format, so orientation is decided once per building from the sign of its volume, which holds up on L-shaped plans where "faces away from the centre" doesn't.
+- **Files are a trust boundary.** Imports are capped at 1 MB, must be strict UTF-8 JSON of a known format and version, and are shape-checked before anything is replaced. Anything unsupported is refused with a message, not approximated.
+- **Save, reload, export.** The model persists in the browser and exports as glTF, CSV and JSON whose totals match the panel.
+
+## Where it stands
+
+Live, as a learning prototype. The heat-loss figure is a simplified estimate, not an official GEG or DIN V 18599 calculation, and the app says so.
