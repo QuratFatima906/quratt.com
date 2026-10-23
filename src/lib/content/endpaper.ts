@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { ShelfItem } from './schema';
 
 /** The owner's public Endpaper profile. Its public books are read from `<profile>/shelf.json`. */
-export const ENDPAPER_PROFILE = 'https://endpaper-alpha.vercel.app/@qurat';
+export const ENDPAPER_PROFILE = 'https://endpaper.quratt.com/@qurat';
 
 /** Endpaper's four statuses, in the shelf's own words. */
 const STATE = { reading: 'now', finished: 'done', shelf: 'soon', set_aside: 'gave up' } as const;

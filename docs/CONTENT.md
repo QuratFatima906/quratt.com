@@ -125,7 +125,7 @@ page were removed with the titles; restore them from git history when one return
 ## Reads
 
 The shelf is the owner's public Endpaper books, read from
-`https://endpaper-alpha.vercel.app/@qurat/shelf.json` and cached for an hour, followed by the
+`https://endpaper.quratt.com/@qurat/shelf.json` and cached for an hour, followed by the
 seeded rows Endpaper does not already have (matched by title). Each Endpaper book links to its
 own page there. If Endpaper is down, the shelf shows the seeded rows alone. To show a book here, make it public on Endpaper; nothing is edited in
 this repository.
